@@ -3,18 +3,18 @@ import React, {
   useContext,
   useEffect,
   useState
-} from 'react';
+  } from 'react';
 import { apiClient } from '@/services/api-client';
 import { authService } from '@/services';
+import { HOT_FAIR_LOCAL_STORAGE_ACCESS_TOKEN_KEY, HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY, HOT_FAIR_SESSION_REDIRECT_KEY } from '@/config';
 import { showErrorToast, showSuccessToast } from '@/utils';
 import { TUser } from '@/types/api';
 import { useLocalStorage, useSessionStorage } from '@/hooks/use-storage';
 import {
   TOAST_NOTIFICATIONS,
-  HOT_FAIR_LOCAL_STORAGE_ACCESS_TOKEN_KEY,
-  HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY,
-  HOT_FAIR_SESSION_REDIRECT_KEY,
 } from "@/constants";
+
+
 
 type TAuthContext = {
   token: string;

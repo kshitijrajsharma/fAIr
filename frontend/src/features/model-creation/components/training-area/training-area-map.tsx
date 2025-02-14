@@ -1,14 +1,19 @@
-import useDebounce from "@/hooks/use-debounce";
-import { ControlsPosition, DrawingModes } from "@/enums";
-import { GeoJSONSource, Map } from "maplibre-gl";
-import { geojsonToWKT } from "@terraformer/wkt";
-import { GeoJSONType, PaginatedTrainingArea } from "@/types";
-import { MapComponent, MapCursorToolTip } from "@/components/map";
-import { Polygon } from "geojson";
-import { RefObject, useCallback, useEffect, useState } from "react";
-import { TerraDraw } from "terra-draw";
-import { useMapLayers } from "@/hooks/use-map-layer";
-import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
+import useDebounce from '@/hooks/use-debounce';
+import { ControlsPosition, DrawingModes } from '@/enums';
+import { GeoJSONSource, Map } from 'maplibre-gl';
+import { geojsonToWKT } from '@terraformer/wkt';
+import { GeoJSONType, PaginatedTrainingArea } from '@/types';
+import { MapComponent, MapCursorToolTip } from '@/components/map';
+import { Polygon } from 'geojson';
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useState
+  } from 'react';
+import { TerraDraw } from 'terra-draw';
+import { useMapLayers } from '@/hooks/use-map-layer';
+import { useToolTipVisibility } from '@/hooks/use-tooltip-visibility';
 import {
   useCreateTrainingArea,
   useGetTrainingDatasetLabels,
@@ -26,7 +31,7 @@ import {
   TRAINING_AREAS_AOI_OUTLINE_COLOR,
   TRAINING_AREAS_AOI_OUTLINE_WIDTH,
   MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
-} from "@/constants";
+} from "@/config";
 import {
   calculateGeoJSONArea,
   formatAreaInAppropriateUnit,
@@ -312,22 +317,22 @@ const TrainingAreaMap = ({
       layerControlLayers={[
         ...(data?.results?.features?.length
           ? [
-              {
-                value: "Training Areas",
-                subLayers: [trainingAreasLayerId, trainingAreasFillLayerId],
-              },
-            ]
+            {
+              value: "Training Areas",
+              subLayers: [trainingAreasLayerId, trainingAreasFillLayerId],
+            },
+          ]
           : []),
         ...(labels && labels?.features.length > 0
           ? [
-              {
-                value: "Training Labels",
-                subLayers: [
-                  trainingDatasetLabelsLayerId,
-                  trainingDatasetLabelsOutlineLayerId,
-                ],
-              },
-            ]
+            {
+              value: "Training Labels",
+              subLayers: [
+                trainingDatasetLabelsLayerId,
+                trainingDatasetLabelsOutlineLayerId,
+              ],
+            },
+          ]
           : []),
       ]}
     >

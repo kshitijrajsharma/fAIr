@@ -5,6 +5,7 @@ import { extractTileJSONURL, showErrorToast } from '@/utils';
 import { GeoJSONSource, LngLatBoundsLike, Map } from 'maplibre-gl';
 import { Legend } from '@/features/start-mapping/components';
 import { MapComponent, MapCursorToolTip } from '@/components/map';
+import { TOAST_NOTIFICATIONS } from '@/constants';
 import { useMapLayers } from '@/hooks/use-map-layer';
 import { useToolTipVisibility } from '@/hooks/use-tooltip-visibility';
 import {
@@ -24,7 +25,7 @@ import {
   TTrainingDataset,
 } from "@/types";
 import {
-  TOAST_NOTIFICATIONS,
+
   ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
@@ -36,7 +37,8 @@ import {
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-} from "@/constants";
+} from "@/config";
+
 
 export const StartMappingMapComponent = ({
   trainingDataset,

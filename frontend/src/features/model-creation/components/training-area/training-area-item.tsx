@@ -5,12 +5,13 @@ import { JOSMLogo, OSMLogo } from '@/assets/svgs';
 import { LabelStatus } from '@/enums/training-area';
 import { Map } from 'maplibre-gl';
 import { ToolTip } from '@/components/ui/tooltip';
+import { TRAINING_AREA_LABELS_FETCH_POOLING_TIME_MS } from '@/config';
 import {
   useCallback,
   useEffect,
   useRef,
   useState
-} from 'react';
+  } from 'react';
 import { useDialog } from '@/hooks/use-dialog';
 import { useDropdownMenu } from '@/hooks/use-dropdown-menu';
 import { useModelsContext } from '@/app/providers/models-provider';
@@ -38,7 +39,6 @@ import {
 import {
   MODELS_CONTENT,
   TOAST_NOTIFICATIONS,
-  TRAINING_AREA_LABELS_FETCH_POOLING_TIME_MS,
 } from "@/constants";
 import {
   useCreateTrainingLabelsForAOI,

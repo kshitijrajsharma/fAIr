@@ -1,19 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { DeleteIcon, FileIcon, UploadIcon } from "@/components/ui/icons";
-import { Dialog } from "@/components/ui/dialog";
-import { FileWithPath, useDropzone } from "react-dropzone";
-import { Geometry, MultiPolygon, Polygon } from "geojson";
-import { SlFormatBytes } from "@shoelace-style/shoelace/dist/react";
-import { Spinner } from "@/components/ui/spinner";
-import { useCallback, useState } from "react";
-import { DialogProps, Feature, FeatureCollection } from "@/types";
+import { Button } from '@/components/ui/button';
+import { DeleteIcon, FileIcon, UploadIcon } from '@/components/ui/icons';
+import { Dialog } from '@/components/ui/dialog';
+import { DialogProps, Feature, FeatureCollection } from '@/types';
+import { FileWithPath, useDropzone } from 'react-dropzone';
+import { Geometry, MultiPolygon, Polygon } from 'geojson';
+import { MODELS_CONTENT } from '@/constants';
+import { SlFormatBytes } from '@shoelace-style/shoelace/dist/react';
+import { Spinner } from '@/components/ui/spinner';
+import { useCallback, useState } from 'react';
 import {
   MAX_ACCEPTABLE_POLYGON_IN_TRAINING_AREA_GEOJSON_FILE,
   MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS,
   MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREAS,
   MAX_TRAINING_AREA_UPLOAD_FILE_SIZE,
-  MODELS_CONTENT,
-} from "@/constants";
+} from "@/config";
+
 import {
   formatAreaInAppropriateUnit,
   showErrorToast,
@@ -140,7 +141,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
       disabled ||
       uploadInProgress ||
       acceptedFiles.length ===
-        MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS ||
+      MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS ||
       acceptedFiles.length === MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREAS,
   });
 
