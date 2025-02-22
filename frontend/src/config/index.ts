@@ -119,6 +119,7 @@ export const MAX_TRAINING_AREA_SIZE: number = parseIntEnv(ENVS.MAX_TRAINING_AREA
 
 /**
  * The minimum allowed area size (in square meters) for training areas.
+ * The default is set to 5797 sq. meters (1.43 acres).
  */
 export const MIN_TRAINING_AREA_SIZE: number = parseIntEnv(ENVS.MIN_TRAINING_AREA_SIZE, 5797);
 
