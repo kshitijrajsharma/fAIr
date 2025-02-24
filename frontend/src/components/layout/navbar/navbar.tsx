@@ -18,7 +18,7 @@ export const NavBar = () => {
   const [open, setOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <>
@@ -40,9 +40,14 @@ export const NavBar = () => {
             {isAuthenticated ? (
               <UserProfile />
             ) : (
-              <Button variant="primary" onClick={() => navigate(location, {
-                state: { backgroundLocation: location }
-              })}>
+              <Button
+                variant="primary"
+                onClick={() =>
+                  navigate(location, {
+                    state: { backgroundLocation: location },
+                  })
+                }
+              >
                 {SHARED_CONTENT.navbar.loginButton}
               </Button>
             )}
@@ -63,9 +68,11 @@ export const NavBar = () => {
             <Button
               variant="primary"
               className={styles.loginButton}
-              onClick={() => navigate(location, {
-                state: { backgroundLocation: location }
-              })}
+              onClick={() =>
+                navigate(location, {
+                  state: { backgroundLocation: location },
+                })
+              }
             >
               {SHARED_CONTENT.navbar.loginButton}
             </Button>
@@ -80,7 +87,7 @@ export const NavBar = () => {
             height="20px"
           />
         </button>
-      </nav >
+      </nav>
     </>
   );
 };

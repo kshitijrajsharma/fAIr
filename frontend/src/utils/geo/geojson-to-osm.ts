@@ -1,5 +1,5 @@
-import { create } from 'xmlbuilder2';
-import { FeatureCollection, Position } from 'geojson';
+import { create } from "xmlbuilder2";
+import { FeatureCollection, Position } from "geojson";
 
 class Node {
   lat: number;
@@ -27,7 +27,6 @@ class Way {
   }
 }
 
-
 export const geojsonToOsmPolygons = (geojson: FeatureCollection): string => {
   if (!geojson || geojson.type !== "FeatureCollection") {
     throw new Error("Invalid GeoJSON FeatureCollection");
@@ -36,7 +35,6 @@ export const geojsonToOsmPolygons = (geojson: FeatureCollection): string => {
   const nodes: Node[] = [];
   const nodesIndex: Record<string, Node> = {};
   const ways: Way[] = [];
-
 
   geojson.features.forEach((feature) => {
     const { geometry, properties } = feature;
@@ -60,7 +58,6 @@ export const geojsonToOsmPolygons = (geojson: FeatureCollection): string => {
     version: "0.6",
     generator: "HOT-fAIr",
   });
-
 
   let lastNodeId = -1;
   nodes.forEach((node) => {
@@ -128,9 +125,8 @@ const processPolygon = (
   });
 };
 
-
 const mapPropertiesToTags = (
-  properties: Record<string, any>
+  properties: Record<string, any>,
 ): Record<string, string> => {
   const tags: Record<string, string> = {};
 

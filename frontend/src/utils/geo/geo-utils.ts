@@ -1,18 +1,17 @@
-import bbox from '@turf/bbox';
+import bbox from "@turf/bbox";
 import {
   BASE_API_URL,
   JOSM_REMOTE_URL,
   MAX_TRAINING_AREA_SIZE,
   MIN_TRAINING_AREA_SIZE,
-  OSM_HASHTAGS
-  } from '@/config';
-import { calculateGeoJSONArea } from './geometry-utils';
-import { Feature, FeatureCollection } from 'geojson';
-import { geojsonToOsmPolygons } from './geojson-to-osm';
-import { showErrorToast, showSuccessToast } from '../general-utils';
-import { TOAST_NOTIFICATIONS } from '@/constants';
-import { API_ENDPOINTS, } from '@/services';
-
+  OSM_HASHTAGS,
+} from "@/config";
+import { calculateGeoJSONArea } from "./geometry-utils";
+import { Feature, FeatureCollection } from "geojson";
+import { geojsonToOsmPolygons } from "./geojson-to-osm";
+import { showErrorToast, showSuccessToast } from "../general-utils";
+import { TOAST_NOTIFICATIONS } from "@/constants";
+import { API_ENDPOINTS } from "@/services";
 
 /**
  * Creates a GeoJSON FeatureCollection
@@ -127,7 +126,10 @@ export const openInJOSM = async (
       loadurl.searchParams.set("top", String(bounds[3]));
       loadurl.searchParams.set("left", String(bounds[0]));
       loadurl.searchParams.set("right", String(bounds[2]));
-      loadurl.searchParams.set("changeset_tags", `comment=${OSM_HASHTAGS}|source=${oamTileName}`);
+      loadurl.searchParams.set(
+        "changeset_tags",
+        `comment=${OSM_HASHTAGS}|source=${oamTileName}`,
+      );
       await fetch(loadurl);
       showSuccessToast(TOAST_NOTIFICATIONS.josmOpenSuccess);
     } catch (error) {

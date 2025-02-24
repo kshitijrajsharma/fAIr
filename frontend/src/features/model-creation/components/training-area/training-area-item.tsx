@@ -1,20 +1,15 @@
-import FileUploadDialog from '@/features/model-creation/components/dialogs/file-upload-dialog';
-import { DropDown } from '@/components/ui/dropdown';
-import { IconProps, TTrainingAreaFeature } from '@/types';
-import { JOSMLogo, OSMLogo } from '@/assets/svgs';
-import { LabelStatus } from '@/enums/training-area';
-import { Map } from 'maplibre-gl';
-import { ToolTip } from '@/components/ui/tooltip';
-import { TRAINING_AREA_LABELS_FETCH_POOLING_TIME_MS } from '@/config';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-  } from 'react';
-import { useDialog } from '@/hooks/use-dialog';
-import { useDropdownMenu } from '@/hooks/use-dropdown-menu';
-import { useModelsContext } from '@/app/providers/models-provider';
+import FileUploadDialog from "@/features/model-creation/components/dialogs/file-upload-dialog";
+import { DropDown } from "@/components/ui/dropdown";
+import { IconProps, TTrainingAreaFeature } from "@/types";
+import { JOSMLogo, OSMLogo } from "@/assets/svgs";
+import { LabelStatus } from "@/enums/training-area";
+import { Map } from "maplibre-gl";
+import { ToolTip } from "@/components/ui/tooltip";
+import { TRAINING_AREA_LABELS_FETCH_POOLING_TIME_MS } from "@/config";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDialog } from "@/hooks/use-dialog";
+import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
+import { useModelsContext } from "@/app/providers/models-provider";
 import {
   CloudDownloadIcon,
   DeleteIcon,
@@ -36,10 +31,7 @@ import {
   showWarningToast,
   truncateString,
 } from "@/utils";
-import {
-  MODELS_CONTENT,
-  TOAST_NOTIFICATIONS,
-} from "@/constants";
+import { MODELS_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import {
   useCreateTrainingLabelsForAOI,
   useDeleteTrainingArea,
@@ -102,7 +94,9 @@ const LabelFetchStatus = ({
     if (isFetching) return "Fetching labels...";
     if (isError) return "Error occurred. Please retry.";
     if (status === LabelStatus.DOWNLOADED) {
-      return timeSince ? `Labels fetched ${timeSince} ago` : "Labels fetched recently";
+      return timeSince
+        ? `Labels fetched ${timeSince} ago`
+        : "Labels fetched recently";
     }
     return "No labels yet";
   };
@@ -294,7 +288,7 @@ export const TrainingAreaItem: React.FC<
         shouldPoll: false,
         errorToastShown: false,
       }));
-      refetchTrainingAreas()
+      refetchTrainingAreas();
       showSuccessToast(
         `Training labels for Training Area ${trainingArea.id} have been successfully fetched.`,
       );
@@ -422,7 +416,7 @@ export const TrainingAreaItem: React.FC<
     {
       tooltip: disableLabelsFetchOrUpload
         ? MODELS_CONTENT.modelCreation.trainingArea.toolTips
-          .labelsFetchInProgress
+            .labelsFetchInProgress
         : MODELS_CONTENT.modelCreation.trainingArea.toolTips.uploadLabels,
       isIcon: true,
       Icon: UploadIcon,
@@ -477,9 +471,9 @@ export const TrainingAreaItem: React.FC<
             content={
               disableLabelsFetchOrUpload
                 ? MODELS_CONTENT.modelCreation.trainingArea.toolTips
-                  .labelsFetchInProgress
+                    .labelsFetchInProgress
                 : MODELS_CONTENT.modelCreation.trainingArea.toolTips
-                  .fetchOSMLabels
+                    .fetchOSMLabels
             }
           >
             <button

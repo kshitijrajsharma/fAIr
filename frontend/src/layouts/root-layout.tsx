@@ -6,7 +6,8 @@ import { NavBar } from "@/components/layout";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useScrollToTop } from "@/hooks/use-scroll-to-element";
-import { OpenStreetMapAuthModal } from "@/components/auth";
+import { useAuth } from "@/app/providers/auth-provider";
+import { AuthenticationModal } from "@/components/auth";
 
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
@@ -15,26 +16,21 @@ export const RootLayout = () => {
   useEffect(() => {
     scrollToTop();
   }, [pathname]);
-
+  const { isAuthenticated } = useAuth();
   const pagesWithoutNavbarAndFooter = [
-    APPLICATION_ROUTES.OSM_LOGIN,
-    APPLICATION_ROUTES.START_MAPPING_BASE
+    APPLICATION_ROUTES.AUTH_CALLBACK,
+    APPLICATION_ROUTES.START_MAPPING_BASE,
   ];
 
-  const pagesWithoutPadding = [
-    APPLICATION_ROUTES.HOMEPAGE
-  ]
+  const pagesWithoutPadding = [APPLICATION_ROUTES.HOMEPAGE];
   return (
     <>
       <HotTracking />
-      {
-        state?.backgroundLocation && <OpenStreetMapAuthModal />
-      }
+      {state?.backgroundLocation && !isAuthenticated && <AuthenticationModal />}
       <main className="min-h-screen relative  mx-auto flex flex-col justify-between">
-        <Banner />
-        {!pagesWithoutNavbarAndFooter.includes(pathname) && (
-          <NavBar />
-        )}
+        {!pagesWithoutNavbarAndFooter.includes(pathname) && <Banner />}
+
+        {!pagesWithoutNavbarAndFooter.includes(pathname) && <NavBar />}
 
         <div
           // Disable global padding on landing page.
@@ -42,9 +38,7 @@ export const RootLayout = () => {
         >
           <Outlet />
         </div>
-        {!pagesWithoutNavbarAndFooter.includes(pathname) && (
-          <Footer />
-        )}
+        {!pagesWithoutNavbarAndFooter.includes(pathname) && <Footer />}
       </main>
     </>
   );

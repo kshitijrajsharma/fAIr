@@ -12,7 +12,7 @@ type ProtectedRouteProps = {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation()
+  const location = useLocation();
   if (!isAuthenticated) {
     return (
       <>
@@ -33,7 +33,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           </div>
           <Button
             variant="primary"
-            onClick={() => navigate(location, { state: { backgroundLocation: location } })}
+            onClick={() =>
+              navigate(location, { state: { backgroundLocation: location } })
+            }
             className="max-w-[300px]"
           >
             {SHARED_CONTENT.protectedPage.ctaButton}

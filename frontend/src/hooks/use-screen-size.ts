@@ -14,10 +14,12 @@ const useScreenSize = () => {
     isMobile: boolean;
     isTablet: boolean;
     isLaptop: boolean;
+    isLargeScreen: boolean;
   }>({
     isMobile: false,
     isTablet: false,
     isLaptop: false,
+    isLargeScreen: false,
   });
 
   const handleResize = () => {
@@ -25,6 +27,7 @@ const useScreenSize = () => {
       isMobile: window.innerWidth < 640,
       isTablet: window.innerWidth > 640 && window.innerWidth < 768,
       isLaptop: window.innerWidth > 768 && window.innerWidth < 1024,
+      isLargeScreen: window.innerWidth > 1300,
     });
   };
 

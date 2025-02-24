@@ -1,11 +1,11 @@
-import { FullScreenIcon } from '@/components/ui/icons';
-import { Map } from 'maplibre-gl';
-import { MODELS_CONTENT } from '@/constants';
-import { showErrorToast } from '@/utils';
-import { ToolTip } from '@/components/ui/tooltip';
-import { useCallback, useEffect } from 'react';
-import { useGetTMSTileJSON } from '@/features/model-creation/hooks/use-tms-tilejson';
-import { useGetTrainingDataset } from '@/features/models/hooks/use-dataset';
+import { FullScreenIcon } from "@/components/ui/icons";
+import { Map } from "maplibre-gl";
+import { MODELS_CONTENT } from "@/constants";
+import { showErrorToast } from "@/utils";
+import { ToolTip } from "@/components/ui/tooltip";
+import { useCallback, useEffect } from "react";
+import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
+import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
 import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
@@ -29,7 +29,7 @@ const OpenAerialMap = ({
 
   useEffect(() => {
     if (trainingDatasetFetchError) {
-      showErrorToast(undefined, 'Failed to fetch training dataset');
+      showErrorToast(undefined, "Failed to fetch training dataset");
     }
   }, [trainingDatasetFetchError]);
 

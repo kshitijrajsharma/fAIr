@@ -3,6 +3,10 @@ sl-dialog::part(title) {
   font-weight: var(--hot-fair-font-weight-semibold);
 }
 
+sl-dialog.rounded::part(panel) {
+  border-radius: 20px;
+}
+
 sl-dialog.primary::part(title) {
   color: var(--hot-fair-color-primary);
 }

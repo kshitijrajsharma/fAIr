@@ -2,17 +2,17 @@ import {
   APPLICATION_ROUTES,
   MODELS_BASE,
   MODELS_ROUTES,
-  TOAST_NOTIFICATIONS
-  } from '@/constants';
-import { BASE_MODELS, TrainingDatasetOption, TrainingType } from '@/enums';
-import { HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY } from '@/config';
-import { LngLatBoundsLike } from 'maplibre-gl';
-import { useCreateTrainingDataset } from '@/features/model-creation/hooks/use-training-datasets';
-import { useGetTrainingDataset } from '@/features/models/hooks/use-dataset';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useModelDetails } from '@/features/models/hooks/use-models';
-import { UseMutationResult } from '@tanstack/react-query';
-import { useSessionStorage } from '@/hooks/use-storage';
+  TOAST_NOTIFICATIONS,
+} from "@/constants";
+import { BASE_MODELS, TrainingDatasetOption, TrainingType } from "@/enums";
+import { HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY } from "@/config";
+import { LngLatBoundsLike } from "maplibre-gl";
+import { useCreateTrainingDataset } from "@/features/model-creation/hooks/use-training-datasets";
+import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useModelDetails } from "@/features/models/hooks/use-models";
+import { UseMutationResult } from "@tanstack/react-query";
+import { useSessionStorage } from "@/hooks/use-storage";
 
 import {
   TTrainingAreaFeature,
@@ -231,8 +231,8 @@ const ModelsContext = createContext<{
   validateEditMode: boolean;
 }>({
   formData: initialFormState,
-  setFormData: () => { },
-  handleChange: () => { },
+  setFormData: () => {},
+  handleChange: () => {},
   createNewTrainingDatasetMutation: {} as UseMutationResult<
     TTrainingDataset,
     Error,
@@ -247,13 +247,13 @@ const ModelsContext = createContext<{
   >,
   hasLabeledTrainingAreas: false,
   hasAOIsWithGeometry: false,
-  resetState: () => { },
+  resetState: () => {},
   isEditMode: false,
   modelId: "",
   getFullPath: () => "",
-  handleModelCreationAndUpdate: () => { },
+  handleModelCreationAndUpdate: () => {},
   trainingDatasetCreationInProgress: false,
-  handleTrainingDatasetCreation: () => { },
+  handleTrainingDatasetCreation: () => {},
   validateEditMode: false,
 });
 
@@ -263,13 +263,15 @@ export const ModelsProvider: React.FC<{
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { modelId } = useParams();
-  const { getSessionValue, setSessionValue, removeSessionValue } = useSessionStorage();
+  const { getSessionValue, setSessionValue, removeSessionValue } =
+    useSessionStorage();
 
-  const storedFormData = getSessionValue(HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY);
-  const [formData, setFormData] = useState<typeof initialFormState>(
-    storedFormData ? JSON.parse(storedFormData) : initialFormState
+  const storedFormData = getSessionValue(
+    HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY,
   );
-
+  const [formData, setFormData] = useState<typeof initialFormState>(
+    storedFormData ? JSON.parse(storedFormData) : initialFormState,
+  );
 
   const handleChange = (
     field: string,
@@ -283,7 +285,10 @@ export const ModelsProvider: React.FC<{
   ) => {
     setFormData((prev) => {
       const updatedData = { ...prev, [field]: value };
-      setSessionValue(HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY, JSON.stringify(updatedData));
+      setSessionValue(
+        HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY,
+        JSON.stringify(updatedData),
+      );
       return updatedData;
     });
   };
@@ -361,7 +366,6 @@ export const ModelsProvider: React.FC<{
       }
     };
   }, []);
-
 
   const resetState = () => {
     removeSessionValue(HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY);
@@ -455,7 +459,6 @@ export const ModelsProvider: React.FC<{
     formData.trainingAreas.filter(
       (aoi: TTrainingAreaFeature) => aoi.geometry === null,
     ).length === 0;
-
 
   const handleTrainingDatasetCreation = () => {
     createNewTrainingDatasetMutation.mutate({

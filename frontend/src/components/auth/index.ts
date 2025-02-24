@@ -1,1 +1,1 @@
-export { OpenStreetMapAuthModal } from './osm-login-modal'
+export { AuthenticationModal } from "./auth-modal";

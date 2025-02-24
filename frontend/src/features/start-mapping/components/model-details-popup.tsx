@@ -1,15 +1,13 @@
-import useScreenSize from '@/hooks/use-screen-size';
-import { ELEMENT_DISTANCE_FROM_NAVBAR } from '@/config';
-import { extractDatePart, roundNumber, truncateString } from '@/utils';
-import { MobileDrawer } from '@/components/ui/drawer';
-import { Popup } from '@/components/ui/popup';
-import { SkeletonWrapper } from '@/components/ui/skeleton';
-import { TModelDetails, TTrainingDataset } from '@/types';
-import { useModelDetails } from '@/features/models/hooks/use-models';
-import { useTrainingDetails } from '@/features/models/hooks/use-training';
-import {
-  START_MAPPING_PAGE_CONTENT,
-} from "@/constants";
+import useScreenSize from "@/hooks/use-screen-size";
+import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
+import { extractDatePart, roundNumber, truncateString } from "@/utils";
+import { MobileDrawer } from "@/components/ui/drawer";
+import { Popup } from "@/components/ui/popup";
+import { SkeletonWrapper } from "@/components/ui/skeleton";
+import { TModelDetails, TTrainingDataset } from "@/types";
+import { useModelDetails } from "@/features/models/hooks/use-models";
+import { useTrainingDetails } from "@/features/models/hooks/use-training";
+import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 
 const ModelDetailsPopUp = ({
   showPopup,
