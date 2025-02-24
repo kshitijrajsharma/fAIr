@@ -9,15 +9,16 @@ import { navLinks } from "@/constants/general";
 import { NavLogo } from "@/components/layout";
 import { SHARED_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
-import { useLocation } from "react-router-dom";
-import { useLogin } from "@/hooks/use-login";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { UserProfile } from "@/components/layout";
 import { useState } from "react";
 
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
   const { isAuthenticated } = useAuth();
-  const { handleLogin, loading } = useLogin();
+  const navigate = useNavigate();
+  const location = useLocation()
 
   return (
     <>
@@ -39,10 +40,10 @@ export const NavBar = () => {
             {isAuthenticated ? (
               <UserProfile />
             ) : (
-              <Button variant="primary" onClick={handleLogin} spinner={loading}>
-                {loading
-                  ? SHARED_CONTENT.loginButtonLoading
-                  : SHARED_CONTENT.navbar.loginButton}
+              <Button variant="primary" onClick={() => navigate(location, {
+                state: { backgroundLocation: location }
+              })}>
+                {SHARED_CONTENT.navbar.loginButton}
               </Button>
             )}
           </div>
@@ -62,12 +63,11 @@ export const NavBar = () => {
             <Button
               variant="primary"
               className={styles.loginButton}
-              onClick={handleLogin}
-              spinner={loading}
+              onClick={() => navigate(location, {
+                state: { backgroundLocation: location }
+              })}
             >
-              {loading
-                ? SHARED_CONTENT.loginButtonLoading
-                : SHARED_CONTENT.navbar.loginButton}
+              {SHARED_CONTENT.navbar.loginButton}
             </Button>
           )}
         </div>
@@ -80,7 +80,7 @@ export const NavBar = () => {
             height="20px"
           />
         </button>
-      </nav>
+      </nav >
     </>
   );
 };

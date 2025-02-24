@@ -322,6 +322,17 @@ const router = createBrowserRouter([
        */
 
       /**
+       * Auth route
+       */
+      {
+        path: APPLICATION_ROUTES.LOGIN,
+        lazy: async () => {
+          const { LoginPage } = await import("@/app/routes/login");
+          return { Component: LoginPage };
+        },
+      },
+
+      /**
        * 404 route
        */
       {

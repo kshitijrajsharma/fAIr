@@ -23,13 +23,13 @@ import {
  */
 export const useLogin = () => {
   const location = useLocation();
-  const currentPath = location.pathname;
+
   const { setSessionValue } = useSessionStorage();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (): Promise<void> => {
     setLoading(true);
-    setSessionValue(HOT_FAIR_SESSION_REDIRECT_KEY, currentPath);
+    setSessionValue(HOT_FAIR_SESSION_REDIRECT_KEY, location.pathname);
     try {
       await authService.initializeOAuthFlow();
     } catch (error) {
