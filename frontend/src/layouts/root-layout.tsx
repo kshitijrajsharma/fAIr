@@ -26,7 +26,7 @@ export const RootLayout = () => {
   return (
     <>
       <HotTracking />
-      {state?.backgroundLocation && !isAuthenticated && <AuthenticationModal />}
+      <AuthenticationModal isOpen={state?.backgroundLocation && !isAuthenticated} />
       <main className="min-h-screen relative  mx-auto flex flex-col justify-between">
         {!pagesWithoutNavbarAndFooter.includes(pathname) && <Banner />}
 

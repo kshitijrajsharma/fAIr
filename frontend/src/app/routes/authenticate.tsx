@@ -26,7 +26,7 @@ export const AuthenticationCallbackPage = () => {
   return (
     <>
       <Head title={AUTH_PAGE_AND_MODAL_CONTENT.pageTitle}></Head>
-      <AuthenticationModal callbackPage />
+      <AuthenticationModal callbackPage isOpen />
     </>
   );
 };

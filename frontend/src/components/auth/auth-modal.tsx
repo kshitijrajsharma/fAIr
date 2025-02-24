@@ -12,8 +12,10 @@ import { Spinner } from "@/components/ui/spinner";
 
 export const AuthenticationModal = ({
   callbackPage = false,
+  isOpen = false
 }: {
   callbackPage?: boolean;
+  isOpen?: boolean
 }) => {
   const { closeDialog } = useDialog();
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ export const AuthenticationModal = ({
   };
 
   return (
-    <Dialog isOpened={true} closeDialog={handleOnClose} label="">
+    <Dialog isOpened={isOpen} closeDialog={handleOnClose} label="">
       <div className="px-2 md:px-4 flex items-center justify-center flex-col gap-y-20">
         <NavLogo />
         <div className="text-center flex flex-col gap-y-2">
