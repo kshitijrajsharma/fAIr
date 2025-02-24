@@ -26,7 +26,10 @@ export const RootLayout = () => {
   return (
     <>
       <HotTracking />
-      <AuthenticationModal isOpen={state?.backgroundLocation && !isAuthenticated} />
+      {/* Show the auth modal when a `backgroundLocation` is set and when the user is not authenticated. */}
+      <AuthenticationModal
+        isOpen={state?.backgroundLocation && !isAuthenticated}
+      />
       <main className="min-h-screen relative  mx-auto flex flex-col justify-between">
         {!pagesWithoutNavbarAndFooter.includes(pathname) && <Banner />}
 

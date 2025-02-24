@@ -42,11 +42,14 @@ export const NavBar = () => {
             ) : (
               <Button
                 variant="primary"
-                onClick={() =>
+                onClick={() => {
+                  /*
+                   * Set the `backgroundLocation` in location state so that when we open the authentication modal we still see the current page in the background.
+                   */
                   navigate(location, {
                     state: { backgroundLocation: location },
-                  })
-                }
+                  });
+                }}
               >
                 {SHARED_CONTENT.navbar.loginButton}
               </Button>
@@ -68,11 +71,14 @@ export const NavBar = () => {
             <Button
               variant="primary"
               className={styles.loginButton}
-              onClick={() =>
+              onClick={() => {
+                /*
+                 * Set the `backgroundLocation` in location state so that when we open the authentication modal we still see the current page in the background.
+                 */
                 navigate(location, {
                   state: { backgroundLocation: location },
-                })
-              }
+                });
+              }}
             >
               {SHARED_CONTENT.navbar.loginButton}
             </Button>

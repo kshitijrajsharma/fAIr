@@ -33,9 +33,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           </div>
           <Button
             variant="primary"
-            onClick={() =>
-              navigate(location, { state: { backgroundLocation: location } })
-            }
+            onClick={() => {
+              /*
+               * Set the `backgroundLocation` in location state so that when we open the authentication modal we still see the current page in the background.
+               */
+              navigate(location, { state: { backgroundLocation: location } });
+            }}
             className="max-w-[300px]"
           >
             {SHARED_CONTENT.protectedPage.ctaButton}

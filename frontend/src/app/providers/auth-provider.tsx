@@ -9,7 +9,7 @@ import {
 import { showErrorToast, showSuccessToast } from "@/utils";
 import { TUser } from "@/types/api";
 import { useLocalStorage, useSessionStorage } from "@/hooks/use-storage";
-import { TOAST_NOTIFICATIONS } from "@/constants";
+import { APPLICATION_ROUTES, TOAST_NOTIFICATIONS } from "@/constants";
 
 type TAuthContext = {
   token: string;
@@ -126,6 +126,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.access_token);
     } catch (error) {
       showErrorToast(error, TOAST_NOTIFICATIONS.authenticationFailed);
+      // Delay for 3 seconds, incase it's the network speed.
+      // Otherwise, redirect the user back to the home page.
+      setTimeout(() => {
+        window.location.href = APPLICATION_ROUTES.HOMEPAGE;
+      }, 3000);
     }
   };
 
