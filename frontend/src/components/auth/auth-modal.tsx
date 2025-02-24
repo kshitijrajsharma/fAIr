@@ -13,7 +13,7 @@ import { Spinner } from "@/components/ui/spinner";
 export const AuthenticationModal = ({
   callbackPage = false,
 }: {
-  callbackPage: boolean;
+  callbackPage?: boolean;
 }) => {
   const { closeDialog } = useDialog();
   const navigate = useNavigate();

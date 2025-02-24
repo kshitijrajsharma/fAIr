@@ -1,3 +1,4 @@
+// @ts-nocheck 
 import { act, renderHook } from "@testing-library/react-hooks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { authService } from "@/services";

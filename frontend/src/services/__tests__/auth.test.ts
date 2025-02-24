@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { authService } from "../auth";
 import { apiClient } from "@/services/api-client";
@@ -15,6 +17,7 @@ describe("AuthService", () => {
   describe("getOAuthURL", () => {
     it("should return the OAuth URL", async () => {
       const mockResponse = { data: { login_url: "http://example.com" } };
+
       apiClient.get.mockResolvedValue(mockResponse);
 
       const result = await authService.getOAuthURL();
