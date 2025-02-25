@@ -1,4 +1,5 @@
 import useScreenSize from '@/hooks/use-screen-size';
+import { ELEMENT_DISTANCE_FROM_NAVBAR } from '@/config';
 import { extractDatePart, roundNumber, truncateString } from '@/utils';
 import { MobileDrawer } from '@/components/ui/drawer';
 import { Popup } from '@/components/ui/popup';
@@ -7,7 +8,6 @@ import { TModelDetails, TTrainingDataset } from '@/types';
 import { useModelDetails } from '@/features/models/hooks/use-models';
 import { useTrainingDetails } from '@/features/models/hooks/use-training';
 import {
-  ELEMENT_DISTANCE_FROM_NAVBAR,
   START_MAPPING_PAGE_CONTENT,
 } from "@/constants";
 

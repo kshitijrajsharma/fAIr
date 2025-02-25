@@ -1,8 +1,14 @@
-import { ControlsPosition } from "@/enums";
-import { MapComponent } from "@/components/map";
-import { PMTiles } from "pmtiles";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useMapInstance } from "@/hooks/use-map-instance";
+import { ControlsPosition } from '@/enums';
+import { errorMessages } from '@/constants';
+import { MapComponent } from '@/components/map';
+import { PMTiles } from 'pmtiles';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+  } from 'react';
+import { useMapInstance } from '@/hooks/use-map-instance';
 import {
   LayerSpecification,
   MapLayerMouseEvent,
@@ -25,8 +31,8 @@ import {
   TRAINING_AREAS_AOI_LABELS_OUTLINE_WIDTH,
   TRAINING_AREAS_AOI_OUTLINE_COLOR,
   TRAINING_AREAS_AOI_OUTLINE_WIDTH,
-  errorMessages,
-} from "@/constants";
+
+} from "@/config";
 
 type Metadata = {
   name?: string;
@@ -172,15 +178,15 @@ export const TrainingAreaMap = ({
                         <table>
                             <tbody>
                                 ${Object.entries(feature.properties)
-                                  .map(
-                                    ([key, value]) => `
+            .map(
+              ([key, value]) => `
                                     <tr>
                                         <td class="text-gray">${key}</td>
                                         <td class="font-semibold text-dark">${typeof value === "boolean" ? JSON.stringify(value) : value}</td>
                                     </tr>
                                 `,
-                                  )
-                                  .join("")}
+            )
+            .join("")}
                             </tbody>
                         </table>
                     </div>

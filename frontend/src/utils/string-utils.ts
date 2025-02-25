@@ -1,4 +1,4 @@
-import { OAM_S3_BUCKET_URL, OAM_TITILER_ENDPOINT } from '@/constants';
+import { OAM_S3_BUCKET_URL, OAM_TITILER_ENDPOINT } from '@/config';
 
 /**
  * Truncates a string to a specified maximum length, appending ellipsis if truncated.

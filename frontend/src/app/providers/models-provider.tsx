@@ -1,18 +1,19 @@
 import {
   APPLICATION_ROUTES,
-  HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY,
   MODELS_BASE,
-  MODELS_ROUTES
-} from '@/constants';
+  MODELS_ROUTES,
+  TOAST_NOTIFICATIONS
+  } from '@/constants';
 import { BASE_MODELS, TrainingDatasetOption, TrainingType } from '@/enums';
+import { HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY } from '@/config';
 import { LngLatBoundsLike } from 'maplibre-gl';
-import { TOAST_NOTIFICATIONS } from '@/constants';
 import { useCreateTrainingDataset } from '@/features/model-creation/hooks/use-training-datasets';
 import { useGetTrainingDataset } from '@/features/models/hooks/use-dataset';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useModelDetails } from '@/features/models/hooks/use-models';
 import { UseMutationResult } from '@tanstack/react-query';
 import { useSessionStorage } from '@/hooks/use-storage';
+
 import {
   TTrainingAreaFeature,
   TTrainingDataset,

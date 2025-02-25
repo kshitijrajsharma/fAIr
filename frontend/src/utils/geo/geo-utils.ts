@@ -1,16 +1,18 @@
 import bbox from '@turf/bbox';
-import { API_ENDPOINTS, BASE_API_URL } from '@/services';
+import {
+  BASE_API_URL,
+  JOSM_REMOTE_URL,
+  MAX_TRAINING_AREA_SIZE,
+  MIN_TRAINING_AREA_SIZE,
+  OSM_HASHTAGS
+  } from '@/config';
 import { calculateGeoJSONArea } from './geometry-utils';
 import { Feature, FeatureCollection } from 'geojson';
 import { geojsonToOsmPolygons } from './geojson-to-osm';
 import { showErrorToast, showSuccessToast } from '../general-utils';
-import {
-  JOSM_REMOTE_URL,
-  MAX_TRAINING_AREA_SIZE,
-  MIN_TRAINING_AREA_SIZE,
-  OSM_HASHTAGS,
-  TOAST_NOTIFICATIONS,
-} from "@/constants";
+import { TOAST_NOTIFICATIONS } from '@/constants';
+import { API_ENDPOINTS, } from '@/services';
+
 
 /**
  * Creates a GeoJSON FeatureCollection

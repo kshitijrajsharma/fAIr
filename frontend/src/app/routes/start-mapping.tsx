@@ -1,5 +1,5 @@
 import useScreenSize from '@/hooks/use-screen-size';
-import { APPLICATION_ROUTES } from '@/constants';
+import { APPLICATION_ROUTES, START_MAPPING_PAGE_CONTENT, TOAST_NOTIFICATIONS } from '@/constants';
 import { BASE_MODELS } from '@/enums';
 import { FitToBounds, LayerControl, ZoomLevel } from '@/components/map';
 import { Head } from '@/components/seo';
@@ -34,8 +34,7 @@ import {
   showSuccessToast,
 } from "@/utils";
 import {
-  START_MAPPING_PAGE_CONTENT,
-  TOAST_NOTIFICATIONS,
+
   PREDICTION_API_FILE_EXTENSIONS,
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
@@ -44,7 +43,7 @@ import {
   ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-} from "@/constants";
+} from "@/config";
 
 export type TDownloadOptions = {
   name: string;

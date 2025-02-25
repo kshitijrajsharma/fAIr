@@ -1,14 +1,14 @@
-import { Dispatch, SetStateAction } from "react";
-import { fetchOSMDatabaseLastUpdated } from "@/features/model-creation/hooks/use-training-areas";
-import { formatDuration } from "@/utils";
-import { Map } from "maplibre-gl";
-import { NoTrainingAreaIcon } from "@/components/ui/icons";
-import { PaginatedTrainingArea } from "@/types";
-import { Pagination } from "@/components/shared";
-import { TrainingAreaItem } from "@/features/model-creation/components/training-area/training-area-item";
-import { useQuery } from "@tanstack/react-query";
+import { Dispatch, SetStateAction } from 'react';
+import { fetchOSMDatabaseLastUpdated } from '@/features/model-creation/hooks/use-training-areas';
+import { formatDuration } from '@/utils';
+import { Map } from 'maplibre-gl';
+import { NoTrainingAreaIcon } from '@/components/ui/icons';
+import { OSM_LAST_UPDATED_POOLING_INTERVAL_MS } from '@/config';
+import { PaginatedTrainingArea } from '@/types';
+import { Pagination } from '@/components/shared';
+import { TrainingAreaItem } from '@/features/model-creation/components/training-area/training-area-item';
+import { useQuery } from '@tanstack/react-query';
 import {
-  OSM_LAST_UPDATED_POOLING_INTERVAL_MS,
   MODELS_CONTENT,
 } from "@/constants";
 

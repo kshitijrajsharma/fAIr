@@ -1,12 +1,17 @@
-import area from "@turf/area";
-import bboxPolygon from "@turf/bbox";
-import { booleanIntersects } from "@turf/boolean-intersects";
-import { createFeatureCollection } from "./geo-utils";
-import { Feature, FeatureCollection, Polygon, Position } from "geojson";
-import { LngLatBoundsLike, Map } from "maplibre-gl";
-import { roundNumber } from "../number-utils";
-import { TModelPredictions, TModelPredictionsConfig } from "@/types";
-import { uuid4 } from "../general-utils";
+import area from '@turf/area';
+import bboxPolygon from '@turf/bbox';
+import { booleanIntersects } from '@turf/boolean-intersects';
+import { createFeatureCollection } from './geo-utils';
+import {
+  Feature,
+  FeatureCollection,
+  Polygon,
+  Position
+  } from 'geojson';
+import { LngLatBoundsLike, Map } from 'maplibre-gl';
+import { roundNumber } from '../number-utils';
+import { TModelPredictions, TModelPredictionsConfig } from '@/types';
+import { uuid4 } from '../general-utils';
 
 /**
  * Calculates the area of a GeoJSON Feature or FeatureCollection.
@@ -36,12 +41,14 @@ export const calculateGeoJSONArea = (
  * @returns {string} The result as 12,222,000 m² or 12,222 km²
  */
 
-export const formatAreaInAppropriateUnit = (area: number): string => {
-  if (area > 1000000) {
-    return roundNumber(area / 1000000, 1).toLocaleString() + "km²";
+export function formatAreaInAppropriateUnit(area: number) {
+  const SQUARE_METERS_IN_SQUARE_KILOMETER = 1000000;
+  if (area > SQUARE_METERS_IN_SQUARE_KILOMETER) {
+    return roundNumber(area / SQUARE_METERS_IN_SQUARE_KILOMETER, 1).toLocaleString() + "km²";
   }
   return roundNumber(area, 1).toLocaleString() + "m²";
 };
+
 /**
  * Computes the bounding box of a GeoJSON Feature.
  *

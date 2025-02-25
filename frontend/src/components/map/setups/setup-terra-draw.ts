@@ -1,4 +1,5 @@
-import maplibregl from "maplibre-gl";
+import maplibregl from 'maplibre-gl';
+import { HexColorStyling } from 'node_modules/terra-draw/dist/common';
 import {
   TerraDraw,
   TerraDrawMapLibreGLAdapter,
@@ -10,7 +11,7 @@ import {
   TRAINING_AREAS_AOI_FILL_OPACITY,
   TRAINING_AREAS_AOI_OUTLINE_COLOR,
   TRAINING_AREAS_AOI_OUTLINE_WIDTH,
-} from "@/constants";
+} from "@/config";
 
 export const setupTerraDraw = (map: maplibregl.Map) => {
   return new TerraDraw({
@@ -53,13 +54,13 @@ export const setupTerraDraw = (map: maplibregl.Map) => {
         },
         styles: {
           // Fill colour (a string containing a 6 digit Hex color)
-          fillColor: TRAINING_AREAS_AOI_FILL_COLOR,
+          fillColor: TRAINING_AREAS_AOI_FILL_COLOR as HexColorStyling,
 
           // Fill opacity (0 - 1)
           fillOpacity: TRAINING_AREAS_AOI_FILL_OPACITY,
 
           // Outline colour (Hex color)
-          outlineColor: TRAINING_AREAS_AOI_OUTLINE_COLOR,
+          outlineColor: TRAINING_AREAS_AOI_OUTLINE_COLOR as HexColorStyling,
 
           //Outline width (Integer)
           outlineWidth: TRAINING_AREAS_AOI_OUTLINE_WIDTH,
