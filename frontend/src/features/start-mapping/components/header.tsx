@@ -11,21 +11,20 @@ import { ModelPredictionsTracker } from "@/features/start-mapping/components/mod
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
-import { TModel, TModelPredictions, TModelPredictionsConfig } from "@/types";
+import { TModel, TModelPredictions, TTrainingDataset } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { UserProfile } from "@/components/layout";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 
 const StartMappingHeader = ({
-  data,
+  modelInfo,
   modelPredictions,
   modelPredictionsExist,
   trainingDatasetIsPending,
   trainingDatasetIsError,
   query,
   updateQuery,
-  trainingConfig,
   setModelPredictions,
   disablePrediction,
   map,
@@ -34,15 +33,16 @@ const StartMappingHeader = ({
   modelDetailsPopupIsActive,
   downloadOptions,
   clearPredictions,
+  trainingDataset,
+  currentZoom,
 }: {
   modelPredictionsExist: boolean;
   trainingDatasetIsPending: boolean;
   trainingDatasetIsError: boolean;
-  data: TModel;
+  modelInfo: TModel;
   modelPredictions: TModelPredictions;
   query: TQueryParams;
   updateQuery: (newParams: TQueryParams) => void;
-  trainingConfig: TModelPredictionsConfig;
   setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
   map: Map | null;
   disablePrediction: boolean;
@@ -51,6 +51,8 @@ const StartMappingHeader = ({
   modelDetailsPopupIsActive: boolean;
   downloadOptions: TDownloadOptions;
   clearPredictions: () => void;
+  trainingDataset: TTrainingDataset;
+  currentZoom: number;
 }) => {
   const { onDropdownHide, onDropdownShow, dropdownIsOpened } =
     useDropdownMenu();
@@ -75,10 +77,10 @@ const StartMappingHeader = ({
           />
           <div className="flex flex-col md:flex-row md:items-center gap-x-4 z-10">
             <p
-              title={data?.name}
+              title={modelInfo?.name}
               className="text-dark text-body-2base text-nowrap truncate md:max-w-[20px] lg:max-w-[300px] xl:max-w-[400px]"
             >
-              {data?.name ?? "N/A"}
+              {modelInfo?.name ?? "N/A"}
             </p>
             <ModelDetailsButton
               onClick={handleModelDetailsPopup}
@@ -132,9 +134,12 @@ const StartMappingHeader = ({
           <ModelAction
             modelPredictions={modelPredictions}
             setModelPredictions={setModelPredictions}
-            trainingConfig={trainingConfig}
             map={map}
             disablePrediction={disablePrediction}
+            query={query}
+            trainingDataset={trainingDataset}
+            currentZoom={currentZoom}
+            modelInfo={modelInfo}
           />
           <UserProfile hideFullName smallerSize />
         </div>
