@@ -366,8 +366,8 @@ export const handleConflation = (
     }
 
     // Check if the new feature intersects with any feature in updatedAll.
-    const intersectingIndex = updatedAll.findIndex(existingFeature =>
-      booleanIntersects(newFeature, existingFeature)
+    const intersectingIndex = updatedAll.findIndex((existingFeature) =>
+      booleanIntersects(newFeature, existingFeature),
     );
 
     if (intersectingIndex !== -1) {
@@ -390,7 +390,6 @@ export const handleConflation = (
         },
       });
     }
-
   }
 
   return {
