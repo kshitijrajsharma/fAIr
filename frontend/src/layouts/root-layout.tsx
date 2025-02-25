@@ -25,12 +25,13 @@ export const RootLayout = () => {
       <AuthenticationModal
         isOpen={state?.backgroundLocation && !isAuthenticated}
       />
-      <main className="min-h-screen relative  mx-auto flex flex-col justify-between">
-        {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Banner />}
-
+      <main className="min-h-screen relative mx-auto flex flex-col justify-between">
         {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
           !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && (
-            <NavBar />
+            <>
+              <Banner />
+              <NavBar />
+            </>
           )}
 
         <div
@@ -39,6 +40,7 @@ export const RootLayout = () => {
         >
           <Outlet />
         </div>
+
         {!pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
           !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Footer />}
       </main>
