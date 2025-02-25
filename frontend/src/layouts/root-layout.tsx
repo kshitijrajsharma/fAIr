@@ -39,7 +39,7 @@ export const RootLayout = () => {
         >
           <Outlet />
         </div>
-        {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
+        {!pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
           !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Footer />}
       </main>
     </>
