@@ -17,12 +17,7 @@ export const RootLayout = () => {
     scrollToTop();
   }, [pathname]);
   const { isAuthenticated } = useAuth();
-  const pagesWithoutNavbarAndFooter = [
-    APPLICATION_ROUTES.AUTH_CALLBACK,
-    APPLICATION_ROUTES.START_MAPPING_BASE,
-  ];
 
-  const pagesWithoutPadding = [APPLICATION_ROUTES.HOMEPAGE];
   return (
     <>
       <HotTracking />
@@ -31,17 +26,21 @@ export const RootLayout = () => {
         isOpen={state?.backgroundLocation && !isAuthenticated}
       />
       <main className="min-h-screen relative  mx-auto flex flex-col justify-between">
-        {!pagesWithoutNavbarAndFooter.includes(pathname) && <Banner />}
+        {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Banner />}
 
-        {!pagesWithoutNavbarAndFooter.includes(pathname) && <NavBar />}
+        {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
+          !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && (
+            <NavBar />
+          )}
 
         <div
           // Disable global padding on landing page.
-          className={`${pagesWithoutPadding.includes(pathname) ? "" : "app-padding"} w-full`}
+          className={`${pathname === APPLICATION_ROUTES.HOMEPAGE ? "" : "app-padding"} w-full`}
         >
           <Outlet />
         </div>
-        {!pagesWithoutNavbarAndFooter.includes(pathname) && <Footer />}
+        {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
+          !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Footer />}
       </main>
     </>
   );
