@@ -57,7 +57,7 @@ const ModelAction = ({
         map?.getBounds().getNorth(),
       ] as BBOX,
     };
-  }, [map, query, currentZoom]);
+  }, [map, query, currentZoom, trainingDataset, modelInfo]);
 
   const modelPredictionMutation = useGetModelPredictions({
     mutationConfig: {
