@@ -126,10 +126,11 @@ export const HOT_FAIR_BANNER_LOCAL_STORAGE_KEY: string =
   "__hot_fair_banner_closed";
 
 /**
- * The key used to store the model predictions in the session storage for the application.
+ * The key used to store the predictions for the specific model in the users local storage.
  */
-export const HOT_FAIR_MODEL_PREDICTIONS_SESSION_STORAGE_KEY: string =
-  "__hot_fair_model_predictions";
+export const HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY = (
+  modelId: string,
+): string => `__hot_fair_model_predictions_for_model_${modelId}`;
 
 // ==============================================================================================================================
 // Training Area Configurations

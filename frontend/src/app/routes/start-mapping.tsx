@@ -8,7 +8,7 @@ import { FitToBounds, LayerControl, ZoomLevel } from "@/components/map";
 import { Head } from "@/components/seo";
 import { LngLatBoundsLike } from "maplibre-gl";
 import { ModelDetailsPopUp } from "@/features/start-mapping/components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
 import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
@@ -43,7 +43,9 @@ import {
   ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+  HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY,
 } from "@/config";
+import { useLocalStorage } from "@/hooks/use-storage";
 
 export type TDownloadOptions = {
   name: string;
@@ -117,18 +119,38 @@ export const StartMappingPage = () => {
       [SEARCH_PARAMS.area]: searchParams.get(SEARCH_PARAMS.area) || 4,
     };
   });
+  const { setValue, getValue } = useLocalStorage();
 
-  // Todo - move to local storage
-  const [modelPredictions, setModelPredictions] = useState<TModelPredictions>({
-    all: [],
+  const emptyPredictionState = {
     accepted: [],
     rejected: [],
-  });
+    all: [],
+  };
+  const [modelPredictions, setModelPredictions] = useState<TModelPredictions>(
+    () => {
+      const savedPredictions = getValue(
+        HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY(modelId as string),
+      );
+      return savedPredictions
+        ? JSON.parse(savedPredictions)
+        : emptyPredictionState;
+    },
+  );
 
-  const modelPredictionsExist =
-    modelPredictions.accepted.length > 0 ||
-    modelPredictions.rejected.length > 0 ||
-    modelPredictions.all.length > 0;
+  useEffect(() => {
+    setValue(
+      HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY(modelId as string),
+      JSON.stringify(modelPredictions),
+    );
+  }, [modelPredictions, modelId]);
+
+  const modelPredictionsExist = useMemo(() => {
+    return (
+      modelPredictions.accepted.length > 0 ||
+      modelPredictions.rejected.length > 0 ||
+      modelPredictions.all.length > 0
+    );
+  }, [modelPredictions]);
 
   const updateQuery = useCallback(
     (newParams: TQueryParams) => {
@@ -154,47 +176,50 @@ export const StartMappingPage = () => {
 
   const popupAnchorId = "model-details";
 
-  const mapLayers = [
-    ...(modelPredictions.accepted.length > 0
-      ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .acceptedPredictions,
-            subLayers: [
-              ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
-      : []),
-    ...(modelPredictions.rejected.length > 0
-      ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .rejectedPredictions,
-            subLayers: [
-              REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
-      : []),
-    ...(modelPredictions.all.length > 0
-      ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .predictionResults,
-            subLayers: [
-              ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
-      : []),
-  ];
+  const mapLayers = useMemo(
+    () => [
+      ...(modelPredictions.accepted.length > 0
+        ? [
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .acceptedPredictions,
+              subLayers: [
+                ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
+        : []),
+      ...(modelPredictions.rejected.length > 0
+        ? [
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .rejectedPredictions,
+              subLayers: [
+                REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
+        : []),
+      ...(modelPredictions.all.length > 0
+        ? [
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .predictionResults,
+              subLayers: [
+                ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
+        : []),
+    ],
+    [modelPredictions],
+  );
 
   const handleAllFeaturesDownload = useCallback(async () => {
     geoJSONDowloader(
@@ -288,11 +313,7 @@ export const StartMappingPage = () => {
   }, [setShowModelDetailsPopup]);
 
   const clearPredictions = useCallback(() => {
-    setModelPredictions({
-      accepted: [],
-      rejected: [],
-      all: [],
-    });
+    setModelPredictions(emptyPredictionState);
   }, [setModelPredictions]);
 
   return (
