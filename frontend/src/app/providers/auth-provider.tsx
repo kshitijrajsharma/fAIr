@@ -1,20 +1,15 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState
-  } from 'react';
-import { apiClient } from '@/services/api-client';
-import { authService } from '@/services';
-import { HOT_FAIR_LOCAL_STORAGE_ACCESS_TOKEN_KEY, HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY, HOT_FAIR_SESSION_REDIRECT_KEY } from '@/config';
-import { showErrorToast, showSuccessToast } from '@/utils';
-import { TUser } from '@/types/api';
-import { useLocalStorage, useSessionStorage } from '@/hooks/use-storage';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { apiClient } from "@/services/api-client";
+import { authService } from "@/services";
 import {
-  TOAST_NOTIFICATIONS,
-} from "@/constants";
-
-
+  HOT_FAIR_LOCAL_STORAGE_ACCESS_TOKEN_KEY,
+  HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY,
+  HOT_FAIR_SESSION_REDIRECT_KEY,
+} from "@/config";
+import { showErrorToast, showSuccessToast } from "@/utils";
+import { TUser } from "@/types/api";
+import { useLocalStorage, useSessionStorage } from "@/hooks/use-storage";
+import { APPLICATION_ROUTES, TOAST_NOTIFICATIONS } from "@/constants";
 
 type TAuthContext = {
   token: string;
@@ -41,11 +36,8 @@ type AuthProviderProps = {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { getValue, setValue, removeValue } = useLocalStorage();
-  const {
-    getSessionValue,
-    removeSessionValue,
-    setSessionValue,
-  } = useSessionStorage();
+  const { getSessionValue, removeSessionValue, setSessionValue } =
+    useSessionStorage();
 
   const [token, setToken] = useState<string | undefined>(
     getValue(HOT_FAIR_LOCAL_STORAGE_ACCESS_TOKEN_KEY),
@@ -57,7 +49,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Set token globally to eliminate the need to rewrite it
   apiClient.defaults.headers.common["access-token"] = token ? `${token}` : null;
-
 
   const handleRedirection = () => {
     const redirectTo = getSessionValue(HOT_FAIR_SESSION_REDIRECT_KEY);
@@ -113,7 +104,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [token]);
 
-
   /**
    * Clean up and logout.
    */
@@ -136,6 +126,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.access_token);
     } catch (error) {
       showErrorToast(error, TOAST_NOTIFICATIONS.authenticationFailed);
+      // Delay for 3 seconds, incase it's the network speed.
+      // Otherwise, redirect the user back to the home page.
+      setTimeout(() => {
+        window.location.href = APPLICATION_ROUTES.HOMEPAGE;
+      }, 3000);
     }
   };
 

@@ -1,19 +1,11 @@
-import { DropDown } from '@/components/ui/dropdown';
-import { ELEMENT_DISTANCE_FROM_NAVBAR } from '@/config';
-import {
-  FormLabel,
-  Input,
-  Select,
-  Switch
-  } from '@/components/ui/form';
-import { SEARCH_PARAMS, TQueryParams } from '@/app/routes/start-mapping';
-import { SettingsIcon } from '@/components/ui/icons';
-import { ToolTip } from '@/components/ui/tooltip';
-import { useDropdownMenu } from '@/hooks/use-dropdown-menu';
-import {
-
-  START_MAPPING_PAGE_CONTENT,
-} from "@/constants";
+import { DropDown } from "@/components/ui/dropdown";
+import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
+import { FormLabel, Input, Select, Switch } from "@/components/ui/form";
+import { SEARCH_PARAMS, TQueryParams } from "@/app/routes/start-mapping";
+import { SettingsIcon } from "@/components/ui/icons";
+import { ToolTip } from "@/components/ui/tooltip";
+import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
+import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 
 import {
   DropdownPlacement,
@@ -96,7 +88,6 @@ export const ModelSettings = ({
           options={confidenceLevels}
           defaultValue={query[SEARCH_PARAMS.confidenceLevel] as number}
           handleChange={(value) => {
-
             handleQueryUpdate(SEARCH_PARAMS.confidenceLevel, Number(value));
           }}
         />

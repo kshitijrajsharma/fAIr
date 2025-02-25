@@ -1,18 +1,20 @@
-import { Button } from '@/components/ui/button';
-import { DeleteIcon, FileIcon, UploadIcon } from '@/components/ui/icons';
-import { Dialog } from '@/components/ui/dialog';
-import { DialogProps, Feature, FeatureCollection } from '@/types';
-import { FileWithPath, useDropzone } from 'react-dropzone';
-import { Geometry, MultiPolygon, Polygon } from 'geojson';
-import { MODELS_CONTENT } from '@/constants';
-import { SlFormatBytes } from '@shoelace-style/shoelace/dist/react';
-import { Spinner } from '@/components/ui/spinner';
-import { useCallback, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { DeleteIcon, FileIcon, UploadIcon } from "@/components/ui/icons";
+import { Dialog } from "@/components/ui/dialog";
+import { DialogProps, Feature, FeatureCollection } from "@/types";
+import { FileWithPath, useDropzone } from "react-dropzone";
+import { Geometry, MultiPolygon, Polygon } from "geojson";
+import { MODELS_CONTENT } from "@/constants";
+import { SlFormatBytes } from "@shoelace-style/shoelace/dist/react";
+import { Spinner } from "@/components/ui/spinner";
+import { useCallback, useState } from "react";
 import {
   MAX_ACCEPTABLE_POLYGON_IN_TRAINING_AREA_GEOJSON_FILE,
   MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS,
   MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREAS,
+  MAX_TRAINING_AREA_SIZE,
   MAX_TRAINING_AREA_UPLOAD_FILE_SIZE,
+  MIN_TRAINING_AREA_SIZE,
 } from "@/config";
 
 import {
@@ -141,7 +143,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
       disabled ||
       uploadInProgress ||
       acceptedFiles.length ===
-      MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS ||
+        MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS ||
       acceptedFiles.length === MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREAS,
   });
 
@@ -307,10 +309,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
               </small>
               {!disableFileSizeValidation && (
                 <small className="text-body-4 md:text-body-3 text-center">
-                  {
-                    MODELS_CONTENT.modelCreation.trainingArea.fileUploadDialog
-                      .aoiAreaInstruction
-                  }
+                  {`Area should be > ${formatAreaInAppropriateUnit(MIN_TRAINING_AREA_SIZE)} and < ${formatAreaInAppropriateUnit(MAX_TRAINING_AREA_SIZE)}.`}
                 </small>
               )}
             </>

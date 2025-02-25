@@ -1,11 +1,11 @@
-import useDebounce from '@/hooks/use-debounce';
-import { CheckIcon } from '@/components/ui/icons';
-import { HelpText, Input } from '@/components/ui/form';
-import { MODELS_CONTENT } from '@/constants';
-import { SearchIcon } from '@/components/ui/icons';
-import { SkeletonWrapper } from '@/components/ui/skeleton';
-import { useGetTrainingDatasets } from '@/features/model-creation/hooks/use-training-datasets';
-import { useState } from 'react';
+import useDebounce from "@/hooks/use-debounce";
+import { CheckIcon } from "@/components/ui/icons";
+import { HelpText, Input } from "@/components/ui/form";
+import { MODELS_CONTENT } from "@/constants";
+import { SearchIcon } from "@/components/ui/icons";
+import { SkeletonWrapper } from "@/components/ui/skeleton";
+import { useGetTrainingDatasets } from "@/features/model-creation/hooks/use-training-datasets";
+import { useState } from "react";
 import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
@@ -27,8 +27,12 @@ const SelectExistingTrainingDatasetForm = () => {
               .existingTrainingDatasetSectionHeading
           }
         </p>
-        <HelpText content={MODELS_CONTENT.modelCreation.trainingDataset.form
-          .existingTrainingDatasetSectionDescription} />
+        <HelpText
+          content={
+            MODELS_CONTENT.modelCreation.trainingDataset.form
+              .existingTrainingDatasetSectionDescription
+          }
+        />
       </div>
       <div className={`flex  items-center border border-gray-border`}>
         <SearchIcon className={`ml-2 icon-lg text-dark`} />
@@ -43,7 +47,6 @@ const SelectExistingTrainingDatasetForm = () => {
           }
           disabled={isError}
           className="w-full"
-
         />
       </div>
 
@@ -69,7 +72,6 @@ const SelectExistingTrainingDatasetForm = () => {
                         disabled={!td.source_imagery}
                         className="w-full text-start"
                         onClick={() => {
-
                           handleChange(
                             MODEL_CREATION_FORM_NAME.SELECTED_TRAINING_DATASET_ID,
                             String(td.id),

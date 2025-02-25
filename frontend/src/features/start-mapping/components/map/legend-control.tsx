@@ -1,15 +1,9 @@
-import useScreenSize from '@/hooks/use-screen-size';
-import { LegendBookIcon } from '@/components/ui/icons';
-import { Map } from 'maplibre-gl';
-import { START_MAPPING_PAGE_CONTENT } from '@/constants';
-import { useCallback, useState } from 'react';
-import {
-
-  LEGEND_NAME_MAPPING,
-  MAP_STYLES_PREFIX,
-} from "@/config";
-
-
+import useScreenSize from "@/hooks/use-screen-size";
+import { LegendBookIcon } from "@/components/ui/icons";
+import { Map } from "maplibre-gl";
+import { START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { useCallback, useState } from "react";
+import { LEGEND_NAME_MAPPING, MAP_STYLES_PREFIX } from "@/config";
 
 const FillLegendStyle = ({
   fillColor,

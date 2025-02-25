@@ -44,6 +44,7 @@ export const APPLICATION_ROUTES = {
   START_MAPPING_BASE: "/start-mapping/",
   START_MAPPING: "/start-mapping/:modelId",
   NOTFOUND: "/404",
+  AUTH_CALLBACK: "/authenticate",
   PRIVACY_POLICY: "/privacy",
   LEARN: "/learn",
   ABOUT: "/about",

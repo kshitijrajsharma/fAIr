@@ -9,3 +9,4 @@ export { default as ModelFormConfirmation } from "@/assets/images/model_creation
 export { default as FairModelPlaceholderImage } from "@/assets/images/model_placeholder_image.png";
 export { default as TrainingInProgressImage } from "@/assets/images/training_in_progress.png";
 export { default as fAIrLogo } from "@/assets/images/fAIr_logo.png";
+export { default as OSMLogo } from "@/assets/images/osm_logo.png";

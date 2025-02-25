@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { API_ENDPOINTS, MutationConfig } from '@/services';
-import { deleteTrainingArea } from '@/features/model-creation/api/delete-trainings';
-import { MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS } from '@/config';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import axios from "axios";
+import { API_ENDPOINTS, MutationConfig } from "@/services";
+import { deleteTrainingArea } from "@/features/model-creation/api/delete-trainings";
+import { MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS } from "@/config";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getTrainingAreaLabelsQueryOptions,
   getTrainingAreaQueryOptions,
@@ -108,7 +108,6 @@ type useGetTrainingAreaLabelsFromOSMOptions = {
 export const useGetTrainingAreaLabelsFromOSM = ({
   mutationConfig,
 }: useGetTrainingAreaLabelsFromOSMOptions) => {
-
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
   return useMutation({

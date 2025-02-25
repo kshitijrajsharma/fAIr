@@ -1,4 +1,4 @@
-import { IconProps } from './common';
+import { IconProps } from "./common";
 // Models related pages content types starts.
 
 export type TModelsContent = {
@@ -102,7 +102,6 @@ export type TModelsContent = {
         title: string;
         mainInstruction: string;
         fleSizeInstruction: string;
-        aoiAreaInstruction: string;
       };
       pageDescription: string;
     };
@@ -590,6 +589,16 @@ export type TStartMappingPageContent = {
 };
 
 // Start mapping page content types ends.
+
+// Auth Page/Modal content starts.
+export type TAuthPageAndModalContent = {
+  pageTitle: string;
+  title: string;
+  instruction: string;
+  buttonText: string;
+  authInProgressText: string;
+};
+// Auth Page/Modal content ends.
 
 // About page content types starts.
 

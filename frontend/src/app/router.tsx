@@ -1,7 +1,7 @@
-import { APPLICATION_ROUTES } from '@/constants';
-import { MainErrorFallback } from '@/components/errors';
-import { ModelFormsLayout, RootLayout } from '@/layouts';
-import { ProtectedRoute } from '@/app/routes/protected-route';
+import { APPLICATION_ROUTES } from "@/constants";
+import { MainErrorFallback } from "@/components/errors";
+import { ModelFormsLayout, RootLayout } from "@/layouts";
+import { ProtectedRoute } from "@/app/routes/protected-route";
 import {
   Navigate,
   RouterProvider,
@@ -320,6 +320,19 @@ const router = createBrowserRouter([
       /**
        * User account routes ends
        */
+
+      /**
+       * Auth route
+       */
+      {
+        path: APPLICATION_ROUTES.AUTH_CALLBACK,
+        lazy: async () => {
+          const { AuthenticationCallbackPage } = await import(
+            "@/app/routes/authenticate"
+          );
+          return { Component: AuthenticationCallbackPage };
+        },
+      },
 
       /**
        * 404 route

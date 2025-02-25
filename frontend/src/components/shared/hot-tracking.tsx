@@ -1,9 +1,11 @@
-import { APPLICATION_ROUTES } from '@/constants';
-import { HOT_TRACKING_HTML_TAG_NAME, MATOMO_APP_DOMAIN, MATOMO_ID } from '@/config';
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-
-
+import { APPLICATION_ROUTES } from "@/constants";
+import {
+  HOT_TRACKING_HTML_TAG_NAME,
+  MATOMO_APP_DOMAIN,
+  MATOMO_ID,
+} from "@/config";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export const HotTracking = ({ homepagePath = APPLICATION_ROUTES.HOMEPAGE }) => {
   const { pathname } = useLocation();

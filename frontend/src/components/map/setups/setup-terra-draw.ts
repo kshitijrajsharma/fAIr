@@ -1,5 +1,5 @@
-import maplibregl from 'maplibre-gl';
-import { HexColorStyling } from 'node_modules/terra-draw/dist/common';
+import maplibregl from "maplibre-gl";
+import { HexColorStyling } from "node_modules/terra-draw/dist/common";
 import {
   TerraDraw,
   TerraDrawMapLibreGLAdapter,

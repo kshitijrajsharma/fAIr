@@ -3,7 +3,7 @@ import { Head } from "@/components/seo";
 import { SHARED_CONTENT } from "@/constants";
 import { ShieldIcon } from "@/components/ui/icons";
 import { useAuth } from "@/app/providers/auth-provider";
-import { useLogin } from "@/hooks/use-login";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -11,8 +11,8 @@ type ProtectedRouteProps = {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  const { handleLogin, loading } = useLogin();
-
+  const navigate = useNavigate();
+  const location = useLocation();
   if (!isAuthenticated) {
     return (
       <>
@@ -33,13 +33,15 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           </div>
           <Button
             variant="primary"
-            onClick={handleLogin}
+            onClick={() => {
+              /*
+               * Set the `backgroundLocation` in location state so that when we open the authentication modal we still see the current page in the background.
+               */
+              navigate(location, { state: { backgroundLocation: location } });
+            }}
             className="max-w-[300px]"
-            spinner={loading}
           >
-            {loading
-              ? SHARED_CONTENT.loginButtonLoading
-              : SHARED_CONTENT.protectedPage.ctaButton}
+            {SHARED_CONTENT.protectedPage.ctaButton}
           </Button>
         </section>
       </>

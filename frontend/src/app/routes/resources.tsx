@@ -1,4 +1,4 @@
-import { PageUnderConstruction } from '@/components/errors';
+import { PageUnderConstruction } from "@/components/errors";
 // import { ChevronDownIcon } from "@/components/ui/icons";
 // import { FAQs, SectionHeader } from "@/components/shared";
 // import { Head } from "@/components/seo";
@@ -8,7 +8,6 @@ import { PageUnderConstruction } from '@/components/errors';
 // import { RESOURCES_PAGE_CONTENT } from "@/constants";
 // import { TArticle } from "@/types";
 // import { truncateString } from "@/utils";
-
 
 export const ResourcesPage = () => {
   return (
