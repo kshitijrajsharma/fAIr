@@ -6,6 +6,7 @@ import { Link } from "@/components/ui/link";
 import { navLinks } from "@/constants/general";
 import { NavLogo } from "@/components/layout";
 import { useNavigate } from "react-router-dom";
+import { APPLICATION_ROUTES } from "@/constants";
 
 type BrandLogoWithDropDownProps = {
   isOpened: boolean;
@@ -18,6 +19,7 @@ export const BrandLogoWithDropDown = function BrandLogoWithDropDown({
   onClose,
   onShow,
 }: BrandLogoWithDropDownProps) {
+  const navigate = useNavigate();
   const navItems = navLinks.map((link, id) => (
     <li key={`${link.title}-${id}`}>
       <Link
@@ -31,8 +33,6 @@ export const BrandLogoWithDropDown = function BrandLogoWithDropDown({
       </Link>
     </li>
   ));
-
-  const navigate = useNavigate();
   return (
     <DropDown
       placement={DropdownPlacement.BOTTOM_START}
@@ -48,7 +48,13 @@ export const BrandLogoWithDropDown = function BrandLogoWithDropDown({
         <Divider />
         <button
           className="text-body-3  block w-full px-4 py-2 text-start hover:bg-off-white hover:rounded-b-xl text-primary"
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate(APPLICATION_ROUTES.HOMEPAGE);
+            }
+          }}
         >
           Stop Mapping
         </button>
