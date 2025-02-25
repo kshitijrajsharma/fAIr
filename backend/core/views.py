@@ -310,6 +310,7 @@ class ModelViewSet(
         "created_at": ["exact", "gt", "gte", "lt", "lte"],
         "last_modified": ["exact", "gt", "gte", "lt", "lte"],
         "user": ["exact"],
+        "dataset": ["exact"],
         "id": ["exact"],
     }
     ordering_fields = ["created_at", "last_modified", "id", "status"]
