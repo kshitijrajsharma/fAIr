@@ -28,8 +28,6 @@ export const OpenAerialMap = ({
         source: TMS_SOURCE_ID,
         layout: { visibility: "visible" },
       });
-
-
     }
 
   }, [map, tileJSONURL]);
