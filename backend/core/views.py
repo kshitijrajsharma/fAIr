@@ -310,6 +310,7 @@ class ModelViewSet(
         "created_at": ["exact", "gt", "gte", "lt", "lte"],
         "last_modified": ["exact", "gt", "gte", "lt", "lte"],
         "user": ["exact"],
+        "dataset": ["exact"],
         "id": ["exact"],
     }
     ordering_fields = ["created_at", "last_modified", "id", "status"]
@@ -969,7 +970,7 @@ def get_kpi_stats(request):
     total_models_with_status_published = Model.objects.filter(status=0).count()
     total_registered_users = OsmUser.objects.count()
     total_approved_predictions = ApprovedPredictions.objects.count()
-    total_feedback_labels = FeedbackLabel.objects.count()
+    total_feedback_labels = Feedback.objects.count()
 
     data = {
         "total_models_published": total_models_with_status_published,

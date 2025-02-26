@@ -23,7 +23,7 @@ Unlike other AI data producers, fAIr is a free and open-source AI service that a
 
 To eliminate model biases, fAIr is built to work with the local communities and receive constant feedback on the models, which will result in the progressive intelligence of computer vision models. The AI models suggest detected features to be added to OpenStreetMap (OSM), but mass import into OSM is not planned. Whenever an OSM mapper uses the AI models for assisted mapping and completes corrections, fAIr can take those corrections as feedback to enhance the AI model’s accuracy.
 
-## Product Roadmap
+## Product Roadmap (Users' Roadmap)
 
 <!-- prettier-ignore-start -->
 | Status | Feature |
@@ -34,14 +34,20 @@ To eliminate model biases, fAIr is built to work with the local communities and 
 |✅| mapping predictions into OSM using JOSM |
 |✅| improvements to the prediction algorithm: adopting YOLOv8 model |
 |✅| UI/UX redesign to enhance the user experience |
-|✅| fAIr evaluation research with Masaryk University & Missing Maps Czechia and Slovakia, welcome to join the efforts, [here is the final report](https://drive.google.com/file/d/10axeli5RozCE0gL2XeTIugAUHJPUDgvu/view?usp=sharing) |
-|⚙️| You can follow [here](https://docs.google.com/spreadsheets/d/1HavA2RFVLKLKTQnkOupWx0VmJHXn3FVAxhsDH37W9rM/edit?gid=0#gid=0) fAIr 2025 user road map for new features and [here](https://docs.google.com/document/d/1A8kRG-Tw922bV8CTz4HXjCpp7cZmHSpehLOQQF1EXao/edit?usp=sharing) is a detailed initial features plan
+|✅| fAIr evaluation research with Masaryk University & Missing Maps Czechia and Slovakia, welcome to join the efforts, [here is the final report](https://drive.google.com/file/d/10axeli5RozCE0gL2XeTIugAUHJPUDgvu/view?usp=sharing) 
+|🔄| Handling User Profile
+|🔄| Notifications features
+|📅| Replicable Models
+|📅| Offline AI Prediction
+|📅| Post Processing
+|📅| fAIrSwipe, integration with MapSwipe, [more details](https://docs.google.com/document/d/1dWQlBl6HM7Nky-deahw0DfKlOOEbBhuWRPnLquyf7jU/edit?usp=sharing)
 
+|👀| You can follow [here](https://docs.google.com/document/d/1A8kRG-Tw922bV8CTz4HXjCpp7cZmHSpehLOQQF1EXao/edit?usp=sharing) the details and scope of each of the above features. and you can see and follow the [Figma design progress](https://www.figma.com/design/1WXme5jfWV4tCaY9Rcaekk/fAIr-Project---UIUX-Team?node-id=2772-7466&p=f) for current in development 🔄 features
 
 <!-- prettier-ignore-end -->
 
-A more
-[high level roadmap for 2025 can be found on Github](https://github.com/orgs/hotosm/projects/40).
+A higher level roadmap for 2025 can be found on
+[Github](https://github.com/orgs/hotosm/projects/40).
 
 # General Workflow of fAIr
 
