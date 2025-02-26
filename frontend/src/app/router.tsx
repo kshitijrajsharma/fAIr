@@ -322,7 +322,7 @@ const router = createBrowserRouter([
        */
 
       /**
-       * Auth route
+       * Auth route starts.
        */
       {
         path: APPLICATION_ROUTES.AUTH_CALLBACK,
@@ -333,7 +333,9 @@ const router = createBrowserRouter([
           return { Component: AuthenticationCallbackPage };
         },
       },
-
+      /**
+      * Auth route ends.
+      */
       /**
        * 404 route
        */
