@@ -9,6 +9,7 @@ import {
   getTrainingDatasetLabels,
   getTrainingDatasets,
 } from "@/features/model-creation/api/get-trainings";
+import { QUERY_KEYS } from "@/services";
 
 export const getTrainingDatasetsQueryOptions = (searchQuery: string) => {
   return queryOptions({
@@ -22,7 +23,7 @@ export const getTrainingAreasQueryOptions = (
   offset: number,
 ) => {
   return queryOptions({
-    queryKey: ["training-areas", datasetId, offset],
+    queryKey: [QUERY_KEYS.TRAINING_AREAS(datasetId, offset)],
     queryFn: () => getTrainingAreas(datasetId, offset),
     placeholderData: keepPreviousData,
   });

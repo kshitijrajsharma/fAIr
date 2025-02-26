@@ -24,6 +24,8 @@ export type MutationConfig<
   Parameters<MutationFnType>[0]
 >;
 
-export const queryKeys = {
+export const QUERY_KEYS = {
   MODEL_DETAILS: (modelId: string) => `model-details-${modelId}`,
+  TRAINING_AREAS: (datasetId: number, offset: number) =>
+    `training-areas-${datasetId}-${offset}`,
 };

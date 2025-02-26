@@ -422,7 +422,7 @@ export const ModelsProvider: React.FC<{
     });
   }, [formData, modelId]);
 
-  const handleModelCreationOrUpdateSuccess = () => {
+  const handleModelCreationOrUpdateSuccess = (id?: string) => {
     if (isModelOwner) {
       showSuccessToast(
         isEditMode
@@ -431,7 +431,7 @@ export const ModelsProvider: React.FC<{
       );
     }
 
-    navigate(`${getFullPath(MODELS_ROUTES.CONFIRMATION)}?id=${modelId}`);
+    navigate(`${getFullPath(MODELS_ROUTES.CONFIRMATION)}?id=${id ?? modelId}`);
     // Submit the model for training request
     submitTrainingRequest();
   };
@@ -459,19 +459,23 @@ export const ModelsProvider: React.FC<{
     modelId: modelId as string,
   });
 
-  // Confirm that all the training areas labels has been retrieved
-  const hasLabeledTrainingAreas =
-    formData.trainingAreas.length > 0 &&
-    formData.trainingAreas.filter(
-      (aoi: TTrainingAreaFeature) => aoi.properties.label_fetched === null,
-    ).length === 0;
+  // Confirm that all the training areas labels have been fetched.
+  const hasLabeledTrainingAreas = useMemo(
+    () =>
+      formData.trainingAreas.every(
+        (aoi: TTrainingAreaFeature) => aoi.properties.label_fetched !== null,
+      ),
+    [formData],
+  );
 
-  // Confirm that all of the training areas has a geometry
-  const hasAOIsWithGeometry =
-    formData.trainingAreas.length > 0 &&
-    formData.trainingAreas.filter(
-      (aoi: TTrainingAreaFeature) => aoi.geometry === null,
-    ).length === 0;
+  // Confirm that all of the training areas have a geometry.
+  const hasAOIsWithGeometry = useMemo(
+    () =>
+      formData.trainingAreas.every(
+        (aoi: TTrainingAreaFeature) => aoi.geometry !== null,
+      ),
+    [formData],
+  );
 
   const handleTrainingDatasetCreation = () => {
     createNewTrainingDatasetMutation.mutate({

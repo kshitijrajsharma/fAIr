@@ -1,5 +1,5 @@
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
-import { queryKeys } from "@/services";
+import { QUERY_KEYS } from "@/services";
 import {
   getModels,
   getModelDetails,
@@ -63,7 +63,7 @@ export const getModelDetailsQueryOptions = (
   enabled: boolean,
 ) => {
   return queryOptions({
-    queryKey: [queryKeys.MODEL_DETAILS(id)],
+    queryKey: [QUERY_KEYS.MODEL_DETAILS(id)],
     queryFn: () => getModelDetails(id),
     //@ts-expect-error bad type definition
     refetchInterval: refetchInterval,
