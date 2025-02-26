@@ -70,6 +70,7 @@ export type PaginatedTrainings = {
 
 export type TModelDetails = TModel & {
   description: string;
+  dataset: TTrainingDataset;
 };
 
 export type TTrainingAreaFeature = {

@@ -25,32 +25,37 @@ export const RejectedPredictionsLayer = ({
   useEffect(() => {
     if (!map) return;
 
-    map.addSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID, {
-      type: "geojson",
-      data: { type: "FeatureCollection", features: [] },
-    });
+    if (!map.getSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID)) {
+      map.addSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID, {
+        type: "geojson",
+        data: { type: "FeatureCollection", features: [] },
+      });
+    }
 
-    map.addLayer({
-      id: REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-      type: "fill",
-      source: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-      paint: {
-        "fill-color": "#D63F40",
-        "fill-opacity": 0.2,
-      },
-      layout: { visibility: "visible" },
-    });
-
-    map.addLayer({
-      id: REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-      type: "line",
-      source: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-      paint: {
-        "line-color": "#D63F40",
-        "line-width": 2,
-      },
-      layout: { visibility: "visible" },
-    });
+    if (!map.getLayer(REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID)) {
+      map.addLayer({
+        id: REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+        type: "fill",
+        source: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
+        paint: {
+          "fill-color": "#D63F40",
+          "fill-opacity": 0.2,
+        },
+        layout: { visibility: "visible" },
+      });
+    }
+    if (!map.getLayer(REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID)) {
+      map.addLayer({
+        id: REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+        type: "line",
+        source: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
+        paint: {
+          "line-color": "#D63F40",
+          "line-width": 2,
+        },
+        layout: { visibility: "visible" },
+      });
+    }
   }, [map]);
 
   useEffect(() => {

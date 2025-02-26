@@ -52,17 +52,16 @@ export const useModels = ({
 
 export const useModelDetails = (
   id: string,
-  enabled: boolean = true,
+  enabled: boolean = false,
   refetchInterval: boolean | number = false,
 ) => {
   return useQuery({
-    ...getModelDetailsQueryOptions(id, refetchInterval),
+    ...getModelDetailsQueryOptions(id, refetchInterval, enabled),
     retry: (_, error) => {
       // When a model is not found, don't retry.
       //@ts-expect-error bad type definition
       return error.response?.status !== 404;
     },
-    enabled: enabled,
   });
 };
 

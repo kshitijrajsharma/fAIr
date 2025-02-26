@@ -192,7 +192,7 @@ export const MAX_ACCEPTABLE_POLYGON_IN_TRAINING_AREA_GEOJSON_FILE: number =
 /**
  * The maximum zoom level for the map.
  */
-export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 22);
+export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 21);
 
 /**
  * The minimum zoom level for the map before the prediction components can be activated.

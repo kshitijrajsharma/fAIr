@@ -1,5 +1,9 @@
 import { Map } from "maplibre-gl";
-import { TMS_LAYER_ID, TMS_SOURCE_ID } from "@/config";
+import {
+
+  TMS_LAYER_ID,
+  TMS_SOURCE_ID,
+} from "@/config";
 import { useEffect } from "react";
 
 export const OpenAerialMap = ({
@@ -26,7 +30,7 @@ export const OpenAerialMap = ({
         layout: { visibility: "visible" },
       });
     }
-  }, [map]);
+  }, [map, tileJSONURL]);
 
   return null;
 };

@@ -8,7 +8,6 @@ import { BASE_MODELS, TrainingDatasetOption, TrainingType } from "@/enums";
 import { HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY } from "@/config";
 import { LngLatBoundsLike } from "maplibre-gl";
 import { useCreateTrainingDataset } from "@/features/model-creation/hooks/use-training-datasets";
-import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useModelDetails } from "@/features/models/hooks/use-models";
 import { UseMutationResult } from "@tanstack/react-query";
@@ -305,20 +304,11 @@ export const ModelsProvider: React.FC<{
     isEditMode,
   );
 
-  const {
-    data: trainingDataset,
-    isPending: trainingDatasetIsPending,
-    isError: trainingDatasetIsError,
-  } = useGetTrainingDataset(
-    Number(data?.dataset),
-    Boolean(isEditMode && data?.dataset),
-  );
-
   // Will be used in the route validator component to delay the redirection for a while until the data are retrieved
   const validateEditMode =
     formData.selectedTrainingDatasetId !== "" && formData.tmsURL !== "";
 
-  // Fetch and prefill model details
+  // Fetch and prefill model details and training dataset
   useEffect(() => {
     if (!isEditMode || isPending || !data) return;
 
@@ -334,28 +324,17 @@ export const ModelsProvider: React.FC<{
     handleChange(MODEL_CREATION_FORM_NAME.MODEL_NAME, data.name ?? "");
     handleChange(
       MODEL_CREATION_FORM_NAME.SELECTED_TRAINING_DATASET_ID,
-      data.dataset,
+      data.dataset.id,
     );
-  }, [isEditMode, isError, isPending, data]);
-
-  // Fetch and prefill training dataset
-  useEffect(() => {
-    if (!isEditMode || trainingDatasetIsPending || trainingDatasetIsError)
-      return;
     handleChange(
       MODEL_CREATION_FORM_NAME.DATASET_NAME,
-      trainingDataset.name ?? "",
+      data.dataset.name ?? "",
     );
     handleChange(
       MODEL_CREATION_FORM_NAME.TMS_URL,
-      trainingDataset.source_imagery ?? "",
+      data.dataset.source_imagery ?? "",
     );
-  }, [
-    isEditMode,
-    trainingDatasetIsPending,
-    trainingDataset,
-    trainingDatasetIsError,
-  ]);
+  }, [isEditMode, isError, isPending, data]);
 
   useEffect(() => {
     // Cleanup the timeout on component unmount

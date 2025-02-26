@@ -22,7 +22,10 @@ const OpenAerialMap = ({
 }) => {
   const { handleChange } = useModelsContext();
 
-  const { isPending, data, isError } = useGetTMSTileJSON(tileJSONURL);
+  const { isPending, data, isError } = useGetTMSTileJSON(
+    tileJSONURL,
+    !!trainingDatasetId,
+  );
 
   const { data: trainingDataset, isError: trainingDatasetFetchError } =
     useGetTrainingDataset(trainingDatasetId);

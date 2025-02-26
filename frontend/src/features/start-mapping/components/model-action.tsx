@@ -3,11 +3,10 @@ import { Map } from "maplibre-gl";
 import { START_MAPPING_PAGE_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import {
   BBOX,
-  TModel,
+  TModelDetails,
   TModelPredictions,
   TModelPredictionsConfig,
   TQueryParams,
-  TTrainingDataset,
 } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useCallback } from "react";
@@ -23,7 +22,6 @@ const ModelAction = ({
   map,
   disablePrediction,
   query,
-  trainingDataset,
   currentZoom,
   modelInfo,
 }: {
@@ -32,9 +30,8 @@ const ModelAction = ({
   map: Map | null;
   disablePrediction: boolean;
   query: TQueryParams;
-  trainingDataset: TTrainingDataset;
   currentZoom: number;
-  modelInfo: TModel;
+  modelInfo: TModelDetails;
 }) => {
   const { modelId } = useParams();
 
@@ -44,11 +41,11 @@ const ModelAction = ({
       area_threshold: query[SEARCH_PARAMS.area] as number,
       use_josm_q: query[SEARCH_PARAMS.useJOSMQ] as boolean,
       confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
-      checkpoint: `/mnt/efsmount/data/trainings/dataset_${modelInfo?.dataset}/output/training_${modelInfo?.published_training}/checkpoint${PREDICTION_API_FILE_EXTENSIONS[modelInfo?.base_model as BASE_MODELS]}`,
+      checkpoint: `/mnt/efsmount/data/trainings/dataset_${modelInfo?.dataset?.id}/output/training_${modelInfo?.published_training}/checkpoint${PREDICTION_API_FILE_EXTENSIONS[modelInfo?.base_model as BASE_MODELS]}`,
       max_angle_change: 15,
       model_id: modelId as string,
       skew_tolerance: 15,
-      source: trainingDataset?.source_imagery as string,
+      source: modelInfo?.dataset?.source_imagery as string,
       zoom_level: currentZoom,
       bbox: [
         map?.getBounds().getWest(),
@@ -57,7 +54,7 @@ const ModelAction = ({
         map?.getBounds().getNorth(),
       ] as BBOX,
     };
-  }, [map, query, currentZoom, trainingDataset, modelInfo]);
+  }, [map, query, currentZoom, modelInfo]);
 
   const modelPredictionMutation = useGetModelPredictions({
     mutationConfig: {

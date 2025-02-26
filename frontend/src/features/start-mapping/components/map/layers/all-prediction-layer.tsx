@@ -26,32 +26,38 @@ export const AllPredictionsLayer = ({
 
   useEffect(() => {
     if (!map) return;
+    if (!map.getSource(ALL_MODEL_PREDICTIONS_SOURCE_ID)) {
+      map.addSource(ALL_MODEL_PREDICTIONS_SOURCE_ID, {
+        type: "geojson",
+        data: { type: "FeatureCollection", features: [] },
+      });
+    }
 
-    map.addSource(ALL_MODEL_PREDICTIONS_SOURCE_ID, {
-      type: "geojson",
-      data: { type: "FeatureCollection", features: [] },
-    });
-    map.addLayer({
-      id: ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-      type: "fill",
-      source: ALL_MODEL_PREDICTIONS_SOURCE_ID,
-      paint: {
-        "fill-color": "#A243DC",
-        "fill-opacity": 0.2,
-      },
-      layout: { visibility: "visible" },
-    });
+    if (!map.getLayer(ALL_MODEL_PREDICTIONS_FILL_LAYER_ID)) {
+      map.addLayer({
+        id: ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+        type: "fill",
+        source: ALL_MODEL_PREDICTIONS_SOURCE_ID,
+        paint: {
+          "fill-color": "#A243DC",
+          "fill-opacity": 0.2,
+        },
+        layout: { visibility: "visible" },
+      });
+    }
 
-    map.addLayer({
-      id: ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-      type: "line",
-      source: ALL_MODEL_PREDICTIONS_SOURCE_ID,
-      paint: {
-        "line-color": "#A243DC",
-        "line-width": 2,
-      },
-      layout: { visibility: "visible" },
-    });
+    if (!map.getLayer(ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID)) {
+      map.addLayer({
+        id: ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+        type: "line",
+        source: ALL_MODEL_PREDICTIONS_SOURCE_ID,
+        paint: {
+          "line-color": "#A243DC",
+          "line-width": 2,
+        },
+        layout: { visibility: "visible" },
+      });
+    }
   }, [map]);
 
   useEffect(() => {

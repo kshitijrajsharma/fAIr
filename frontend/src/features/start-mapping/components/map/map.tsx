@@ -29,9 +29,11 @@ import {
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
 } from "@/config";
 import bbox from "@turf/bbox";
-import { AcceptedPredictionsLayer } from "./layers/accepted-prediction-layer";
-import { RejectedPredictionsLayer } from "./layers/rejected-prediction-layer";
-import { AllPredictionsLayer } from "./layers/all-prediction-layer";
+import {
+  AcceptedPredictionsLayer,
+  RejectedPredictionsLayer,
+  AllPredictionsLayer,
+} from "@/features/start-mapping/components/map/layers";
 
 export const StartMappingMapComponent = ({
   trainingDataset,
@@ -39,7 +41,6 @@ export const StartMappingMapComponent = ({
   setModelPredictions,
   oamTileJSONIsError,
   oamTileJSON,
-  oamTileJSONError,
   modelPredictionsExist,
   map,
   mapContainerRef,
@@ -47,10 +48,12 @@ export const StartMappingMapComponent = ({
   layers,
   tmsBounds,
   trainingId,
+  modelInfoRequestIsPending,
 }: {
   trainingId: number;
   trainingDataset?: TTrainingDataset;
   modelPredictions: TModelPredictions;
+
   setModelPredictions: Dispatch<
     SetStateAction<{
       all: TModelPredictionFeature[];
@@ -61,7 +64,6 @@ export const StartMappingMapComponent = ({
 
   oamTileJSONIsError: boolean;
   oamTileJSON: TileJSON;
-  oamTileJSONError: any;
   modelPredictionsExist: boolean;
   map: Map | null;
   currentZoom: number;
@@ -71,6 +73,7 @@ export const StartMappingMapComponent = ({
     subLayers: string[];
   }[];
   tmsBounds: LngLatBoundsLike;
+  modelInfoRequestIsPending: boolean;
 }) => {
   const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -85,10 +88,11 @@ export const StartMappingMapComponent = ({
   useEffect(() => {
     if (!oamTileJSONIsError) return;
     showErrorToast(undefined, TOAST_NOTIFICATIONS.trainingDataset.error);
-  }, [oamTileJSONIsError, oamTileJSONError]);
+  }, [oamTileJSONIsError]);
 
   useEffect(() => {
-    if (!map || !tmsBounds || oamTileJSONIsError) return;
+    if (!map || !tmsBounds || oamTileJSONIsError || modelInfoRequestIsPending)
+      return;
 
     // if there are predictions that the user hasn't interacted with, zoom to them.
     if (modelPredictions.all.length > 0) {
@@ -102,17 +106,21 @@ export const StartMappingMapComponent = ({
     } else {
       map.fitBounds(tmsBounds);
     }
-  }, [map, tmsBounds, oamTileJSONIsError, oamTileJSON]);
+  }, [
+    map,
+    tmsBounds,
+    oamTileJSONIsError,
+    oamTileJSON,
+    modelInfoRequestIsPending,
+  ]);
 
   useEffect(() => {
     if (!map) return;
-
     const layerIds = [
       ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
       ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
       REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
     ];
-
     const handleMouseEnter = () => {
       map.getCanvas().style.cursor = "pointer";
     };
@@ -143,10 +151,10 @@ export const StartMappingMapComponent = ({
 
   const showTooltip =
     currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION && tooltipVisible;
+
   return (
     <MapComponent
       controlsPosition={ControlsPosition.TOP_LEFT}
-      oamTileJSONURL={tileJSONURL}
       showTileBoundaries
       fitToBounds={!isSmallViewport}
       bounds={tmsBounds}
@@ -156,9 +164,10 @@ export const StartMappingMapComponent = ({
       zoomControls={!isSmallViewport}
       layerControl={!isSmallViewport}
       layerControlLayers={layers}
-      openAerialMap
       basemaps
       showCurrentZoom={!isSmallViewport}
+      openAerialMap={!modelInfoRequestIsPending}
+      oamTileJSONURL={tileJSONURL}
     >
       <AcceptedPredictionsLayer
         map={map}
@@ -169,6 +178,7 @@ export const StartMappingMapComponent = ({
         features={modelPredictions.rejected}
       />
       <AllPredictionsLayer map={map} features={modelPredictions.all} />
+
       {showPopup && (
         <PredictedFeatureActionPopup
           event={selectedEvent}

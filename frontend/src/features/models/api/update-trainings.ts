@@ -17,7 +17,10 @@ export const useUpdateTraining = ({
   mutationConfig,
   modelId,
 }: UseUpdateTrainingOptions) => {
-  const { refetch: refetchModelDetails } = useModelDetails(String(modelId));
+  const { refetch: refetchModelDetails } = useModelDetails(
+    String(modelId),
+    true,
+  );
   const { refetch: refetchTrainingHistory } = useTrainingHistory(
     String(modelId),
     0,
