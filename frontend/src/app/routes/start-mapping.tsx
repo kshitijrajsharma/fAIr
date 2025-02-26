@@ -118,7 +118,7 @@ export const StartMappingPage = () => {
     };
   });
 
-  // Todo - move to local storage
+  // Todo - move to local storage.
   const [modelPredictions, setModelPredictions] = useState<TModelPredictions>({
     all: [],
     accepted: [],
