@@ -65,6 +65,17 @@ class ModelSerializer(serializers.ModelSerializer):
         validated_data["user"] = user
         return super().create(validated_data)
 
+    def __init__(self, *args, **kwargs):
+        super(ModelSerializer, self).__init__(*args, **kwargs)
+        request = self.context.get("request")
+        # Check if there's a pk in the URL (detail view) and then override dataset field.
+        if (
+            request
+            and request.resolver_match
+            and request.resolver_match.kwargs.get("pk")
+        ):
+            self.fields["dataset"] = DatasetSerializer(read_only=True)
+
     # def get_training(self, obj):
     #     if not hasattr(self, "_cached_training"):
     #         self._cached_training = Training.objects.filter(
