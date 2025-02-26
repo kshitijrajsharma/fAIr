@@ -8,7 +8,6 @@ import {
   createTrainingRequest,
   TCreateTrainingRequestArgs,
 } from "@/features/model-creation/api/create-trainings";
-import { useModelDetails } from "@/features/models/hooks/use-models";
 import {
   TUpdateModelArgs,
   updateModel,
@@ -58,7 +57,6 @@ export const useUpdateModel = ({
   mutationConfig,
   modelId,
 }: useUpdateModelOptions) => {
-  const { refetch: refetchModelDetails } = useModelDetails(modelId, true);
   const queryClient = useQueryClient();
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
@@ -68,7 +66,6 @@ export const useUpdateModel = ({
       queryClient.invalidateQueries({
         queryKey: [queryKeys.MODEL_DETAILS(modelId)],
       });
-      refetchModelDetails();
       onSuccess?.(...args);
     },
     ...restConfig,

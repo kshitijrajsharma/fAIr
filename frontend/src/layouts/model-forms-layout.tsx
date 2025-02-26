@@ -83,7 +83,7 @@ export const ModelFormsLayout = () => {
       />
       <Head title="Create New Model" />
       <BackButton />
-      <div className="min-h-screen grid grid-cols-12 grid-rows-[auto_1fr_auto] gap-y-8 w-full justify-center my-8">
+      <div className="min-h-screen grid grid-cols-12 grid-rows-[auto_1fr_auto] gap-y-4 w-full justify-center my-2">
         <div className="col-span-12 lg:col-start-2 lg:col-span-10 w-full">
           <ProgressBar
             currentPath={pathname}
@@ -125,7 +125,7 @@ const ModelFormRouteValidator = ({
     if (!pathname || !formData || !currentPageIndex) return;
     const prevRoute = getFullPath(pages[currentPageIndex - 1].path);
     if (pathname.includes(MODELS_ROUTES.TRAINING_DATASET)) {
-      // When a user is in the training dataset page, they must have filled the model details page
+      // When a user is in the training dataset page, they must have filled the model details page form.
       if (!formData.modelName && !formData.modelDescription)
         navigate(prevRoute);
     } else if (pathname.includes(MODELS_ROUTES.TRAINING_AREA)) {

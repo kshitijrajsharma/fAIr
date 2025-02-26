@@ -114,9 +114,9 @@ export const HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY: string =
 /**
  * The key used to store the model form data in session storage to preserve the state incase the user
  * visits ID Editor or JOSM to map a training area.
- * Session storage is used to allow users to be able to open fAIr on a new tab and start on a clean slate.
+ * Local storage is used to withstand reloads and network issues.
  */
-export const HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY: string =
+export const HOT_FAIR_MODEL_CREATION_LOCAL_STORAGE_KEY: string =
   "__hot_fair_model_creation_formdata";
 
 /**
@@ -381,7 +381,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-  1000 +
+    1000 +
   REFRESH_BUFFER_MS;
 
 // ==============================================================================================================================

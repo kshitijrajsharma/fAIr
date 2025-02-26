@@ -34,6 +34,7 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
     handleTrainingDatasetCreation,
     trainingDatasetCreationInProgress,
     isEditMode,
+    isModelOwner,
   } = useModelsContext();
 
   const nextPage = () => {
@@ -150,6 +151,15 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
         label={MODELS_CONTENT.modelCreation.progressButtons.back}
         iconClassName="rotate-90"
         onClick={prevPage}
+        /**
+         * If the user is not the owner of the model and they are in edit mode, then don't let them go back on
+         * the training area page. Since the back page is training dataset, which they're not authorized to change.
+         */
+        disabled={
+          !isModelOwner &&
+          isEditMode &&
+          currentPath.includes(MODELS_ROUTES.TRAINING_AREA)
+        }
       />
       <ButtonWithIcon
         variant="primary"

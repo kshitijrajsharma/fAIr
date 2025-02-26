@@ -126,6 +126,7 @@ export type TModelsContent = {
         exploreModels: string;
       };
       description: string;
+      updateDescription: string;
     };
 
     trainingSettings: {

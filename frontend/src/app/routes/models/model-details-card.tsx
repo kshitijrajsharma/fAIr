@@ -1,4 +1,3 @@
-import axios from "axios";
 import ModelEnhancementDialog from "@/features/models/components/dialogs/model-enhancement-dialog";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { BackButton, ButtonWithIcon } from "@/components/ui/button";
@@ -12,55 +11,24 @@ import { TrainingAreaDrawer } from "@/features/models/components/training-area-d
 import { TrainingInProgressImage } from "@/assets/images";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
-import { useEffect } from "react";
-import { useModelDetails } from "@/features/models/hooks/use-models";
-import { useNavigate, useParams } from "react-router-dom";
 import {
   ModelDetailsSection,
   ModelDetailsProperties,
   ModelDetailsInfo,
   TrainingHistoryTable,
 } from "@/features/models/components";
+import { useModelsContext } from "@/app/providers/models-provider";
 
 export const ModelDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
-
   const {
     isOpened: isModelFilesDialogOpened,
     closeDialog: closeModelFilesDialog,
     openDialog: openModelFilesDialog,
   } = useDialog();
 
-  const navigate = useNavigate();
+  const { data, isPending, isError } = useModelsContext();
 
-  const { data, isPending, isError, error } = useModelDetails(
-    id as string,
-    !!id,
-    10000,
-  );
   const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (isError && error) {
-      const currentPath = window.location.pathname;
-      if (axios.isAxiosError(error)) {
-        navigate(APPLICATION_ROUTES.NOTFOUND, {
-          state: {
-            from: currentPath,
-            error: error.response?.data?.detail,
-          },
-        });
-      } else {
-        const err = error as Error;
-        navigate(APPLICATION_ROUTES.NOTFOUND, {
-          state: {
-            from: currentPath,
-            error: err.message,
-          },
-        });
-      }
-    }
-  }, [isError, error, navigate]);
 
   const {
     isOpened: isModelEnhancementDialogOpened,

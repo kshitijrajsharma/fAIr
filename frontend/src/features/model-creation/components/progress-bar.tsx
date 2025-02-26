@@ -3,6 +3,7 @@ import { cn } from "@/utils";
 import { useEffect, useRef } from "react";
 import { useModelsContext } from "@/app/providers/models-provider";
 import { useNavigate } from "react-router-dom";
+import { MODELS_ROUTES } from "@/constants";
 
 type ProgressBarProps = {
   currentPath: string;
@@ -16,7 +17,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   pages,
 }) => {
   const navigate = useNavigate();
-  const { getFullPath } = useModelsContext();
+  const { getFullPath, isModelOwner } = useModelsContext();
   const activeStepRef = useRef<HTMLButtonElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,13 +44,23 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     >
       {pages.map((step, index) => {
         const activeStep = currentPath.includes(step.path);
+        // Disable the confirmation page button from been clickable.
         const isLastPage = index === pages.length - 1;
+        // Disable other buttons when the user is on the confirmation page.
+        const isConfirmationPage = currentPath.includes(
+          MODELS_ROUTES.CONFIRMATION,
+        );
+        // Disable the model details and training dataset if the user is not the owner of the model
+        const disableButton =
+          isLastPage ||
+          isConfirmationPage ||
+          (!isModelOwner && [0, 1].includes(index));
         return (
           <button
             key={`current-form-progress-${step.id}`}
             ref={activeStep ? activeStepRef : null}
-            className="flex items-center gap-x-3 cursor-pointer"
-            disabled={isLastPage}
+            className={`flex items-center gap-x-3 ${disableButton && "cursor-not-allowed"}`}
+            disabled={disableButton}
             onClick={() => !isLastPage && navigate(getFullPath(step.path))}
           >
             {step.id < currentPageIndex + 1 ? (

@@ -155,6 +155,8 @@ export const MODELS_CONTENT: TModelsContent = {
       },
       description:
         "Your created model was successful, and it is now undergoing a training.",
+      updateDescription:
+        "Model update was successful, and it is now undergoing a training.",
     },
     trainingSettings: {
       form: {

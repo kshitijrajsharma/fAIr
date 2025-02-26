@@ -19,7 +19,7 @@ export const useUpdateTraining = ({
 }: UseUpdateTrainingOptions) => {
   const { refetch: refetchModelDetails } = useModelDetails(
     String(modelId),
-    true,
+    !!modelId,
   );
   const { refetch: refetchTrainingHistory } = useTrainingHistory(
     String(modelId),
