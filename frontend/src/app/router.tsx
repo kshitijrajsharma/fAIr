@@ -334,8 +334,8 @@ const router = createBrowserRouter([
         },
       },
       /**
-      * Auth route ends.
-      */
+       * Auth route ends.
+       */
       /**
        * 404 route
        */

@@ -169,7 +169,7 @@ export const StartMappingMapComponent = ({
       openAerialMap={!modelInfoRequestIsPending}
       oamTileJSONURL={tileJSONURL}
     >
-      {!modelInfoRequestIsPending &&
+      {!modelInfoRequestIsPending && (
         <>
           <AcceptedPredictionsLayer
             map={map}
@@ -180,7 +180,8 @@ export const StartMappingMapComponent = ({
             features={modelPredictions.rejected}
           />
           <AllPredictionsLayer map={map} features={modelPredictions.all} />
-        </>}
+        </>
+      )}
 
       {showPopup && (
         <PredictedFeatureActionPopup

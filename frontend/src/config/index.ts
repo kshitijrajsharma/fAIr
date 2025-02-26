@@ -191,6 +191,8 @@ export const MAX_ACCEPTABLE_POLYGON_IN_TRAINING_AREA_GEOJSON_FILE: number =
 
 /**
  * The maximum zoom level for the map.
+ * Model predictions require a max zoom of 22.
+ * 21 is used here because 1 is already added to the 'currentZoom' in the useMapInstance() hook.
  */
 export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 21);
 
@@ -379,7 +381,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-    1000 +
+  1000 +
   REFRESH_BUFFER_MS;
 
 // ==============================================================================================================================
