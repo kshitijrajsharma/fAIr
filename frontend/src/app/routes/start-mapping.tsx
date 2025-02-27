@@ -311,7 +311,6 @@ export const StartMappingPage = () => {
   return (
     <>
       <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
-
       <div className="h-screen flex flex-col fullscreen">
         {/* Mobile dialog */}
         <StartMappingMobileDrawer
