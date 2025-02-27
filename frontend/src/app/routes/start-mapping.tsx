@@ -16,6 +16,7 @@ import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { UserProfile } from "@/components/layout";
 import { Feature, TileJSON, TModelPredictions } from "@/types";
+
 import {
   BrandLogoWithDropDown,
   Legend,
@@ -75,6 +76,7 @@ export const StartMappingPage = () => {
     data: modelInfo,
     error,
   } = useModelDetails(modelId as string, !!modelId);
+
 
   const tileJSONURL = useMemo(
     () =>
@@ -311,7 +313,6 @@ export const StartMappingPage = () => {
   return (
     <>
       <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
-
       <div className="h-screen flex flex-col fullscreen">
         {/* Mobile dialog */}
         <StartMappingMobileDrawer
@@ -326,6 +327,7 @@ export const StartMappingPage = () => {
           updateQuery={updateQuery}
           modelDetailsPopupIsActive={showModelDetailsPopup}
           clearPredictions={clearPredictions}
+          trainingDataset={trainingDataset as TTrainingDataset}
           currentZoom={currentZoom}
           modelInfo={modelInfo}
         />
