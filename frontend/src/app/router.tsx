@@ -339,7 +339,6 @@ const router = createBrowserRouter([
           return { Component: AuthenticationCallbackPage };
         },
       },
-
       /**
        * Auth route ends.
        */
