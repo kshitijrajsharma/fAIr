@@ -82,7 +82,7 @@ const TrainingAreaForm = () => {
         successToast={TOAST_NOTIFICATIONS.trainingAreasFileUploadSuccess}
         disabled={createTrainingArea.isPending}
       />
-      <div className="md:h-screen min-h-screen flex flex-col mb-40">
+      <div className="lg:h-screen min-h-screen flex flex-col mb-40">
         <div className="flex md:justify-between md:items-center flex-col md:flex-row gap-y-4 mb-10">
           <div className="basis-2/3">
             <StepHeading
@@ -111,7 +111,7 @@ const TrainingAreaForm = () => {
             trainingDatasetId={Number(formData.selectedTrainingDatasetId)}
           />
         </div>
-        <div className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen lg:no-fullscreen">
+        <div className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen xl:no-fullscreen">
           <div className="w-full h-[90vh] col-span-12 lg:col-span-6 2xl:col-span-7">
             <TrainingAreaMap
               tileJSONURL={tileJSONURL}
