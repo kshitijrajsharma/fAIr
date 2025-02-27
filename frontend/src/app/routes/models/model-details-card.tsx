@@ -1,4 +1,3 @@
-import axios from "axios";
 import ModelEnhancementDialog from "@/features/models/components/dialogs/model-enhancement-dialog";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { BackButton, ButtonWithIcon } from "@/components/ui/button";
@@ -7,61 +6,29 @@ import { Image } from "@/components/ui/image";
 import { ModelDetailsSkeleton } from "@/features/models/components/skeletons";
 import { ModelFilesDialog } from "@/features/models/components/dialogs";
 import { StarStackIcon } from "@/components/ui/icons";
-import { TModelDetails, TTrainingDataset } from "@/types";
+import { TModelDetails } from "@/types";
 import { TrainingAreaDrawer } from "@/features/models/components/training-area-drawer";
 import { TrainingInProgressImage } from "@/assets/images";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
-import { useEffect } from "react";
-import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
-import { useModelDetails } from "@/features/models/hooks/use-models";
-import { useNavigate, useParams } from "react-router-dom";
 import {
   ModelDetailsSection,
   ModelDetailsProperties,
   ModelDetailsInfo,
   TrainingHistoryTable,
 } from "@/features/models/components";
+import { useModelsContext } from "@/app/providers/models-provider";
 
 export const ModelDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
-
   const {
     isOpened: isModelFilesDialogOpened,
     closeDialog: closeModelFilesDialog,
     openDialog: openModelFilesDialog,
   } = useDialog();
 
-  const navigate = useNavigate();
+  const { data, isPending, isError } = useModelsContext();
 
-  const { data, isPending, isError, error } = useModelDetails(
-    id as string,
-    !!id,
-    10000,
-  );
   const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (isError && error) {
-      const currentPath = window.location.pathname;
-      if (axios.isAxiosError(error)) {
-        navigate(APPLICATION_ROUTES.NOTFOUND, {
-          state: {
-            from: currentPath,
-            error: error.response?.data?.detail,
-          },
-        });
-      } else {
-        const err = error as Error;
-        navigate(APPLICATION_ROUTES.NOTFOUND, {
-          state: {
-            from: currentPath,
-            error: err.message,
-          },
-        });
-      }
-    }
-  }, [isError, error, navigate]);
 
   const {
     isOpened: isModelEnhancementDialogOpened,
@@ -69,20 +36,9 @@ export const ModelDetailsPage = () => {
     openDialog: openModelEnhancementDialog,
   } = useDialog();
 
-  const {
-    isPending: isTrainingDatasetPending,
-    data: trainingDataset,
-    isError: isTrainingDatasetError,
-  } = useGetTrainingDataset(data?.dataset, !!data);
-
   const { isOpened, closeDialog, openDialog } = useDialog();
 
-  if (
-    isPending ||
-    isError ||
-    isTrainingDatasetPending ||
-    isTrainingDatasetError
-  ) {
+  if (isPending || isError) {
     return <ModelDetailsSkeleton />;
   }
 
@@ -91,20 +47,20 @@ export const ModelDetailsPage = () => {
       <ModelEnhancementDialog
         isOpened={isModelEnhancementDialogOpened}
         closeDialog={closeModelEnhancementDialog}
-        modelId={data?.id as string}
+        modelId={data?.id}
       />
       <TrainingAreaDrawer
         isOpened={isOpened}
         closeDialog={closeDialog}
-        trainingAreaId={data?.published_training as number}
-        tmsURL={trainingDataset?.source_imagery as string}
+        trainingAreaId={data.published_training}
+        tmsURL={data?.dataset?.source_imagery}
       />
       <Head title={`${data?.name} Model`} />
       <ModelFilesDialog
         closeDialog={closeModelFilesDialog}
         isOpened={isModelFilesDialogOpened}
-        trainingId={data?.published_training as number}
-        datasetId={data?.dataset as number}
+        trainingId={data?.published_training}
+        datasetId={data?.dataset?.id}
       />
       <BackButton className="mt-6" route={APPLICATION_ROUTES.MODELS} />
       <div className="my-12 flex flex-col gap-y-20">
@@ -112,9 +68,7 @@ export const ModelDetailsPage = () => {
           data={data as TModelDetails}
           openModelFilesDialog={openModelFilesDialog}
           openTrainingAreaDrawer={openDialog}
-          isError={isTrainingDatasetError}
-          isPending={isTrainingDatasetPending}
-          trainingDataset={trainingDataset as TTrainingDataset}
+          trainingDataset={data?.dataset}
         />
         <ModelDetailsSection
           title={MODELS_CONTENT.models.modelsDetailsCard.propertiesSectionTitle}
@@ -133,7 +87,7 @@ export const ModelDetailsPage = () => {
           ) : (
             <ModelDetailsProperties
               trainingId={data?.published_training as number}
-              datasetId={data?.dataset}
+              datasetId={data?.dataset?.id}
               baseModel={data.base_model}
             />
           )}
@@ -168,9 +122,9 @@ export const ModelDetailsPage = () => {
             modelId={data?.id as string}
             trainingId={data?.published_training as number}
             modelOwner={data?.user.username as string}
-            datasetId={data?.dataset as number}
+            datasetId={data?.dataset.id as number}
             baseModel={data?.base_model as string}
-            tmsUrl={trainingDataset.source_imagery}
+            tmsUrl={data?.dataset?.source_imagery}
           />
         </ModelDetailsSection>
       </div>

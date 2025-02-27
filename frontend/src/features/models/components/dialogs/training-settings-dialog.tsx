@@ -5,7 +5,6 @@ import { Dialog } from "@/components/ui/dialog";
 import { MODELS_CONTENT } from "@/constants";
 import { PAGE_LIMIT } from "@/components/shared";
 import { useEffect } from "react";
-import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useTrainingHistory } from "@/features/models/hooks/use-training";
 
 import {
@@ -24,10 +23,14 @@ const ModelTrainingSettingsDialog: React.FC<ModelEnhancementDialogProps> = ({
   closeDialog,
   modelId,
 }) => {
-  const { data, isPending, isError } = useModelDetails(modelId);
-
-  const { handleChange, formData, createNewTrainingRequestMutation } =
-    useModelsContext();
+  const {
+    handleChange,
+    formData,
+    createNewTrainingRequestMutation,
+    data,
+    isPending,
+    isError,
+  } = useModelsContext();
 
   {
     /*  

@@ -7,6 +7,7 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
+import { ModelsProvider } from "@/app/providers/models-provider";
 
 const router = createBrowserRouter([
   {
@@ -71,7 +72,12 @@ const router = createBrowserRouter([
             "@/app/routes/models/model-details-card"
           );
           return {
-            Component: () => <ModelDetailsPage />,
+            Component: () => (
+              <ModelsProvider>
+                {" "}
+                <ModelDetailsPage />
+              </ModelsProvider>
+            ),
           };
         },
       },
@@ -333,11 +339,10 @@ const router = createBrowserRouter([
           return { Component: AuthenticationCallbackPage };
         },
       },
-      
       /**
        * Auth route ends.
        */
-      
+
       /**
        * 404 route
        */

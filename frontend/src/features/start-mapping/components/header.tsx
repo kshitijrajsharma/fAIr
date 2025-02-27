@@ -11,7 +11,7 @@ import { ModelPredictionsTracker } from "@/features/start-mapping/components/mod
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
-import { TModel, TModelPredictions, TTrainingDataset } from "@/types";
+import { TModelDetails, TModelPredictions } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { UserProfile } from "@/components/layout";
@@ -21,8 +21,8 @@ const StartMappingHeader = ({
   modelInfo,
   modelPredictions,
   modelPredictionsExist,
-  trainingDatasetIsPending,
-  trainingDatasetIsError,
+  modelInfoRequestIsPending,
+  modelInfoRequestIsError,
   query,
   updateQuery,
   setModelPredictions,
@@ -33,13 +33,12 @@ const StartMappingHeader = ({
   modelDetailsPopupIsActive,
   downloadOptions,
   clearPredictions,
-  trainingDataset,
   currentZoom,
 }: {
   modelPredictionsExist: boolean;
-  trainingDatasetIsPending: boolean;
-  trainingDatasetIsError: boolean;
-  modelInfo: TModel;
+  modelInfoRequestIsPending: boolean;
+  modelInfoRequestIsError: boolean;
+  modelInfo: TModelDetails;
   modelPredictions: TModelPredictions;
   query: TQueryParams;
   updateQuery: (newParams: TQueryParams) => void;
@@ -51,7 +50,6 @@ const StartMappingHeader = ({
   modelDetailsPopupIsActive: boolean;
   downloadOptions: TDownloadOptions;
   clearPredictions: () => void;
-  trainingDataset: TTrainingDataset;
   currentZoom: number;
 }) => {
   const { onDropdownHide, onDropdownShow, dropdownIsOpened } =
@@ -65,7 +63,7 @@ const StartMappingHeader = ({
 
   return (
     <SkeletonWrapper
-      showSkeleton={trainingDatasetIsPending || trainingDatasetIsError}
+      showSkeleton={modelInfoRequestIsPending || modelInfoRequestIsError}
       skeletonClassName="h-10"
     >
       <div className="flex items-center justify-between">
@@ -138,7 +136,6 @@ const StartMappingHeader = ({
             map={map}
             disablePrediction={disablePrediction}
             query={query}
-            trainingDataset={trainingDataset}
             currentZoom={currentZoom}
             modelInfo={modelInfo}
           />

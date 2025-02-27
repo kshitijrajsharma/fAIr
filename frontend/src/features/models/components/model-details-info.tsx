@@ -19,15 +19,11 @@ const ModelDetailsInfo = ({
   openModelFilesDialog,
   openTrainingAreaDrawer,
   trainingDataset,
-  isError,
-  isPending,
 }: {
   data: TModelDetails;
   openModelFilesDialog: () => void;
   openTrainingAreaDrawer: () => void;
   trainingDataset: TTrainingDataset;
-  isError: boolean;
-  isPending: boolean;
 }) => {
   const { isOpened, openDialog, closeDialog } = useDialog();
   const { user, isAuthenticated } = useAuth();
@@ -105,21 +101,15 @@ const ModelDetailsInfo = ({
               <span className="text-gray">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetName}
               </span>
-              {isPending ? (
-                <p className="h-6 ml-2 w-20 animate-pulse bg-light-gray"></p>
-              ) : isError ? (
-                <span>Error retrieving dataset info</span>
-              ) : (
-                <p title={trainingDataset?.name}>
-                  {truncateString(trainingDataset?.name, 40)}
-                </p>
-              )}
+              <p title={trainingDataset?.name}>
+                {truncateString(trainingDataset?.name, 40)}
+              </p>
             </div>
             <div className="text-dark text-body-2 flex gap-x-1">
               <span className="text-gray">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetId}
               </span>
-              <p>{data?.dataset}</p>
+              <p>{data?.dataset.id}</p>
             </div>
             <ModelFilesButton
               openModelFilesDialog={openModelFilesDialog}

@@ -2,23 +2,20 @@ import PredictedFeatureActionPopup from "@/features/start-mapping/components/fea
 import useScreenSize from "@/hooks/use-screen-size";
 import { ControlsPosition } from "@/enums";
 import { extractTileJSONURL, showErrorToast } from "@/utils";
-import { GeoJSONSource, LngLatBoundsLike, Map } from "maplibre-gl";
+import { LngLatBoundsLike, Map } from "maplibre-gl";
 import { Legend } from "@/features/start-mapping/components";
 import { MapComponent, MapCursorToolTip } from "@/components/map";
 import { TOAST_NOTIFICATIONS } from "@/constants";
-import { useMapLayers } from "@/hooks/use-map-layer";
 import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
 import {
   Dispatch,
   RefObject,
   SetStateAction,
-  useCallback,
   useEffect,
   useState,
 } from "react";
 
 import {
-  GeoJSONType,
   TileJSON,
   TModelPredictionFeature,
   TModelPredictions,
@@ -26,17 +23,17 @@ import {
 } from "@/types";
 import {
   ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-  ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-  ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-  ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-  ALL_MODEL_PREDICTIONS_SOURCE_ID,
   MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
   MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION,
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-  REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-  REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
 } from "@/config";
+import bbox from "@turf/bbox";
+import {
+  AcceptedPredictionsLayer,
+  RejectedPredictionsLayer,
+  AllPredictionsLayer,
+} from "@/features/start-mapping/components/map/layers";
 
 export const StartMappingMapComponent = ({
   trainingDataset,
@@ -44,7 +41,6 @@ export const StartMappingMapComponent = ({
   setModelPredictions,
   oamTileJSONIsError,
   oamTileJSON,
-  oamTileJSONError,
   modelPredictionsExist,
   map,
   mapContainerRef,
@@ -52,10 +48,12 @@ export const StartMappingMapComponent = ({
   layers,
   tmsBounds,
   trainingId,
+  modelInfoRequestIsPending,
 }: {
   trainingId: number;
   trainingDataset?: TTrainingDataset;
   modelPredictions: TModelPredictions;
+
   setModelPredictions: Dispatch<
     SetStateAction<{
       all: TModelPredictionFeature[];
@@ -66,7 +64,6 @@ export const StartMappingMapComponent = ({
 
   oamTileJSONIsError: boolean;
   oamTileJSON: TileJSON;
-  oamTileJSONError: any;
   modelPredictionsExist: boolean;
   map: Map | null;
   currentZoom: number;
@@ -76,6 +73,7 @@ export const StartMappingMapComponent = ({
     subLayers: string[];
   }[];
   tmsBounds: LngLatBoundsLike;
+  modelInfoRequestIsPending: boolean;
 }) => {
   const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -90,156 +88,39 @@ export const StartMappingMapComponent = ({
   useEffect(() => {
     if (!oamTileJSONIsError) return;
     showErrorToast(undefined, TOAST_NOTIFICATIONS.trainingDataset.error);
-  }, [oamTileJSONIsError, oamTileJSONError]);
+  }, [oamTileJSONIsError]);
 
   useEffect(() => {
-    if (!map || !tmsBounds || oamTileJSONIsError) return;
-    map.fitBounds(tmsBounds);
-  }, [map, tmsBounds, oamTileJSONIsError, oamTileJSON]);
+    if (!map || !tmsBounds || oamTileJSONIsError || modelInfoRequestIsPending)
+      return;
 
-  // Add the map layers
-  useMapLayers(
-    // layers
-    [
-      // accepted
-      {
-        id: ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-        type: "fill",
-        source: ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
-        paint: {
-          "fill-color": "#23C16B",
-          "fill-opacity": 0.2,
-        },
-        layout: { visibility: "visible" },
-      },
-      {
-        id: ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-        type: "line",
-        source: ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
-        paint: {
-          "line-color": "#23C16B",
-          "line-width": 2,
-        },
-        layout: { visibility: "visible" },
-      },
-      // rejected
-      {
-        id: REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-        type: "fill",
-        source: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-        paint: {
-          "fill-color": "#D63F40",
-          "fill-opacity": 0.2,
-        },
-        layout: { visibility: "visible" },
-      },
-      {
-        id: REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-        type: "line",
-        source: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-        paint: {
-          "line-color": "#D63F40",
-          "line-width": 2,
-        },
-        layout: { visibility: "visible" },
-      },
-      // all
-      {
-        id: ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-        type: "fill",
-        source: ALL_MODEL_PREDICTIONS_SOURCE_ID,
-        paint: {
-          "fill-color": "#A243DC",
-          "fill-opacity": 0.2,
-        },
-        layout: { visibility: "visible" },
-      },
-      {
-        id: ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-        type: "line",
-        source: ALL_MODEL_PREDICTIONS_SOURCE_ID,
-        paint: {
-          "line-color": "#A243DC",
-          "line-width": 2,
-        },
-        layout: { visibility: "visible" },
-      },
-    ],
-    // sources
-    [
-      {
-        id: ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
-        spec: {
-          type: "geojson",
-          data: { type: "FeatureCollection", features: [] },
-        },
-      },
-      {
-        id: REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-        spec: {
-          type: "geojson",
-          data: { type: "FeatureCollection", features: [] },
-        },
-      },
-      {
-        id: ALL_MODEL_PREDICTIONS_SOURCE_ID,
-        spec: {
-          type: "geojson",
-          data: { type: "FeatureCollection", features: [] },
-        },
-      },
-    ],
-    map,
-  );
-
-  const updateLayers = useCallback(() => {
-    if (map) {
-      if (map?.getSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID)) {
-        const source = map.getSource(
-          ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
-        ) as GeoJSONSource;
-        source.setData({
-          type: "FeatureCollection",
-          features: modelPredictions.accepted,
-        } as GeoJSONType);
-      }
-
-      if (map?.getSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID)) {
-        const source = map.getSource(
-          REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
-        ) as GeoJSONSource;
-        source.setData({
-          type: "FeatureCollection",
-          features: modelPredictions.rejected,
-        } as GeoJSONType);
-      }
-
-      if (map?.getSource(ALL_MODEL_PREDICTIONS_SOURCE_ID)) {
-        const source = map.getSource(
-          ALL_MODEL_PREDICTIONS_SOURCE_ID,
-        ) as GeoJSONSource;
-        source.setData({
+    // if there are predictions that the user hasn't interacted with, zoom to them.
+    if (modelPredictions.all.length > 0) {
+      // get the bbox of the features with turf.
+      map.fitBounds(
+        bbox({
           type: "FeatureCollection",
           features: modelPredictions.all,
-        } as GeoJSONType);
-      }
+        }) as LngLatBoundsLike,
+      );
+    } else {
+      map.fitBounds(tmsBounds);
     }
-  }, [map, modelPredictions]);
+  }, [
+    map,
+    tmsBounds,
+    oamTileJSONIsError,
+    oamTileJSON,
+    modelInfoRequestIsPending,
+  ]);
 
   useEffect(() => {
     if (!map) return;
-    updateLayers();
-  }, [map, updateLayers, modelPredictions]);
-
-  useEffect(() => {
-    if (!map) return;
-
     const layerIds = [
       ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
       ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
       REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
     ];
-
     const handleMouseEnter = () => {
       map.getCanvas().style.cursor = "pointer";
     };
@@ -270,10 +151,10 @@ export const StartMappingMapComponent = ({
 
   const showTooltip =
     currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION && tooltipVisible;
+
   return (
     <MapComponent
       controlsPosition={ControlsPosition.TOP_LEFT}
-      oamTileJSONURL={tileJSONURL}
       showTileBoundaries
       fitToBounds={!isSmallViewport}
       bounds={tmsBounds}
@@ -283,10 +164,25 @@ export const StartMappingMapComponent = ({
       zoomControls={!isSmallViewport}
       layerControl={!isSmallViewport}
       layerControlLayers={layers}
-      openAerialMap
       basemaps
       showCurrentZoom={!isSmallViewport}
+      openAerialMap={!modelInfoRequestIsPending}
+      oamTileJSONURL={tileJSONURL}
     >
+      {!modelInfoRequestIsPending && (
+        <>
+          <AcceptedPredictionsLayer
+            map={map}
+            features={modelPredictions.accepted}
+          />
+          <RejectedPredictionsLayer
+            map={map}
+            features={modelPredictions.rejected}
+          />
+          <AllPredictionsLayer map={map} features={modelPredictions.all} />
+        </>
+      )}
+
       {showPopup && (
         <PredictedFeatureActionPopup
           event={selectedEvent}

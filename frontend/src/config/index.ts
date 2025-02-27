@@ -114,9 +114,9 @@ export const HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY: string =
 /**
  * The key used to store the model form data in session storage to preserve the state incase the user
  * visits ID Editor or JOSM to map a training area.
- * Session storage is used to allow users to be able to open fAIr on a new tab and start on a clean slate.
+ * Local storage is used to withstand reloads and network issues.
  */
-export const HOT_FAIR_MODEL_CREATION_SESSION_STORAGE_KEY: string =
+export const HOT_FAIR_MODEL_CREATION_LOCAL_STORAGE_KEY: string =
   "__hot_fair_model_creation_formdata";
 
 /**
@@ -126,10 +126,11 @@ export const HOT_FAIR_BANNER_LOCAL_STORAGE_KEY: string =
   "__hot_fair_banner_closed";
 
 /**
- * The key used to store the model predictions in the session storage for the application.
+ * The key used to store the predictions for the specific model in the users local storage.
  */
-export const HOT_FAIR_MODEL_PREDICTIONS_SESSION_STORAGE_KEY: string =
-  "__hot_fair_model_predictions";
+export const HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY = (
+  modelId: string,
+): string => `__hot_fair_model_predictions_for_model_${modelId}`;
 
 // ==============================================================================================================================
 // Training Area Configurations
@@ -190,8 +191,10 @@ export const MAX_ACCEPTABLE_POLYGON_IN_TRAINING_AREA_GEOJSON_FILE: number =
 
 /**
  * The maximum zoom level for the map.
+ * Model predictions require a max zoom of 22.
+ * 21 is used here because 1 is already added to the 'currentZoom' in the useMapInstance() hook.
  */
-export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 22);
+export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 21);
 
 /**
  * The minimum zoom level for the map before the prediction components can be activated.

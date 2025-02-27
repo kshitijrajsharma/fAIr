@@ -7,7 +7,7 @@ import { ModelDetailsButton } from "@/features/start-mapping/components/model-de
 import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
-import { TModel, TModelPredictions, TTrainingDataset } from "@/types";
+import { TModelDetails, TModelPredictions } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
@@ -24,7 +24,6 @@ export const StartMappingMobileDrawer = ({
   updateQuery,
   modelDetailsPopupIsActive,
   clearPredictions,
-  trainingDataset,
   currentZoom,
   modelInfo,
 }: {
@@ -39,9 +38,8 @@ export const StartMappingMobileDrawer = ({
   query: TQueryParams;
   updateQuery: (newParams: TQueryParams) => void;
   clearPredictions: () => void;
-  trainingDataset: TTrainingDataset;
   currentZoom: number;
-  modelInfo: TModel;
+  modelInfo: TModelDetails;
 }) => {
   const [showDownloadOptions, setShowDownloadOptions] =
     useState<boolean>(false);
@@ -62,7 +60,6 @@ export const StartMappingMobileDrawer = ({
               map={map}
               disablePrediction={disablePrediction}
               modelPredictions={modelPredictions}
-              trainingDataset={trainingDataset}
               currentZoom={currentZoom}
               modelInfo={modelInfo}
             />

@@ -8,20 +8,14 @@ import { FitToBounds, LayerControl, ZoomLevel } from "@/components/map";
 import { Head } from "@/components/seo";
 import { LngLatBoundsLike } from "maplibre-gl";
 import { ModelDetailsPopUp } from "@/features/start-mapping/components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
-import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { UserProfile } from "@/components/layout";
-import {
-  Feature,
-  TileJSON,
-  TModelPredictions,
-  TTrainingDataset,
-} from "@/types";
+import { Feature, TileJSON, TModelPredictions } from "@/types";
 import {
   BrandLogoWithDropDown,
   Legend,
@@ -43,7 +37,9 @@ import {
   ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+  HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY,
 } from "@/config";
+import { useLocalStorage } from "@/hooks/use-storage";
 
 export type TDownloadOptions = {
   name: string;
@@ -75,24 +71,23 @@ export const StartMappingPage = () => {
 
   const {
     isError,
-    isPending,
+    isPending: modelInfoRequestIspending,
     data: modelInfo,
     error,
   } = useModelDetails(modelId as string, !!modelId);
 
-  const {
-    data: trainingDataset,
-    isPending: trainingDatasetIsPending,
-    isError: trainingDatasetIsError,
-  } = useGetTrainingDataset(modelInfo?.dataset as number, !isPending);
+  const tileJSONURL = useMemo(
+    () =>
+      modelInfo?.dataset?.source_imagery
+        ? extractTileJSONURL(modelInfo?.dataset?.source_imagery)
+        : undefined,
+    [modelInfo?.dataset?.source_imagery],
+  );
 
-  const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
-
-  const {
-    data: oamTileJSON,
-    isError: oamTileJSONIsError,
-    error: oamTileJSONError,
-  } = useGetTMSTileJSON(tileJSONURL);
+  const { data: oamTileJSON, isError: oamTileJSONIsError } = useGetTMSTileJSON(
+    tileJSONURL as string,
+    !!tileJSONURL,
+  );
 
   useEffect(() => {
     if (isError) {
@@ -117,18 +112,38 @@ export const StartMappingPage = () => {
       [SEARCH_PARAMS.area]: searchParams.get(SEARCH_PARAMS.area) || 4,
     };
   });
+  const { setValue, getValue } = useLocalStorage();
 
-  // Todo - move to local storage.
-  const [modelPredictions, setModelPredictions] = useState<TModelPredictions>({
-    all: [],
+  const emptyPredictionState = {
     accepted: [],
     rejected: [],
-  });
+    all: [],
+  };
+  const [modelPredictions, setModelPredictions] = useState<TModelPredictions>(
+    () => {
+      const savedPredictions = getValue(
+        HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY(modelId as string),
+      );
+      return savedPredictions
+        ? JSON.parse(savedPredictions)
+        : emptyPredictionState;
+    },
+  );
 
-  const modelPredictionsExist =
-    modelPredictions.accepted.length > 0 ||
-    modelPredictions.rejected.length > 0 ||
-    modelPredictions.all.length > 0;
+  useEffect(() => {
+    setValue(
+      HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY(modelId as string),
+      JSON.stringify(modelPredictions),
+    );
+  }, [modelPredictions, modelId]);
+
+  const modelPredictionsExist = useMemo(() => {
+    return (
+      modelPredictions.accepted.length > 0 ||
+      modelPredictions.rejected.length > 0 ||
+      modelPredictions.all.length > 0
+    );
+  }, [modelPredictions]);
 
   const updateQuery = useCallback(
     (newParams: TQueryParams) => {
@@ -154,47 +169,50 @@ export const StartMappingPage = () => {
 
   const popupAnchorId = "model-details";
 
-  const mapLayers = [
-    ...(modelPredictions.accepted.length > 0
-      ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .acceptedPredictions,
-            subLayers: [
-              ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
-      : []),
-    ...(modelPredictions.rejected.length > 0
-      ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .rejectedPredictions,
-            subLayers: [
-              REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
-      : []),
-    ...(modelPredictions.all.length > 0
-      ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .predictionResults,
-            subLayers: [
-              ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
-      : []),
-  ];
+  const mapLayers = useMemo(
+    () => [
+      ...(modelPredictions.accepted.length > 0
+        ? [
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .acceptedPredictions,
+              subLayers: [
+                ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
+        : []),
+      ...(modelPredictions.rejected.length > 0
+        ? [
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .rejectedPredictions,
+              subLayers: [
+                REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
+        : []),
+      ...(modelPredictions.all.length > 0
+        ? [
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .predictionResults,
+              subLayers: [
+                ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
+        : []),
+    ],
+    [modelPredictions],
+  );
 
   const handleAllFeaturesDownload = useCallback(async () => {
     geoJSONDowloader(
@@ -206,7 +224,7 @@ export const StartMappingPage = () => {
           ...modelPredictions.all,
         ],
       },
-      `all_predictions_${modelInfo.dataset}`,
+      `all_predictions_${modelInfo.dataset.id}`,
     );
     showSuccessToast(TOAST_NOTIFICATIONS.startMapping.fileDownloadSuccess);
   }, [modelPredictions, modelInfo]);
@@ -214,23 +232,22 @@ export const StartMappingPage = () => {
   const handleAcceptedFeaturesDownload = useCallback(async () => {
     geoJSONDowloader(
       { type: "FeatureCollection", features: modelPredictions.accepted },
-      `accepted_predictions_${modelInfo.dataset}`,
+      `accepted_predictions_${modelInfo.dataset.id}`,
     );
     showSuccessToast(TOAST_NOTIFICATIONS.startMapping.fileDownloadSuccess);
   }, [modelPredictions, modelInfo]);
 
   const handleFeaturesDownloadToJOSM = useCallback(
     (features: Feature[]) => {
-      if (!map || !trainingDataset?.name || !trainingDataset?.source_imagery)
-        return;
+      if (!map || !modelInfo?.dataset) return;
       openInJOSM(
-        trainingDataset.name,
-        trainingDataset.source_imagery,
+        modelInfo.dataset.name,
+        modelInfo.dataset.source_imagery,
         features,
         true,
       );
     },
-    [map, oamTileJSON, trainingDataset],
+    [map, modelInfo],
   );
 
   const handleAllFeaturesDownloadToJOSM = useCallback(() => {
@@ -288,18 +305,14 @@ export const StartMappingPage = () => {
   }, [setShowModelDetailsPopup]);
 
   const clearPredictions = useCallback(() => {
-    setModelPredictions({
-      accepted: [],
-      rejected: [],
-      all: [],
-    });
+    setModelPredictions(emptyPredictionState);
   }, [setModelPredictions]);
 
   return (
     <>
       <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
-      {/* Mobile dialog */}
       <div className="h-screen flex flex-col fullscreen">
+        {/* Mobile dialog */}
         <StartMappingMobileDrawer
           isOpen={isSmallViewport}
           disablePrediction={disablePrediction}
@@ -312,30 +325,26 @@ export const StartMappingPage = () => {
           updateQuery={updateQuery}
           modelDetailsPopupIsActive={showModelDetailsPopup}
           clearPredictions={clearPredictions}
-          trainingDataset={trainingDataset as TTrainingDataset}
           currentZoom={currentZoom}
           modelInfo={modelInfo}
         />
         <div className="sticky top-0 bg-white z-10 px-4 xl:px-large py-1 hidden md:block">
           {/* Model Details Popup */}
-          {modelInfo && (
-            <ModelDetailsPopUp
-              showPopup={showModelDetailsPopup}
-              handlePopup={handleModelDetailsPopup}
-              closeMobileDrawer={() => setShowModelDetailsPopup(false)}
-              anchor={popupAnchorId}
-              model={modelInfo}
-              trainingDataset={trainingDataset}
-              trainingDatasetIsPending={trainingDatasetIsPending}
-              trainingDatasetIsError={trainingDatasetIsError}
-            />
-          )}
+          <ModelDetailsPopUp
+            showPopup={showModelDetailsPopup}
+            handlePopup={handleModelDetailsPopup}
+            closeMobileDrawer={() => setShowModelDetailsPopup(false)}
+            anchor={popupAnchorId}
+            modelInfo={modelInfo}
+            modelInfoRequestIsPending={modelInfoRequestIspending}
+            modelInfoRequestIsError={isError}
+          />
           {/* Web Header */}
           <StartMappingHeader
             modelInfo={modelInfo}
-            trainingDatasetIsPending={trainingDatasetIsPending}
+            modelInfoRequestIsPending={modelInfoRequestIspending}
             modelPredictionsExist={modelPredictionsExist}
-            trainingDatasetIsError={trainingDatasetIsError}
+            modelInfoRequestIsError={isError}
             modelPredictions={modelPredictions}
             query={query}
             updateQuery={updateQuery}
@@ -347,7 +356,6 @@ export const StartMappingPage = () => {
             handleModelDetailsPopup={handleModelDetailsPopup}
             downloadOptions={downloadOptions}
             clearPredictions={clearPredictions}
-            trainingDataset={trainingDataset as TTrainingDataset}
             currentZoom={currentZoom}
           />
         </div>
@@ -381,12 +389,11 @@ export const StartMappingPage = () => {
           </div>
           {/* Map Component */}
           <StartMappingMapComponent
-            trainingDataset={trainingDataset}
+            trainingDataset={modelInfo?.dataset}
             modelPredictions={modelPredictions}
             setModelPredictions={setModelPredictions}
             oamTileJSONIsError={oamTileJSONIsError}
             oamTileJSON={oamTileJSON as TileJSON}
-            oamTileJSONError={oamTileJSONError}
             modelPredictionsExist={modelPredictionsExist}
             mapContainerRef={mapContainerRef}
             map={map}
@@ -394,6 +401,7 @@ export const StartMappingPage = () => {
             layers={mapLayers}
             tmsBounds={oamTileJSON?.bounds as LngLatBoundsLike}
             trainingId={modelInfo?.published_training}
+            modelInfoRequestIsPending={modelInfoRequestIspending}
           />
         </div>
       </div>

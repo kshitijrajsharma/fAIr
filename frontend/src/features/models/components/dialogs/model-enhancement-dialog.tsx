@@ -64,6 +64,7 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
           closeDialog={handleClose}
           modelId={modelId}
         />
+
         <ul className="flex flex-col gap-y-4 w-full">
           {options.map((option, id) => (
             <li

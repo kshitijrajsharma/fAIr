@@ -45,6 +45,7 @@ export const useMapInstance = (pmtiles: boolean = false) => {
     if (!map) return;
     // There is a mismatch of 1 in the mag.getZoom() results and the actual zoom level of the map.
     // Adding 1 to the result resolves it.
+
     setCurrentZoom(Math.round(map.getZoom()) + 1);
   }, [map]);
 

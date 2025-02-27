@@ -5,13 +5,22 @@ import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { ModelFormConfirmation } from "@/assets/images";
 import { useModelsContext } from "@/app/providers/models-provider";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export const ModelConfirmationPage = () => {
   const [searchParams] = useSearchParams();
-
+  const navigate = useNavigate();
   const modelId = searchParams.get("id");
-  const { isEditMode } = useModelsContext();
+  const { isEditMode, resetState } = useModelsContext();
+
+  // Reset the state on this page.
+  useEffect(() => {
+    if (!modelId) {
+      navigate(APPLICATION_ROUTES.CREATE_NEW_MODEL);
+    }
+    resetState();
+  }, []);
 
   return (
     <div
@@ -31,7 +40,9 @@ export const ModelConfirmationPage = () => {
           Model {modelId} is {isEditMode ? "Updated" : "Created"}!
         </p>
         <p className="text-gray">
-          {MODELS_CONTENT.modelCreation.confirmation.description}
+          {isEditMode
+            ? MODELS_CONTENT.modelCreation.confirmation.updateDescription
+            : MODELS_CONTENT.modelCreation.confirmation.description}
         </p>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <Link

@@ -1,6 +1,6 @@
 import { Map } from "maplibre-gl";
 import { TMS_LAYER_ID, TMS_SOURCE_ID } from "@/config";
-import { useMapLayers } from "@/hooks/use-map-layer";
+import { useEffect } from "react";
 
 export const OpenAerialMap = ({
   tileJSONURL,
@@ -9,26 +9,24 @@ export const OpenAerialMap = ({
   tileJSONURL?: string;
   map: Map | null;
 }) => {
-  useMapLayers(
-    [
-      {
+  useEffect(() => {
+    if (!map) return;
+    if (!map.getSource(TMS_SOURCE_ID)) {
+      map.addSource(TMS_SOURCE_ID, {
+        type: "raster",
+        url: tileJSONURL,
+        tileSize: 256,
+      });
+    }
+    if (!map.getLayer(TMS_LAYER_ID)) {
+      map.addLayer({
         id: TMS_LAYER_ID,
         type: "raster",
         source: TMS_SOURCE_ID,
         layout: { visibility: "visible" },
-      },
-    ],
-    [
-      {
-        id: TMS_SOURCE_ID,
-        spec: {
-          type: "raster",
-          url: tileJSONURL,
-          tileSize: 256,
-        },
-      },
-    ],
-    map,
-  );
+      });
+    }
+  }, [map, tileJSONURL]);
+
   return null;
 };

@@ -3,12 +3,11 @@ import {
   createModel,
   TCreateModelArgs,
 } from "@/features/model-creation/api/create-models";
-import { MutationConfig, queryKeys } from "@/services";
+import { MutationConfig, QUERY_KEYS } from "@/services";
 import {
   createTrainingRequest,
   TCreateTrainingRequestArgs,
 } from "@/features/model-creation/api/create-trainings";
-import { useModelDetails } from "@/features/models/hooks/use-models";
 import {
   TUpdateModelArgs,
   updateModel,
@@ -58,7 +57,6 @@ export const useUpdateModel = ({
   mutationConfig,
   modelId,
 }: useUpdateModelOptions) => {
-  const { refetch: refetchModelDetails } = useModelDetails(modelId);
   const queryClient = useQueryClient();
   const { onSuccess, ...restConfig } = mutationConfig || {};
 
@@ -66,9 +64,8 @@ export const useUpdateModel = ({
     mutationFn: (args: TUpdateModelArgs) => updateModel(args),
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.MODEL_DETAILS(modelId)],
+        queryKey: [QUERY_KEYS.MODEL_DETAILS(modelId)],
       });
-      refetchModelDetails();
       onSuccess?.(...args);
     },
     ...restConfig,

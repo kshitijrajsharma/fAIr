@@ -6,7 +6,7 @@ import { LabelStatus } from "@/enums/training-area";
 import { Map } from "maplibre-gl";
 import { ToolTip } from "@/components/ui/tooltip";
 import { TRAINING_AREA_LABELS_FETCH_POOLING_TIME_MS } from "@/config";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDialog } from "@/hooks/use-dialog";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { useModelsContext } from "@/app/providers/models-provider";
@@ -38,8 +38,9 @@ import {
   useGetTrainingArea,
   useGetTrainingAreaLabels,
   useGetTrainingAreaLabelsFromOSM,
-  useGetTrainingAreas,
 } from "@/features/model-creation/hooks/use-training-areas";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/services";
 
 type LabelState = {
   isFetching: boolean;
@@ -50,19 +51,15 @@ type LabelState = {
   shouldPoll: boolean;
 };
 
-export function useInterval(callback: () => void, delay: number | null) {
-  const savedCallback = useRef(callback);
-
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  useEffect(() => {
-    if (delay === null) return;
-    const id = setInterval(() => savedCallback.current(), delay);
-    return () => clearInterval(id);
-  }, [delay]);
-}
+type TDropdownMenuItems = {
+  tooltip: string;
+  isIcon?: boolean;
+  imageSrc?: string;
+  disabled: boolean;
+  onClick: () => void;
+  Icon?: React.FC<IconProps>;
+  isDelete?: boolean;
+}[];
 
 const LabelFetchStatus = ({
   fetchedDate,
@@ -109,15 +106,6 @@ const LabelFetchStatus = ({
     </p>
   );
 };
-type TDropdownMenuItems = {
-  tooltip: string;
-  isIcon?: boolean;
-  imageSrc?: string;
-  disabled: boolean;
-  onClick: () => void;
-  Icon?: React.FC<IconProps>;
-  isDelete?: boolean;
-}[];
 
 const DropdownMenu = ({
   dropdownMenuItems,
@@ -176,6 +164,7 @@ export const TrainingAreaItem: React.FC<
     map: Map | null;
   }
 > = ({ datasetId, offset, map, ...trainingArea }) => {
+  const queryClient = useQueryClient();
   const initialLabelState: LabelState = {
     isFetching: false,
     error: false,
@@ -265,10 +254,10 @@ export const TrainingAreaItem: React.FC<
     },
   });
 
-  const { refetch: refetchTrainingAreas } = useGetTrainingAreas(
-    datasetId,
-    offset,
-  );
+  // const { refetch: refetchTrainingAreas } = useGetTrainingAreas(
+  //   datasetId,
+  //   offset,
+  // );
 
   const handleFetchLabels = useCallback(() => {
     setLabelState((prev) => ({
@@ -288,7 +277,10 @@ export const TrainingAreaItem: React.FC<
         shouldPoll: false,
         errorToastShown: false,
       }));
-      refetchTrainingAreas();
+      // refetchTrainingAreas();
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.TRAINING_AREAS(datasetId, offset)],
+      });
       showSuccessToast(
         `Training labels for Training Area ${trainingArea.id} have been successfully fetched.`,
       );
