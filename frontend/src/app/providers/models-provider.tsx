@@ -238,8 +238,8 @@ const ModelsContext = createContext<{
   isModelOwner: boolean;
 }>({
   formData: initialFormState,
-  setFormData: () => { },
-  handleChange: () => { },
+  setFormData: () => {},
+  handleChange: () => {},
   createNewTrainingDatasetMutation: {} as UseMutationResult<
     TTrainingDataset,
     Error,
@@ -254,13 +254,13 @@ const ModelsContext = createContext<{
   >,
   hasLabeledTrainingAreas: false,
   hasAOIsWithGeometry: false,
-  resetState: () => { },
+  resetState: () => {},
   isEditMode: false,
   modelId: "",
   getFullPath: () => "",
-  handleModelCreationAndUpdate: () => { },
+  handleModelCreationAndUpdate: () => {},
   trainingDatasetCreationInProgress: false,
-  handleTrainingDatasetCreation: () => { },
+  handleTrainingDatasetCreation: () => {},
   validateEditMode: false,
   isPending: false,
   isError: false,
@@ -386,10 +386,10 @@ export const ModelsProvider: React.FC<{
      * But during edit mode, clean it up on unmount to ensure the forms are on a clean slate.
      * Given that there is already an effect that prefills the form above in edit mode, this won't affect edit mode state.
      */
-    if (!isEditMode) return
+    if (!isEditMode) return;
     // Cleanup the state on component unmount
     return () => {
-      resetState()
+      resetState();
     };
   }, []);
 
@@ -424,27 +424,25 @@ export const ModelsProvider: React.FC<{
     },
   });
 
-  const submitTrainingRequest = useCallback((id: string) => {
-    createNewTrainingRequestMutation.mutate({
-      model: id,
-      input_boundary_width: formData.boundaryWidth,
-      input_contact_spacing: formData.contactSpacing,
-      epochs: formData.epoch,
-      batch_size: formData.batchSize,
-      zoom_level: formData.zoomLevels,
-    });
-  }, [formData, modelId]);
+  const submitTrainingRequest = useCallback(
+    (id: string) => {
+      createNewTrainingRequestMutation.mutate({
+        model: id,
+        input_boundary_width: formData.boundaryWidth,
+        input_contact_spacing: formData.contactSpacing,
+        epochs: formData.epoch,
+        batch_size: formData.batchSize,
+        zoom_level: formData.zoomLevels,
+      });
+    },
+    [formData, modelId],
+  );
 
   const handleModelCreationOrUpdateSuccess = (id: string) => {
-
     if (isEditMode && isModelOwner) {
-      showSuccessToast(
-        TOAST_NOTIFICATIONS.modelUpdateSuccess
-      )
+      showSuccessToast(TOAST_NOTIFICATIONS.modelUpdateSuccess);
     } else if (!isEditMode) {
-      showSuccessToast(
-        TOAST_NOTIFICATIONS.modelCreationSuccess,
-      )
+      showSuccessToast(TOAST_NOTIFICATIONS.modelCreationSuccess);
     }
 
     navigate(`${getFullPath(MODELS_ROUTES.CONFIRMATION)}?id=${id}`);
@@ -478,7 +476,8 @@ export const ModelsProvider: React.FC<{
   // Confirm that all the training areas labels have been fetched.
   const hasLabeledTrainingAreas = useMemo(
     () =>
-      formData.trainingAreas.length > 0 && formData.trainingAreas.every(
+      formData.trainingAreas.length > 0 &&
+      formData.trainingAreas.every(
         (aoi: TTrainingAreaFeature) => aoi.properties.label_fetched !== null,
       ),
     [formData],
@@ -487,7 +486,8 @@ export const ModelsProvider: React.FC<{
   // Confirm that all of the training areas have a geometry.
   const hasAOIsWithGeometry = useMemo(
     () =>
-      formData.trainingAreas.length > 0 && formData.trainingAreas.every(
+      formData.trainingAreas.length > 0 &&
+      formData.trainingAreas.every(
         (aoi: TTrainingAreaFeature) => aoi.geometry !== null,
       ),
     [formData],
@@ -503,7 +503,6 @@ export const ModelsProvider: React.FC<{
     createNewTrainingDatasetMutation.isPending;
 
   const handleModelCreationAndUpdate = () => {
-
     // The user is trying to edit their model.
     // In this case, send a PATCH request and submit a training request.
     if (isEditMode && isModelOwner) {
