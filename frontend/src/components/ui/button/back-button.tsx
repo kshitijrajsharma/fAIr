@@ -1,12 +1,24 @@
 import { ArrowBackIcon } from "@/components/ui/icons";
 import { useNavigate } from "react-router-dom";
 
-const BackButton = ({ className }: { className?: string }) => {
+const BackButton = ({
+  className,
+  route,
+}: {
+  className?: string;
+  route?: string;
+}) => {
   const navigate = useNavigate();
   return (
     <button
       className={`flex items-center gap-x-2 ${className}`}
-      onClick={() => navigate(-1)}
+      onClick={() => {
+        if (route) {
+          navigate(route);
+        } else {
+          navigate(-1);
+        }
+      }}
       title="Go back"
     >
       <ArrowBackIcon className="icon md:icon-lg" />

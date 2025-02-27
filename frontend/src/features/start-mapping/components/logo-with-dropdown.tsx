@@ -6,18 +6,22 @@ import { Link } from "@/components/ui/link";
 import { navLinks } from "@/constants/general";
 import { NavLogo } from "@/components/layout";
 import { useNavigate } from "react-router-dom";
+import { APPLICATION_ROUTES } from "@/constants";
 
 type BrandLogoWithDropDownProps = {
   isOpened: boolean;
   onClose: () => void;
   onShow: () => void;
+  modelId?: string;
 };
 
-export const BrandLogoWithDropDown = function BrandLogoWithDropDown({
+export const BrandLogoWithDropDown = ({
   isOpened,
   onClose,
   onShow,
-}: BrandLogoWithDropDownProps) {
+  modelId,
+}: BrandLogoWithDropDownProps) => {
+  const navigate = useNavigate();
   const navItems = navLinks.map((link, id) => (
     <li key={`${link.title}-${id}`}>
       <Link
@@ -31,8 +35,6 @@ export const BrandLogoWithDropDown = function BrandLogoWithDropDown({
       </Link>
     </li>
   ));
-
-  const navigate = useNavigate();
   return (
     <DropDown
       placement={DropdownPlacement.BOTTOM_START}
@@ -48,7 +50,13 @@ export const BrandLogoWithDropDown = function BrandLogoWithDropDown({
         <Divider />
         <button
           className="text-body-3  block w-full px-4 py-2 text-start hover:bg-off-white hover:rounded-b-xl text-primary"
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            /**
+             * Since this is on the start-mapping page, when they click on stop mapping, regardless of how they got here,
+             * they will be redirected to the model card/details page.
+             */
+            navigate(`${APPLICATION_ROUTES.MODELS}/${modelId}`);
+          }}
         >
           Stop Mapping
         </button>

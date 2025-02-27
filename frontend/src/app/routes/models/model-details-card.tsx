@@ -106,8 +106,7 @@ export const ModelDetailsPage = () => {
         trainingId={data?.published_training as number}
         datasetId={data?.dataset as number}
       />
-
-      <BackButton className="mt-6" />
+      <BackButton className="mt-6" route={APPLICATION_ROUTES.MODELS} />
       <div className="my-12 flex flex-col gap-y-20">
         <ModelDetailsInfo
           data={data as TModelDetails}

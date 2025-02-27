@@ -74,6 +74,7 @@ const StartMappingHeader = ({
             onClose={onFAIRLogoDropdownHide}
             onShow={onFAIRLogoDropdownShow}
             isOpened={FAIRLogoDropdownIsOpened}
+            modelId={modelInfo?.id}
           />
           <div className="flex flex-col md:flex-row md:items-center gap-x-4 z-10">
             <p

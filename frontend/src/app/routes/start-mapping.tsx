@@ -362,6 +362,7 @@ export const StartMappingPage = () => {
                 onClose={onDropdownHide}
                 onShow={onDropdownShow}
                 isOpened={dropdownIsOpened}
+                modelId={modelInfo?.id}
               />
             </div>
             <div className="absolute top-[10vh] right-4 z-[2] flex flex-col gap-y-4 items-end">
