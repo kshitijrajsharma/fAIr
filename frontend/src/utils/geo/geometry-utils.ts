@@ -312,12 +312,32 @@ export const snapGeoJSONPolygonToClosestTile = (geometry: Polygon) => {
   return geometry;
 };
 
-/*
-  Logic.
-  | 1 - Purple: Will be replaced with new feature if it intersects with new features, otherwise, it'll be appended.
-  | 2 - Red: No touch                        
-  | 3 - Green: No touch                         
-*/
+/**
+ * Conflates new features with existing predictions.
+ *
+ * Existing Predictions:
+ * accepted: [A1, A2, A3]
+ * rejected: [R1, R2]
+ * all: [E1, E2, E3, E4]
+ *
+ * New Features:
+ * newFeatures: [N1, N2, N3]
+ *
+ * Logic:
+ * 1. If N1 intersects with any feature in 'all', replace the intersecting feature in 'all' with N1.
+ * 2. If N2 does not intersect with any feature in 'accepted' or 'rejected', append N2 to 'all'.
+ * 3. If N3 intersects with any feature in 'accepted' or 'rejected', do not add N3 to 'all'.
+ *
+ * Example:
+ * - N1 intersects with E2 -> Replace E2 with N1 in 'all'.
+ * - N2 does not intersect with any in 'accepted' or 'rejected' -> Append N2 to 'all'.
+ * - N3 intersects with A2 -> Do not add N3 to 'all'.
+ *
+ * Result:
+ * all: [E1, N1, E3, E4, N2]
+ * accepted: [A1, A2, A3]
+ * rejected: [R1, R2]
+ */
 export const handleConflation = (
   existingPredictions: TModelPredictions,
   newFeatures: Feature[],
@@ -325,14 +345,27 @@ export const handleConflation = (
 ): TModelPredictions => {
   let updatedAll = [...existingPredictions.all];
 
-  newFeatures.forEach((newFeature) => {
-    const intersectsWithAccepted = existingPredictions.accepted.some(
-      (acceptedFeature) => booleanIntersects(newFeature, acceptedFeature),
-    );
-    const intersectsWithRejected = existingPredictions.rejected.some(
-      (rejectedFeature) => booleanIntersects(newFeature, rejectedFeature),
-    );
+  for (const newFeature of newFeatures) {
+    let intersectsAccepted = false;
+    let intersectsRejected = false;
 
+    // Check for intersections in accepted features with early exit.
+    for (const acceptedFeature of existingPredictions.accepted) {
+      if (booleanIntersects(newFeature, acceptedFeature)) {
+        intersectsAccepted = true;
+        break;
+      }
+    }
+
+    // Check for intersections in rejected features with early exit.
+    for (const rejectedFeature of existingPredictions.rejected) {
+      if (booleanIntersects(newFeature, rejectedFeature)) {
+        intersectsRejected = true;
+        break;
+      }
+    }
+
+    // Check if the new feature intersects with any feature in updatedAll.
     const intersectingIndex = updatedAll.findIndex((existingFeature) =>
       booleanIntersects(newFeature, existingFeature),
     );
@@ -342,11 +375,12 @@ export const handleConflation = (
         ...newFeature,
         properties: {
           ...newFeature.properties,
+          // Reuse existing id if available, or generate a new one.
           id: updatedAll[intersectingIndex].properties?.id || uuid4(),
           config: predictionConfig,
         },
       };
-    } else if (!intersectsWithAccepted && !intersectsWithRejected) {
+    } else if (!intersectsAccepted && !intersectsRejected) {
       updatedAll.push({
         ...newFeature,
         properties: {
@@ -356,7 +390,7 @@ export const handleConflation = (
         },
       });
     }
-  });
+  }
 
   return {
     all: updatedAll,

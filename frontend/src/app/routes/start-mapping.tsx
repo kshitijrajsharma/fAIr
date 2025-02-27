@@ -4,7 +4,6 @@ import {
   START_MAPPING_PAGE_CONTENT,
   TOAST_NOTIFICATIONS,
 } from "@/constants";
-import { BASE_MODELS } from "@/enums";
 import { FitToBounds, LayerControl, ZoomLevel } from "@/components/map";
 import { Head } from "@/components/seo";
 import { LngLatBoundsLike } from "maplibre-gl";
@@ -18,11 +17,10 @@ import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { UserProfile } from "@/components/layout";
 import {
-  BBOX,
   Feature,
   TileJSON,
   TModelPredictions,
-  TModelPredictionsConfig,
+  TTrainingDataset,
 } from "@/types";
 import {
   BrandLogoWithDropDown,
@@ -38,7 +36,6 @@ import {
   showSuccessToast,
 } from "@/utils";
 import {
-  PREDICTION_API_FILE_EXTENSIONS,
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
@@ -70,22 +67,24 @@ export const StartMappingPage = () => {
   const { map, mapContainerRef, currentZoom } = useMapInstance();
   const { isSmallViewport } = useScreenSize();
   const navigate = useNavigate();
-  const bounds = map?.getBounds();
+
   const [showModelDetailsPopup, setShowModelDetailsPopup] =
     useState<boolean>(false);
   const { dropdownIsOpened, onDropdownHide, onDropdownShow } =
     useDropdownMenu();
 
-  const { isError, isPending, data, error } = useModelDetails(
-    modelId as string,
-    !!modelId,
-  );
+  const {
+    isError,
+    isPending,
+    data: modelInfo,
+    error,
+  } = useModelDetails(modelId as string, !!modelId);
 
   const {
     data: trainingDataset,
     isPending: trainingDatasetIsPending,
     isError: trainingDatasetIsError,
-  } = useGetTrainingDataset(data?.dataset as number, !isPending);
+  } = useGetTrainingDataset(modelInfo?.dataset as number, !isPending);
 
   const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
 
@@ -119,6 +118,7 @@ export const StartMappingPage = () => {
     };
   });
 
+  // Todo - move to local storage.
   const [modelPredictions, setModelPredictions] = useState<TModelPredictions>({
     all: [],
     accepted: [],
@@ -148,25 +148,6 @@ export const StartMappingPage = () => {
     },
     [searchParams, setSearchParams],
   );
-
-  const trainingConfig: TModelPredictionsConfig = {
-    tolerance: query[SEARCH_PARAMS.tolerance] as number,
-    area_threshold: query[SEARCH_PARAMS.area] as number,
-    use_josm_q: query[SEARCH_PARAMS.useJOSMQ] as boolean,
-    confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
-    checkpoint: `/mnt/efsmount/data/trainings/dataset_${data?.dataset}/output/training_${data?.published_training}/checkpoint${PREDICTION_API_FILE_EXTENSIONS[data?.base_model as BASE_MODELS]}`,
-    max_angle_change: 15,
-    model_id: modelId as string,
-    skew_tolerance: 15,
-    source: trainingDataset?.source_imagery as string,
-    zoom_level: currentZoom,
-    bbox: [
-      bounds?.getWest(),
-      bounds?.getSouth(),
-      bounds?.getEast(),
-      bounds?.getNorth(),
-    ] as BBOX,
-  };
 
   const disablePrediction =
     currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
@@ -225,18 +206,18 @@ export const StartMappingPage = () => {
           ...modelPredictions.all,
         ],
       },
-      `all_predictions_${data.dataset}`,
+      `all_predictions_${modelInfo.dataset}`,
     );
     showSuccessToast(TOAST_NOTIFICATIONS.startMapping.fileDownloadSuccess);
-  }, [modelPredictions]);
+  }, [modelPredictions, modelInfo]);
 
   const handleAcceptedFeaturesDownload = useCallback(async () => {
     geoJSONDowloader(
       { type: "FeatureCollection", features: modelPredictions.accepted },
-      `accepted_predictions_${data.dataset}`,
+      `accepted_predictions_${modelInfo.dataset}`,
     );
     showSuccessToast(TOAST_NOTIFICATIONS.startMapping.fileDownloadSuccess);
-  }, [modelPredictions]);
+  }, [modelPredictions, modelInfo]);
 
   const handleFeaturesDownloadToJOSM = useCallback(
     (features: Feature[]) => {
@@ -316,13 +297,12 @@ export const StartMappingPage = () => {
 
   return (
     <>
-      <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(data?.name)} />
+      <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
       {/* Mobile dialog */}
       <div className="h-screen flex flex-col fullscreen">
         <StartMappingMobileDrawer
           isOpen={isSmallViewport}
           disablePrediction={disablePrediction}
-          trainingConfig={trainingConfig}
           setModelPredictions={setModelPredictions}
           modelPredictions={modelPredictions}
           map={map}
@@ -332,16 +312,19 @@ export const StartMappingPage = () => {
           updateQuery={updateQuery}
           modelDetailsPopupIsActive={showModelDetailsPopup}
           clearPredictions={clearPredictions}
+          trainingDataset={trainingDataset as TTrainingDataset}
+          currentZoom={currentZoom}
+          modelInfo={modelInfo}
         />
         <div className="sticky top-0 bg-white z-10 px-4 xl:px-large py-1 hidden md:block">
           {/* Model Details Popup */}
-          {data && (
+          {modelInfo && (
             <ModelDetailsPopUp
               showPopup={showModelDetailsPopup}
               handlePopup={handleModelDetailsPopup}
               closeMobileDrawer={() => setShowModelDetailsPopup(false)}
               anchor={popupAnchorId}
-              model={data}
+              model={modelInfo}
               trainingDataset={trainingDataset}
               trainingDatasetIsPending={trainingDatasetIsPending}
               trainingDatasetIsError={trainingDatasetIsError}
@@ -349,14 +332,13 @@ export const StartMappingPage = () => {
           )}
           {/* Web Header */}
           <StartMappingHeader
-            data={data}
+            modelInfo={modelInfo}
             trainingDatasetIsPending={trainingDatasetIsPending}
             modelPredictionsExist={modelPredictionsExist}
             trainingDatasetIsError={trainingDatasetIsError}
             modelPredictions={modelPredictions}
             query={query}
             updateQuery={updateQuery}
-            trainingConfig={trainingConfig}
             setModelPredictions={setModelPredictions}
             map={map}
             disablePrediction={disablePrediction}
@@ -365,6 +347,8 @@ export const StartMappingPage = () => {
             handleModelDetailsPopup={handleModelDetailsPopup}
             downloadOptions={downloadOptions}
             clearPredictions={clearPredictions}
+            trainingDataset={trainingDataset as TTrainingDataset}
+            currentZoom={currentZoom}
           />
         </div>
         <div className="col-span-12 h-[70vh] md:h-full md:border-8 md:border-off-white flex-grow relative map-elements-z-index">
@@ -408,7 +392,7 @@ export const StartMappingPage = () => {
             currentZoom={currentZoom}
             layers={mapLayers}
             tmsBounds={oamTileJSON?.bounds as LngLatBoundsLike}
-            trainingId={data?.published_training}
+            trainingId={modelInfo?.published_training}
           />
         </div>
       </div>

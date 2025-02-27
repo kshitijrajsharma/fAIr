@@ -7,7 +7,7 @@ import { ModelDetailsButton } from "@/features/start-mapping/components/model-de
 import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
-import { TModelPredictions, TModelPredictionsConfig } from "@/types";
+import { TModel, TModelPredictions, TTrainingDataset } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
@@ -15,7 +15,6 @@ import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 export const StartMappingMobileDrawer = ({
   isOpen,
   disablePrediction,
-  trainingConfig,
   setModelPredictions,
   map,
   modelPredictions,
@@ -25,10 +24,12 @@ export const StartMappingMobileDrawer = ({
   updateQuery,
   modelDetailsPopupIsActive,
   clearPredictions,
+  trainingDataset,
+  currentZoom,
+  modelInfo,
 }: {
   isOpen: boolean;
   disablePrediction: boolean;
-  trainingConfig: TModelPredictionsConfig;
   modelPredictions: TModelPredictions;
   setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
   map: Map | null;
@@ -38,6 +39,9 @@ export const StartMappingMobileDrawer = ({
   query: TQueryParams;
   updateQuery: (newParams: TQueryParams) => void;
   clearPredictions: () => void;
+  trainingDataset: TTrainingDataset;
+  currentZoom: number;
+  modelInfo: TModel;
 }) => {
   const [showDownloadOptions, setShowDownloadOptions] =
     useState<boolean>(false);
@@ -53,11 +57,14 @@ export const StartMappingMobileDrawer = ({
         <div className="flex items-center justify-between my-4 gap-x-2">
           <div className="w-full basis-5/6">
             <ModelAction
-              trainingConfig={trainingConfig}
+              query={query}
               setModelPredictions={setModelPredictions}
               map={map}
               disablePrediction={disablePrediction}
               modelPredictions={modelPredictions}
+              trainingDataset={trainingDataset}
+              currentZoom={currentZoom}
+              modelInfo={modelInfo}
             />
           </div>
           <div className="p-2 icon-interaction" id="anchor1">
