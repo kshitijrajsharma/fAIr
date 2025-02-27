@@ -81,7 +81,7 @@ const TrainingAreaList = ({
           />
         </div>
       </div>
-      <div className="flex items-center justify-center h-full flex-1 overflow-y-scroll">
+      <div className="flex items-center justify-center h-full flex-1 overflow-y-auto">
         {data?.count === 0 ? (
           <div className="flex items-center justify-center flex-col gap-y-10 text-center">
             <NoTrainingAreaIcon />
