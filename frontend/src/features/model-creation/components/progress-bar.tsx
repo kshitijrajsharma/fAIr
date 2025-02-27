@@ -17,7 +17,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   pages,
 }) => {
   const navigate = useNavigate();
-  const { getFullPath, isModelOwner } = useModelsContext();
+  const { getFullPath, isModelOwner, isEditMode } = useModelsContext();
   const activeStepRef = useRef<HTMLButtonElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -50,11 +50,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         const isConfirmationPage = currentPath.includes(
           MODELS_ROUTES.CONFIRMATION,
         );
-        // Disable the model details and training dataset if the user is not the owner of the model
+        // Disable the model details and training dataset if the user is not the owner of the model and if in edit mode.
         const disableButton =
           isLastPage ||
           isConfirmationPage ||
-          (!isModelOwner && [0, 1].includes(index));
+          (!isModelOwner && [0, 1].includes(index) && isEditMode);
         return (
           <button
             key={`current-form-progress-${step.id}`}

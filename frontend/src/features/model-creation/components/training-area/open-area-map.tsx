@@ -53,7 +53,7 @@ const OpenAerialMap = ({
   }, [map, fitToTMSBounds]);
 
   return (
-    <div className="flex w-full flex-col  gap-y-2 border-b-8 border-off-white py-2 px-4 pb-4">
+    <div className="flex w-full  flex-col  gap-y-2 border-b-8 border-off-white py-2 px-4 pb-2">
       <p className="text-body-2 md:text-body-1 font-medium">
         {MODELS_CONTENT.modelCreation.trainingArea.form.openAerialMap}
       </p>
@@ -66,7 +66,7 @@ const OpenAerialMap = ({
             }
           </p>
         ) : isPending ? (
-          <div className="w-full h-20 bg-gray-border animate-pulse"></div>
+          <div className="w-full h-16 bg-gray-border animate-pulse"></div>
         ) : (
           <>
             <div className="flex gap-x-3 justify-between w-full">

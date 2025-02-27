@@ -229,11 +229,11 @@ export const MAP_STYLES: Record<string, string | StyleSpecification> = {
   OSM: {
     version: 8,
     // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
-    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+    glyphs: "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
     sources: {
-      'raster-tiles': {
-        type: 'raster',
-        tiles: ['https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'],
+      "raster-tiles": {
+        type: "raster",
+        tiles: ["https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"],
         tileSize: 128,
         attribution:
           '© <a href="https://www.openstreetmap.org/copyright/">OpenStreetMap</a> contributors',
@@ -241,14 +241,14 @@ export const MAP_STYLES: Record<string, string | StyleSpecification> = {
     },
     layers: [
       {
-        id: 'simple-tiles',
-        type: 'raster',
-        source: 'raster-tiles',
+        id: "simple-tiles",
+        type: "raster",
+        source: "raster-tiles",
         minzoom: 0,
         maxzoom: 22,
       },
     ],
-  }
+  },
 };
 
 // ==============================================================================================================================
@@ -403,7 +403,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-  1000 +
+    1000 +
   REFRESH_BUFFER_MS;
 
 // ==============================================================================================================================

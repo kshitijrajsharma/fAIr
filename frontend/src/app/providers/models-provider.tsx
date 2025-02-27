@@ -342,7 +342,7 @@ export const ModelsProvider: React.FC<{
     }
   }, [isError, error, navigate]);
 
-  // Fetch and prefill model details and training dataset
+  // Prefill formData with model details in edit mode.
   useEffect(() => {
     if (!isEditMode || isPending || !data || isError) return;
 
@@ -380,6 +380,19 @@ export const ModelsProvider: React.FC<{
     };
   }, []);
 
+  useEffect(() => {
+    /**
+     * During model creation, don't reset the state on unmount to keep track of the users progress and to persist the data during page refresh.
+     * But during edit mode, clean it up on unmount to ensure the forms are on a clean slate.
+     * Given that there is already an effect that prefills the form above in edit mode, this won't affect edit mode state.
+     */
+    if (!isEditMode) return;
+    // Cleanup the state on component unmount
+    return () => {
+      resetState();
+    };
+  }, []);
+
   const createNewTrainingRequestMutation = useCreateModelTrainingRequest({
     mutationConfig: {
       onSuccess: () => {
@@ -411,29 +424,30 @@ export const ModelsProvider: React.FC<{
     },
   });
 
-  const submitTrainingRequest = useCallback(() => {
-    createNewTrainingRequestMutation.mutate({
-      model: modelId as string,
-      input_boundary_width: formData.boundaryWidth,
-      input_contact_spacing: formData.contactSpacing,
-      epochs: formData.epoch,
-      batch_size: formData.batchSize,
-      zoom_level: formData.zoomLevels,
-    });
-  }, [formData, modelId]);
+  const submitTrainingRequest = useCallback(
+    (id: string) => {
+      createNewTrainingRequestMutation.mutate({
+        model: id,
+        input_boundary_width: formData.boundaryWidth,
+        input_contact_spacing: formData.contactSpacing,
+        epochs: formData.epoch,
+        batch_size: formData.batchSize,
+        zoom_level: formData.zoomLevels,
+      });
+    },
+    [formData, modelId],
+  );
 
-  const handleModelCreationOrUpdateSuccess = (id?: string) => {
-    if (isModelOwner) {
-      showSuccessToast(
-        isEditMode
-          ? TOAST_NOTIFICATIONS.modelUpdateSuccess
-          : TOAST_NOTIFICATIONS.modelCreationSuccess,
-      );
+  const handleModelCreationOrUpdateSuccess = (id: string) => {
+    if (isEditMode && isModelOwner) {
+      showSuccessToast(TOAST_NOTIFICATIONS.modelUpdateSuccess);
+    } else if (!isEditMode) {
+      showSuccessToast(TOAST_NOTIFICATIONS.modelCreationSuccess);
     }
 
-    navigate(`${getFullPath(MODELS_ROUTES.CONFIRMATION)}?id=${id ?? modelId}`);
+    navigate(`${getFullPath(MODELS_ROUTES.CONFIRMATION)}?id=${id}`);
     // Submit the model for training request
-    submitTrainingRequest();
+    submitTrainingRequest(id);
   };
 
   const modelCreateMutation = useCreateModel({
@@ -462,6 +476,7 @@ export const ModelsProvider: React.FC<{
   // Confirm that all the training areas labels have been fetched.
   const hasLabeledTrainingAreas = useMemo(
     () =>
+      formData.trainingAreas.length > 0 &&
       formData.trainingAreas.every(
         (aoi: TTrainingAreaFeature) => aoi.properties.label_fetched !== null,
       ),
@@ -471,6 +486,7 @@ export const ModelsProvider: React.FC<{
   // Confirm that all of the training areas have a geometry.
   const hasAOIsWithGeometry = useMemo(
     () =>
+      formData.trainingAreas.length > 0 &&
       formData.trainingAreas.every(
         (aoi: TTrainingAreaFeature) => aoi.geometry !== null,
       ),
@@ -500,7 +516,7 @@ export const ModelsProvider: React.FC<{
       // The user is trying to edit another users model training area and settings.
       // In this case, directly submit a training request.
     } else if (isEditMode && !isModelOwner) {
-      handleModelCreationOrUpdateSuccess();
+      handleModelCreationOrUpdateSuccess(modelId as string);
     } else {
       modelCreateMutation.mutate({
         dataset: formData.selectedTrainingDatasetId,
