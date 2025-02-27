@@ -38,8 +38,8 @@ const TrainingAreaList = ({
   });
 
   return (
-    <div className="flex max-h-[60%] flex-col gap-y-4 justify-between p-2 lg:p-4">
-      <div className="flex items-start w-full flex-col gap-y-4">
+    <div className="flex flex-col overflow-y-auto flex-1 h-full gap-y-2 justify-between p-2 lg:p-4">
+      <div className="flex items-start w-full flex-col gap-y-2">
         <p className="text-body-2">
           {MODELS_CONTENT.modelCreation.trainingArea.form.trainingArea}
           {`${data && data.count > 1 ? "s" : ""}`}{" "}
@@ -81,7 +81,7 @@ const TrainingAreaList = ({
           />
         </div>
       </div>
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-full flex-1 overflow-y-scroll">
         {data?.count === 0 ? (
           <div className="flex items-center justify-center flex-col gap-y-10 text-center">
             <NoTrainingAreaIcon />
@@ -93,7 +93,7 @@ const TrainingAreaList = ({
         ) : isPending ? (
           <div className="w-full h-full animate-pulse bg-light-gray"></div>
         ) : (
-          <div className="h-full overflow-y-auto flex flex-col gap-y-4 w-full">
+          <div className="h-full flex flex-col gap-y-4 w-full">
             {data?.results.features
               .sort((a, b) => b.id - a.id)
               .map((ta) => (

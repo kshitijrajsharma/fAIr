@@ -104,15 +104,15 @@ const TrainingAreaForm = () => {
           </div>
         </div>
 
-        <div className="border-t-8 border-x-8 border-off-white mb-10 fullscreen md:no-fullscreen md:hidden">
+        <div className="border-t-8 border-x-8 border-off-white  fullscreen lg:no-fullscreen lg:hidden">
           <OpenAerialMap
             tileJSONURL={tileJSONURL}
             map={map}
             trainingDatasetId={Number(formData.selectedTrainingDatasetId)}
           />
         </div>
-        <div className="h-full grid grid-cols-12 md:grid-cols-9  border-8 border-off-white fullscreen md:no-fullscreen">
-          <div className="w-full h-[90vh] col-span-12 md:col-span-6 2xl:col-span-7">
+        <div className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen lg:no-fullscreen">
+          <div className="w-full h-[90vh] col-span-12 lg:col-span-6 2xl:col-span-7">
             <TrainingAreaMap
               tileJSONURL={tileJSONURL}
               data={trainingAreasData}
@@ -126,7 +126,7 @@ const TrainingAreaForm = () => {
               currentZoom={currentZoom}
             />
           </div>
-          <div className="hidden md:flex h-[90vh] max-h-screen col-span-12 md:col-span-3 2xl:col-span-2 flex-col w-full border-l-8 border-off-white gap-y-6 py-4 ">
+          <div className="hidden lg:flex h-[90vh] max-h-screen col-span-12 lg:col-span-3 2xl:col-span-2 flex-col w-full border-l-8 border-off-white gap-y-6 py-4 ">
             <OpenAerialMap
               tileJSONURL={tileJSONURL}
               map={map}
@@ -149,25 +149,22 @@ const TrainingAreaForm = () => {
           </div>
         </div>
 
-        <div className="md:hidden fullscreen md:no-fullscreen border-8 border-off-white py-2">
-          <div className="h-[60vh]  overflow-y-auto ">
-            <TrainingAreaList
-              offset={offset}
-              setOffset={setOffset}
-              isPlaceholderData={isPlaceholderData}
-              data={trainingAreasData}
-              isPending={trainingAreaIsPending}
-              datasetId={Number(formData.selectedTrainingDatasetId)}
-              map={map}
-            />
-          </div>
-          <div className="py-2">
-            <ActionButtons
-              toggle={toggle}
-              trainingAreasDataCount={trainingAreasData?.count}
-              setDrawingMode={setDrawingMode}
-            />
-          </div>
+        <div className="flex flex-col lg:hidden h-[90vh] max-h-screen fullscreen lg:no-fullscreen border-8 border-off-white py-2">
+          <TrainingAreaList
+            offset={offset}
+            setOffset={setOffset}
+            isPlaceholderData={isPlaceholderData}
+            data={trainingAreasData}
+            isPending={trainingAreaIsPending}
+            datasetId={Number(formData.selectedTrainingDatasetId)}
+            map={map}
+          />
+
+          <ActionButtons
+            toggle={toggle}
+            trainingAreasDataCount={trainingAreasData?.count}
+            setDrawingMode={setDrawingMode}
+          />
         </div>
       </div>
     </>
