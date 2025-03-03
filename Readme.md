@@ -1,5 +1,6 @@
 ![example workflow](https://github.com/omranlm/TDB/actions/workflows/backend_build.yml/badge.svg)
 ![example workflow](https://github.com/omranlm/TDB/actions/workflows/frontend_build.yml/badge.svg)
+
 Navigate to Backend or Frontend to get Installation Instructions.
 
 # fAIr: AI-assisted Mapping
