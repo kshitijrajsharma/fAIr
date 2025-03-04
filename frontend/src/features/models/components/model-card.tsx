@@ -16,7 +16,7 @@ type ModelCardProps = {
 const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
   // on my-models page, add a badge to the model card
   const { pathname } = useLocation();
-  const canAddStatusBadge = pathname === APPLICATION_ROUTES.ACCOUNT_MODELS;
+  const canAddStatusBadge = pathname === APPLICATION_ROUTES.PROFILE_MODELS;
   const statusToBadgeVariant: Record<string, TBadgeVariants> = {
     "-1": "blue", //draft
     "0": "green", //published

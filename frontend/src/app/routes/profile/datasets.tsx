@@ -1,5 +1,5 @@
 import { PageUnderConstruction } from "@/components/errors";
 
-export const UserAccountSettingsPage = () => {
+export const UserProfileDatasetsPage = () => {
   return <PageUnderConstruction />;
 };

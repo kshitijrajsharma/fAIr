@@ -8,6 +8,7 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 import { ModelsProvider } from "@/app/providers/models-provider";
+import { UserProfileLayout } from "@/layouts/user-profile-layout";
 
 const router = createBrowserRouter([
   {
@@ -298,30 +299,57 @@ const router = createBrowserRouter([
        * User account routes start
        */
       {
-        path: APPLICATION_ROUTES.ACCOUNT_SETTINGS,
-        lazy: async () => {
-          const { UserAccountSettingsPage } = await import(
-            "@/app/routes/account/settings"
-          );
-          return {
-            Component: () => <UserAccountSettingsPage />,
-          };
-        },
-      },
-      {
-        path: APPLICATION_ROUTES.ACCOUNT_MODELS,
-        lazy: async () => {
-          const { UserModelsPage } = await import(
-            "@/app/routes/account/models"
-          );
-          return {
-            Component: () => (
-              <ProtectedRoute>
-                <UserModelsPage />
-              </ProtectedRoute>
-            ),
-          };
-        },
+        element: (
+          <ProtectedRoute>
+            <UserProfileLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            path: APPLICATION_ROUTES.PROFILE_BASE,
+            lazy: async () => {
+              const { UserProfileOverviewPage } = await import(
+                "@/app/routes/profile/overview"
+              );
+              return {
+                Component: () => <UserProfileOverviewPage />,
+              };
+            },
+          },
+          {
+            path: APPLICATION_ROUTES.PROFILE_SETTINGS,
+            lazy: async () => {
+              const { UserProfileSettingsPage } = await import(
+                "@/app/routes/profile/settings"
+              );
+              return {
+                Component: () => <UserProfileSettingsPage />,
+              };
+            },
+          },
+          {
+            path: APPLICATION_ROUTES.PROFILE_MODELS,
+            lazy: async () => {
+              const { UserModelsPage } = await import(
+                "@/app/routes/profile/models"
+              );
+              return {
+                Component: () => <UserModelsPage />,
+              };
+            },
+          },
+          {
+            path: APPLICATION_ROUTES.PROFILE_DATASETS,
+            lazy: async () => {
+              const { UserProfileDatasetsPage } = await import(
+                "@/app/routes/profile/datasets"
+              );
+              return {
+                Component: () => <UserProfileDatasetsPage />,
+              };
+            },
+          },
+        ],
       },
       /**
        * User account routes ends

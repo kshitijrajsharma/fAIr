@@ -41,7 +41,7 @@ const MobileModelFiltersDialog: React.FC<TrainingAreaDrawerProps> = ({
 }) => {
   const currentRoute = useLocation();
   const userIsInAccountModelsPage = currentRoute.pathname.includes(
-    APPLICATION_ROUTES.ACCOUNT_MODELS,
+    APPLICATION_ROUTES.PROFILE_MODELS,
   );
 
   return (

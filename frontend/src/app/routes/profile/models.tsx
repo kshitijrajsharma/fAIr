@@ -1,9 +1,9 @@
 import ModelNotFound from "@/features/models/components/model-not-found";
 import { Head } from "@/components/seo";
-import { LayoutToggle, PageHeader } from "@/features/models/components";
+import { LayoutToggle } from "@/features/models/components";
 import { LayoutView } from "@/enums";
 import { MobileModelFiltersDialog } from "@/features/models/components/dialogs";
-import { MODELS_CONTENT } from "@/constants";
+import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { PAGE_LIMIT } from "@/components/shared";
 import { Pagination } from "@/components/shared";
 import { SEARCH_PARAMS } from "@/app/routes/models/models-list";
@@ -23,6 +23,7 @@ import {
   ModelListGridLayout,
   ModelListTableLayout,
 } from "@/features/models/layouts";
+import { ProfileSectionHeader } from "@/features/user-profile/components";
 
 export const UserModelsPage = () => {
   const { isOpened, openDialog, closeDialog } = useDialog();
@@ -73,10 +74,11 @@ export const UserModelsPage = () => {
         disabled={isPending}
       />
       <Head title={MODELS_CONTENT.myModels.pageTitle} />
-      <section className="my-10 min-h-screen">
-        <PageHeader
+      <section className="min-h-screen gap-y-10 flex flex-col">
+        <ProfileSectionHeader
           title={MODELS_CONTENT.myModels.pageHeader}
-          description={MODELS_CONTENT.myModels.pageDescription}
+          createButtonAlt="Create New"
+          createRoute={APPLICATION_ROUTES.CREATE_NEW_MODEL}
         />
         {/* Filters */}
         <div className="sticky top-0 bg-white z-10 py-2">

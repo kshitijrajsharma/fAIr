@@ -326,6 +326,8 @@ export type TSharedContent = {
       learn: string;
     };
     userProfile: {
+      profile: string;
+      datasets: string;
       models: string;
       settings: string;
       logout: string;

@@ -75,3 +75,9 @@ export type TCSSWithVars = React.CSSProperties & {
 };
 
 export type TShoelaceSize = `${SHOELACE_SELECT_SIZES}`;
+
+export type TProfileNavigationTabs = {
+  title: string;
+  href: string;
+  active: boolean;
+}[];

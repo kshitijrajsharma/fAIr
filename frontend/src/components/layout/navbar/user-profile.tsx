@@ -32,16 +32,30 @@ export const UserProfile = ({
       dropdownIsOpened={dropdownIsOpened}
       menuItems={[
         {
+          value: SHARED_CONTENT.navbar.userProfile.profile,
+          onClick: () => {
+            navigate(APPLICATION_ROUTES.PROFILE_BASE);
+            onDropdownHide();
+          },
+        },
+        {
+          value: SHARED_CONTENT.navbar.userProfile.datasets,
+          onClick: () => {
+            navigate(APPLICATION_ROUTES.PROFILE_DATASETS);
+            onDropdownHide();
+          },
+        },
+        {
           value: SHARED_CONTENT.navbar.userProfile.models,
           onClick: () => {
-            navigate(APPLICATION_ROUTES.ACCOUNT_MODELS);
+            navigate(APPLICATION_ROUTES.PROFILE_MODELS);
             onDropdownHide();
           },
         },
         {
           value: SHARED_CONTENT.navbar.userProfile.settings,
           onClick: () => {
-            navigate(APPLICATION_ROUTES.ACCOUNT_SETTINGS);
+            navigate(APPLICATION_ROUTES.PROFILE_SETTINGS);
             onDropdownHide();
           },
         },
