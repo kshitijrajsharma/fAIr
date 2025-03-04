@@ -38,7 +38,6 @@ EXPORT_TOOL_API_URL = env(
     default="https://api-prod.raw-data.hotosm.org/v1",
 )
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", HOSTNAME, gethostbyname(gethostname())]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "access-token",
 ]
@@ -122,6 +121,14 @@ ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", default="http://127.0.0.1:8000").s
 )
 
 CORS_ORIGIN_WHITELIST = ALLOWED_ORIGINS
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    HOSTNAME,
+    gethostbyname(gethostname()),
+] + ALLOWED_ORIGINS
+
 
 CORS_ORIGIN_ALLOW_ALL = env("CORS_ORIGIN_ALLOW_ALL", default=False)
 DEFAULT_PAGINATION_SIZE = env("DEFAULT_PAGINATION_SIZE", default=50)
