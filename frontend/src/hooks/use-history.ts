@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 export const useHistory = () => {
 
     const navigate = useNavigate();
-    console.log(window.history)
+
     const goBack = () => {
         /**
          * Why 2?
