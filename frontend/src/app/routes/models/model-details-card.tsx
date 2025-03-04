@@ -1,5 +1,5 @@
 import ModelEnhancementDialog from "@/features/models/components/dialogs/model-enhancement-dialog";
-import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
+import { MODELS_CONTENT } from "@/constants";
 import { BackButton, ButtonWithIcon } from "@/components/ui/button";
 import { Head } from "@/components/seo";
 import { Image } from "@/components/ui/image";
@@ -18,6 +18,8 @@ import {
   TrainingHistoryTable,
 } from "@/features/models/components";
 import { useModelsContext } from "@/app/providers/models-provider";
+
+
 
 export const ModelDetailsPage = () => {
   const {
@@ -62,7 +64,7 @@ export const ModelDetailsPage = () => {
         trainingId={data?.published_training}
         datasetId={data?.dataset?.id}
       />
-      <BackButton className="mt-6" route={APPLICATION_ROUTES.MODELS} />
+      <BackButton className="mt-6" />
       <div className="my-12 flex flex-col gap-y-20">
         <ModelDetailsInfo
           data={data as TModelDetails}
