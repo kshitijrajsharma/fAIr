@@ -1,24 +1,18 @@
 import { ArrowBackIcon } from "@/components/ui/icons";
-import { useNavigate } from "react-router-dom";
+import { useHistory } from "@/hooks/use-history";
+
 
 const BackButton = ({
   className,
-  route,
 }: {
   className?: string;
-  route?: string;
 }) => {
-  const navigate = useNavigate();
+
+  const { goBack } = useHistory()
   return (
     <button
       className={`flex items-center gap-x-2 ${className}`}
-      onClick={() => {
-        if (route) {
-          navigate(route);
-        } else {
-          navigate(-1);
-        }
-      }}
+      onClick={goBack}
       title="Go back"
     >
       <ArrowBackIcon className="icon md:icon-lg" />

@@ -19,6 +19,8 @@ import {
 } from "@/features/models/components";
 import { useModelsContext } from "@/app/providers/models-provider";
 
+
+
 export const ModelDetailsPage = () => {
   const {
     isOpened: isModelFilesDialogOpened,
@@ -62,7 +64,7 @@ export const ModelDetailsPage = () => {
         trainingId={data?.published_training}
         datasetId={data?.dataset?.id}
       />
-      <BackButton className="mt-6" route={APPLICATION_ROUTES.MODELS} />
+      <BackButton className="mt-6" />
       <div className="my-12 flex flex-col gap-y-20">
         <ModelDetailsInfo
           data={data as TModelDetails}
