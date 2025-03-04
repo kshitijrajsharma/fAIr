@@ -11,14 +11,13 @@ type BrandLogoWithDropDownProps = {
   isOpened: boolean;
   onClose: () => void;
   onShow: () => void;
-  modelId?: string;
+
 };
 
 export const BrandLogoWithDropDown = ({
   isOpened,
   onClose,
   onShow,
-  modelId,
 }: BrandLogoWithDropDownProps) => {
 
   const { goBack } = useHistory()

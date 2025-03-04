@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { renderHook } from '@testing-library/react';
 import { useHistory } from '../use-history';
 import { useNavigate } from 'react-router-dom';

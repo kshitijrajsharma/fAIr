@@ -1,5 +1,5 @@
 import ModelEnhancementDialog from "@/features/models/components/dialogs/model-enhancement-dialog";
-import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
+import { MODELS_CONTENT } from "@/constants";
 import { BackButton, ButtonWithIcon } from "@/components/ui/button";
 import { Head } from "@/components/seo";
 import { Image } from "@/components/ui/image";
