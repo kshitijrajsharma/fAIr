@@ -13,14 +13,24 @@ from .models import *
 
 class DatasetSerializer(
     serializers.ModelSerializer
-):  # serializers are used to translate models objects to api
+):
+    models_count = serializers.SerializerMethodField()  
     class Meta:
         model = Dataset
-        fields = "__all__"  # defining all the fields to  be included in curd for now , we can restrict few if we want
+        fields = [
+            'name',
+            'source_imagery',
+            'last_modified',
+            'created_at',
+            'status',
+            'models_count',
+            'user',
+        ]
         read_only_fields = (
             "user",
             "created_at",
             "last_modified",
+            "models_count",
         )
 
     def create(self, validated_data):
@@ -28,6 +38,8 @@ class DatasetSerializer(
         validated_data["user"] = user
         return super().create(validated_data)
 
+    def get_models_count(self, obj):
+        return Model.objects.filter(dataset=obj).count()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
