@@ -8,8 +8,8 @@ import { Outlet } from "react-router-dom";
 export const UserProfileLayout = () => {
   const { user } = useAuth();
   return (
-    <main className="min-h-screen">
-      <div className="flex flex-col gap-y-10 mt-12 mb-10">
+    <main className="min-h-screen mt-6 mb-10">
+      <div className="flex flex-col gap-y-10 mb-10">
         <ProfileOverview user={user} />
         <ProfileNavigationTabs />
       </div>

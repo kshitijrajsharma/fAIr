@@ -1,33 +1,38 @@
+import { Avatar } from "@/components/ui/avatar/avatar";
 import { ChevronDownIcon } from "@/components/ui/icons";
-import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { APPLICATION_ROUTES } from "@/constants";
 import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { TUser } from "@/types";
-
-
 
 export const ProfileOverview = ({ user }: { user: TUser }) => {
   return (
     <section className="flex items-center justify-between">
       <div className="flex items-center justify-center gap-x-6">
         <div className="p-2 w-40 h-40 border-4 border-primary rounded-full">
-          <Image
-            src={user.img_url}
-            className="w-full h-full rounded-full border-gray-border"
-            alt={user.username}
+          <Avatar
+            imageUrl={user?.img_url}
+            label={user?.username}
+            size="100%"
+            className="!w-full !h-full rounded-full border-gray-border"
           />
         </div>
         <div>
           <h1 className="text-title-2 font-bold">{user.username}</h1>
           <small className="text-gray text-body-3">
-            {USER_PROFILE_PAGE_CONTENT.overview.dateJoinedPrefix} {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+            {USER_PROFILE_PAGE_CONTENT.overview.dateJoinedPrefix}{" "}
+            {new Date().toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })}
           </small>
         </div>
       </div>
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
-          <h3 className="font-bold text-body-3">90% {USER_PROFILE_PAGE_CONTENT.overview.profileCompletionSuffix}</h3>
+          <h3 className="font-bold text-body-3">
+            90% {USER_PROFILE_PAGE_CONTENT.overview.profileCompletionSuffix}
+          </h3>
           <div className="bg-light-gray h-1.5 w-full rounded-xl">
             <div
               style={{ width: "90%" }}

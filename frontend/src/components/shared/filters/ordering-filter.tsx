@@ -32,7 +32,7 @@ type OrderingFilterProps = {
   isMobileFilterModal?: boolean;
 };
 
-const OrderingFilter: React.FC<OrderingFilterProps> = ({
+export const OrderingFilter: React.FC<OrderingFilterProps> = ({
   disabled = false,
   query,
   updateQuery,
@@ -92,5 +92,3 @@ const OrderingFilter: React.FC<OrderingFilterProps> = ({
     ></CheckboxGroup>
   );
 };
-
-export default OrderingFilter;

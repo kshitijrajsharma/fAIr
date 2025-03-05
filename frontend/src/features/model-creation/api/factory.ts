@@ -7,16 +7,8 @@ import {
   getTrainingAreaLabels,
   getTrainingAreas,
   getTrainingDatasetLabels,
-  getTrainingDatasets,
 } from "@/features/model-creation/api/get-trainings";
 import { QUERY_KEYS } from "@/services";
-
-export const getTrainingDatasetsQueryOptions = (searchQuery: string) => {
-  return queryOptions({
-    queryKey: ["training-datasets", searchQuery],
-    queryFn: () => getTrainingDatasets(searchQuery),
-  });
-};
 
 export const getTrainingAreasQueryOptions = (
   datasetId: number,

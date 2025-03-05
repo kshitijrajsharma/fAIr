@@ -96,4 +96,3 @@ export const formatDuration = (
 
   return timeParts.slice(0, maxUnits).join(" ");
 };
-

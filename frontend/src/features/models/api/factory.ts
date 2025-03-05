@@ -7,7 +7,6 @@ import {
 } from "@/features/models/api/get-models";
 import {
   getModelTrainingHistory,
-  getTrainingDataset,
   getTrainingDetails,
   getTrainingFeedbacks,
   getTrainingStatus,
@@ -17,14 +16,15 @@ import {
 // Models
 
 type TModelQueryOptions = {
-  limit: number;
-  offset: number;
-  orderBy: string;
-  searchQuery: string;
-  dateFilters: Record<string, string>;
-  status: number;
-  id: number;
+  limit?: number;
+  offset?: number;
+  orderBy?: string;
+  searchQuery?: string;
+  dateFilters?: Record<string, string>;
+  status?: number;
+  id?: number;
   userId?: number;
+  dataset?: number;
 };
 
 export const getModelsQueryOptions = ({
@@ -36,11 +36,21 @@ export const getModelsQueryOptions = ({
   dateFilters,
   id,
   userId,
+  dataset,
 }: TModelQueryOptions) => {
   return queryOptions({
     queryKey: [
       "models",
-      { status, searchQuery, offset, orderBy, dateFilters, id, userId },
+      {
+        status,
+        searchQuery,
+        offset,
+        orderBy,
+        dateFilters,
+        id,
+        userId,
+        dataset,
+      },
     ],
     queryFn: () =>
       getModels(
@@ -52,6 +62,7 @@ export const getModelsQueryOptions = ({
         dateFilters,
         id,
         userId,
+        dataset,
       ),
     placeholderData: keepPreviousData,
   });
@@ -124,12 +135,5 @@ export const getTrainingHistoryQueryOptions = (
     queryFn: () => getModelTrainingHistory(modelId, offset, limit, ordering),
     placeholderData: keepPreviousData,
     refetchInterval: 10000,
-  });
-};
-
-export const getTrainingDatasetQueryOptions = (id: number) => {
-  return queryOptions({
-    queryKey: ["training-dataset", id],
-    queryFn: () => getTrainingDataset(id),
   });
 };

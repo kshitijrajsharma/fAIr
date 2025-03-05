@@ -49,22 +49,7 @@ const router = createBrowserRouter([
         },
       },
       /**
-       * Training dataset route
-       */
-      {
-        path: APPLICATION_ROUTES.TRAINING_DATASETS,
-        lazy: async () => {
-          const { TrainingDatasetsPage } = await import(
-            "@/app/routes/training-datasets"
-          );
-          return { Component: TrainingDatasetsPage };
-        },
-      },
-      /**
-       * Training dataset route ends
-       */
-      /**
-       * Models details & list route starts
+       * Models details & list route starts.
        */
       {
         path: APPLICATION_ROUTES.MODEL_DETAILS,
@@ -94,7 +79,7 @@ const router = createBrowserRouter([
         },
       },
       /**
-       * Models details & list route ends
+       * Models details & list route ends.
        */
       {
         element: (
@@ -104,7 +89,7 @@ const router = createBrowserRouter([
         ),
         children: [
           /**
-           * Model creation routes
+           * Model creation routes.
            */
           {
             path: APPLICATION_ROUTES.CREATE_NEW_MODEL,
@@ -173,11 +158,11 @@ const router = createBrowserRouter([
             },
           },
           /**
-           * Model creation routes ends
+           * Model creation routes ends.
            */
 
           /**
-           * Model edit routes starts
+           * Model edit routes starts.
            */
           {
             path: APPLICATION_ROUTES.EDIT_MODEL_DETAILS,
@@ -248,33 +233,29 @@ const router = createBrowserRouter([
         ],
       },
       /**
-       * Model edit routes ends
+       * Model edit routes ends.
        */
       /**
-       * Training dataset route starts
+       *  Datasets details route starts.
        */
       {
-        path: APPLICATION_ROUTES.TRAINING_DATASETS,
+        path: APPLICATION_ROUTES.DATASET_DETAILS,
         lazy: async () => {
-          const { TrainingDatasetsPage } = await import(
-            "@/app/routes/training-datasets"
+          const { TrainingDatasetsDetailPage } = await import(
+            "@/app/routes/datasets/dataset-details"
           );
           return {
-            Component: () => (
-              <ProtectedRoute>
-                <TrainingDatasetsPage />
-              </ProtectedRoute>
-            ),
+            Component: () => <TrainingDatasetsDetailPage />,
           };
         },
       },
 
       /**
-       * Training dataset route ends
+       * Datasets details route ends.
        */
 
       /**
-       * Start mapping route starts
+       * Start mapping route starts.
        */
       {
         path: APPLICATION_ROUTES.START_MAPPING,
@@ -292,11 +273,11 @@ const router = createBrowserRouter([
         },
       },
       /**
-       * Start mapping route ends
+       * Start mapping route ends.
        */
 
       /**
-       * User account routes start
+       * User account routes start.
        */
       {
         element: (
@@ -352,7 +333,7 @@ const router = createBrowserRouter([
         ],
       },
       /**
-       * User account routes ends
+       * User account routes ends.
        */
 
       /**
@@ -372,7 +353,7 @@ const router = createBrowserRouter([
        */
 
       /**
-       * 404 route
+       * 404 route.
        */
       {
         path: APPLICATION_ROUTES.NOTFOUND,
@@ -382,7 +363,7 @@ const router = createBrowserRouter([
         },
       },
       /**
-       * Catch all route -> 404
+       * Catch all route -> 404.
        */
       {
         path: "*",

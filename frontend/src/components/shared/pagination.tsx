@@ -11,7 +11,7 @@ type PaginationProps = {
   disableNextPage: boolean;
   disablePrevPage: boolean;
   totalLength?: number;
-  pageLimit: number;
+  pageLimit?: number;
   query?: TQueryParams;
   updateQuery?: (params: TQueryParams) => void;
   isPlaceholderData?: boolean;
@@ -28,7 +28,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   disableNextPage,
   totalLength = 0,
   disablePrevPage,
-  pageLimit,
+  pageLimit = PAGE_LIMIT,
   query,
   updateQuery,
   isPlaceholderData,

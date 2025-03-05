@@ -42,7 +42,7 @@ export const ProfileStatistics = () => {
     <section className="w-full h-40 bg-frosted-blue rounded-xl">
       <div className="flex items-center h-full w-full justify-around">
         {profileStatsItems.map((stat) => (
-          <div className="flex gap-x-3 items-center">
+          <div className="flex gap-x-3 items-center" key={stat.label}>
             <div className="bg-primary rounded-full">
               <stat.icon className="h-12 w-12 p-2 text-white" />
             </div>

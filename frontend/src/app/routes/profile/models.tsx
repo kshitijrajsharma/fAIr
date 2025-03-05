@@ -4,7 +4,7 @@ import { LayoutToggle } from "@/features/models/components";
 import { LayoutView } from "@/enums";
 import { MobileModelFiltersDialog } from "@/features/models/components/dialogs";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
-import { PAGE_LIMIT } from "@/components/shared";
+import { OrderingFilter, PAGE_LIMIT, SearchFilter } from "@/components/shared";
 import { Pagination } from "@/components/shared";
 import { SEARCH_PARAMS } from "@/app/routes/models/models-list";
 import { useAuth } from "@/app/providers/auth-provider";
@@ -15,10 +15,9 @@ import {
   ClearFilters,
   DateRangeFilter,
   MobileFilter,
-  OrderingFilter,
-  SearchFilter,
   StatusFilter,
 } from "@/features/models/components/filters";
+
 import {
   ModelListGridLayout,
   ModelListTableLayout,
@@ -86,7 +85,14 @@ export const UserModelsPage = () => {
           <div className="flex flex-col gap-y-4">
             <div className=" flex items-center justify-between w-full ">
               <div className="flex items-center justify-between w-full md:gap-x-4 gap-y-2 md:gap-y-0  md:w-auto">
-                <SearchFilter updateQuery={updateQuery} query={query} />
+                <SearchFilter
+                  updateQuery={updateQuery}
+                  query={query}
+                  placeholder={
+                    MODELS_CONTENT.models.modelsList.filtersSection
+                      .searchPlaceHolder
+                  }
+                />
                 <CategoryFilter disabled={isPending} />
                 <StatusFilter
                   disabled={isPending}

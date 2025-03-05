@@ -10,7 +10,7 @@ export const ProfileNavigationTabs = () => {
       <ul className="flex gap-x-20 transition-all duration-300 overflow-x-auto px-4">
         {PROFILE_NAVIGATION_TABS.filter((route) => route.active).map(
           (route) => (
-            <li>
+            <li key={route.title}>
               <Link
                 href={route.href}
                 title={route.title}

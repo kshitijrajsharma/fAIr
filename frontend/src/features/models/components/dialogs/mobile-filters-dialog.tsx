@@ -7,9 +7,9 @@ import { useLocation } from "react-router-dom";
 import {
   CategoryFilter,
   DateRangeFilter,
-  OrderingFilter,
   StatusFilter,
 } from "@/features/models/components/filters";
+import { OrderingFilter } from "@/components/shared";
 
 type TrainingAreaDrawerProps = DialogProps & {
   updateQuery: (updatedParams: TQueryParams) => void;

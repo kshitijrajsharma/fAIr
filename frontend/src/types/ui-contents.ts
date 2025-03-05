@@ -784,6 +784,6 @@ export type TUserProfilePageContent = {
       };
     };
   };
-}
+};
 
 // User profile types ends.

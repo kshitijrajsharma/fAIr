@@ -42,7 +42,8 @@ export const APPLICATION_ROUTES = {
 
   // Model routes end
 
-  TRAINING_DATASETS: "/training-datasets",
+  DATASETS: "/datasets",
+  DATASET_DETAILS: "/datasets/:id",
   START_MAPPING_BASE: "/start-mapping/",
   START_MAPPING: "/start-mapping/:modelId",
   NOTFOUND: "/404",
@@ -56,7 +57,6 @@ export const APPLICATION_ROUTES = {
   PROFILE_MODELS: "/profile/models",
   PROFILE_DATASETS: "/profile/datasets",
 };
-
 
 /**
  * The navigation tabs used in the profile layout.
