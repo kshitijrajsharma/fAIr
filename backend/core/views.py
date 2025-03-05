@@ -237,7 +237,8 @@ class TrainingViewSet(
         filters.OrderingFilter,
     )
     serializer_class = TrainingSerializer  # connecting serializer
-    filterset_fields = ["model", "status"]
+    filterset_fields = ["model", "status", "user", "id"]
+    
     ordering_fields = ["finished_at", "accuracy", "id", "model", "status"]
     search_fields = ["description", "id"]
 
