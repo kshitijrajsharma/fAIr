@@ -18,6 +18,7 @@ class DatasetSerializer(
     class Meta:
         model = Dataset
         fields = [
+            'id',
             'name',
             'source_imagery',
             'last_modified',
