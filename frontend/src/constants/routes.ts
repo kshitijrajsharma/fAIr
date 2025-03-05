@@ -57,6 +57,10 @@ export const APPLICATION_ROUTES = {
   PROFILE_DATASETS: "/profile/datasets",
 };
 
+
+/**
+ * The navigation tabs used in the profile layout.
+ */
 export const PROFILE_NAVIGATION_TABS: TProfileNavigationTabs = [
   {
     title: "Overview",

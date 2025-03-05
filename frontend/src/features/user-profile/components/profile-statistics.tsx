@@ -4,6 +4,7 @@ import {
   FeedbackIcon,
   ProductionCheckmarkIcon,
 } from "@/components/ui/icons";
+import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { IconProps } from "@/types";
 import { FC } from "react";
 
@@ -17,22 +18,22 @@ const profileStatsItems: TProfileStatsItems = [
   {
     stat: 5,
     icon: BotIcon,
-    label: "Models Created",
+    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.modelsCreated,
   },
   {
     stat: 5,
     icon: ProductionCheckmarkIcon,
-    label: "Accepted Features",
+    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.acceptedFeaturesTitle,
   },
   {
     stat: 1235,
     icon: DatabaseIcon,
-    label: "Datasets",
+    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.datasets,
   },
   {
     stat: 533,
     icon: FeedbackIcon,
-    label: "Feedbacks",
+    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.feedbacks,
   },
 ];
 

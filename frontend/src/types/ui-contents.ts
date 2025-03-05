@@ -713,3 +713,77 @@ export type TMapContent = {
 };
 
 // Map content types end.
+
+// User profile types starts.
+
+export type TUserProfilePageContent = {
+  overview: {
+    pageTitle: string;
+    dateJoinedPrefix: string;
+    profileCompletionSuffix: string;
+    profileCompletionCTA: string;
+    trainingsSectionTitle: string;
+    statistics: {
+      modelsCreated: string;
+      acceptedFeaturesTitle: string;
+      datasets: string;
+      feedbacks: string;
+    };
+  };
+  models: {
+    pageTitle: string;
+    sectionTitle: string;
+    createNewButtonText: string;
+  };
+  datasets: {
+    pageTitle: string;
+    sectionTitle: string;
+  };
+  settings: {
+    pageTitle: string;
+    form: {
+      email: {
+        sectionHeading: string;
+        tooltip: string;
+        placeholder: string;
+        title: string;
+      };
+    };
+    notifications: {
+      sectionTitle: string;
+      sectionOne: {
+        title: string;
+        subSectionOne: {
+          title: string;
+          description: string;
+        };
+        subSectionTwo: {
+          title: string;
+          description: string;
+        };
+      };
+      sectionTwo: {
+        title: string;
+        options: string[];
+      };
+    };
+    account: {
+      sectionTitle: string;
+      sectionOne: {
+        title: string;
+        description: string;
+      };
+      deleteButton: {
+        text: string;
+        modal: {
+          title: string;
+          description: string;
+          deleteButtonText: string;
+          cancelButtonText: string;
+        };
+      };
+    };
+  };
+}
+
+// User profile types ends.

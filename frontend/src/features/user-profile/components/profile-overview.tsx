@@ -2,7 +2,10 @@ import { ChevronDownIcon } from "@/components/ui/icons";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { APPLICATION_ROUTES } from "@/constants";
+import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { TUser } from "@/types";
+
+
 
 export const ProfileOverview = ({ user }: { user: TUser }) => {
   return (
@@ -18,13 +21,13 @@ export const ProfileOverview = ({ user }: { user: TUser }) => {
         <div>
           <h1 className="text-title-2 font-bold">{user.username}</h1>
           <small className="text-gray text-body-3">
-            Joined {new Date().toLocaleDateString()}
+            {USER_PROFILE_PAGE_CONTENT.overview.dateJoinedPrefix} {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
           </small>
         </div>
       </div>
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
-          <h3 className="font-bold text-body-3">90% Complete</h3>
+          <h3 className="font-bold text-body-3">90% {USER_PROFILE_PAGE_CONTENT.overview.profileCompletionSuffix}</h3>
           <div className="bg-light-gray h-1.5 w-full rounded-xl">
             <div
               style={{ width: "90%" }}
@@ -35,11 +38,11 @@ export const ProfileOverview = ({ user }: { user: TUser }) => {
         <Link
           nativeAnchor={false}
           disableLinkStyle
-          title="Complete your profile"
+          title={USER_PROFILE_PAGE_CONTENT.overview.profileCompletionCTA}
           href={APPLICATION_ROUTES.PROFILE_SETTINGS}
           className="!text-primary font-semibold text-body-3 inline-flex items-center gap-x-2"
         >
-          Complete your profile{" "}
+          {USER_PROFILE_PAGE_CONTENT.overview.profileCompletionCTA}
           <span>
             <ChevronDownIcon className="w-3 h-3 -rotate-90" />
           </span>

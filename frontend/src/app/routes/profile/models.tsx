@@ -24,6 +24,7 @@ import {
   ModelListTableLayout,
 } from "@/features/models/layouts";
 import { ProfileSectionHeader } from "@/features/user-profile/components";
+import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 
 export const UserModelsPage = () => {
   const { isOpened, openDialog, closeDialog } = useDialog();
@@ -73,11 +74,11 @@ export const UserModelsPage = () => {
         updateQuery={updateQuery}
         disabled={isPending}
       />
-      <Head title={MODELS_CONTENT.myModels.pageTitle} />
+      <Head title={USER_PROFILE_PAGE_CONTENT.models.pageTitle} />
       <section className="min-h-screen gap-y-10 flex flex-col">
         <ProfileSectionHeader
-          title={MODELS_CONTENT.myModels.pageHeader}
-          createButtonAlt="Create New"
+          title={USER_PROFILE_PAGE_CONTENT.models.sectionTitle}
+          createButtonAlt={USER_PROFILE_PAGE_CONTENT.models.createNewButtonText}
           createRoute={APPLICATION_ROUTES.CREATE_NEW_MODEL}
         />
         {/* Filters */}
