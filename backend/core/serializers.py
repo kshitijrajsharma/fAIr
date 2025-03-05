@@ -40,9 +40,10 @@ class UserSerializer(serializers.ModelSerializer):
             # "is_staff",
             # "date_joined",
             # "email",
-            "img_url",
+            # "img_url",
             # "user_permissions",
         ]
+    read_only_fields = ['osm_id', 'username']
 
 
 class ModelSerializer(serializers.ModelSerializer):
@@ -428,3 +429,37 @@ class BannerSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
         ]
+
+
+class UserStatsSerializer(serializers.ModelSerializer):
+    models_count = serializers.SerializerMethodField()
+    datasets_count = serializers.SerializerMethodField()
+    feedbacks_count = serializers.SerializerMethodField()
+    approved_predictions_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OsmUser
+        fields = [
+            'osm_id',
+            'username',
+            'date_joined',
+            'img_url',
+            'models_count',
+            'datasets_count',
+            'feedbacks_count',
+            'approved_predictions_count',
+        ]
+        read_only_fields = ['osm_id', 'username', 'date_joined', 'img_url']
+
+    def get_models_count(self, obj):
+        return Model.objects.filter(user=obj).count()
+
+    def get_datasets_count(self, obj):
+        return Dataset.objects.filter(user=obj).count()
+
+    def get_feedbacks_count(self, obj):
+        return Feedback.objects.filter(user=obj).count()
+
+    def get_approved_predictions_count(self, obj):
+       
+        return ApprovedPredictions.objects.filter(user=obj).count()

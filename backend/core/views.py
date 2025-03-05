@@ -36,7 +36,7 @@ from geojson2osm import geojson2osm
 from login.authentication import OsmAuthentication
 from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 from osmconflator import conflate_geojson
-from rest_framework import decorators, filters, serializers, status, viewsets
+from rest_framework import decorators,generics, filters, serializers, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -73,6 +73,7 @@ from .serializers import (
     ModelSerializer,
     PredictionParamSerializer,
     UserSerializer,
+    UserStatsSerializer
 )
 from .tasks import train_model
 from .utils import (
@@ -248,8 +249,12 @@ class TrainingViewSet(
         feedback_count = Feedback.objects.filter(
             training=instance.id
         ).count()  # cal feedback count
+        approved_predictions_count = ApprovedPredictions.objects.filter(
+            training=instance.id
+        ).count()
         data = serializer.data
         data["feedback_count"] = feedback_count
+        data["approved_predictions_count"] = approved_predictions_count
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -335,14 +340,13 @@ class UsersView(ListAPIView):
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     queryset = OsmUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserStatsSerializer
     filter_backends = (
-        # InBBoxFilter,
         DjangoFilterBackend,
         filters.SearchFilter,
     )
-    filterset_fields = ["id"]
-    search_fields = ["username", "id"]
+    filterset_fields = ["osm_id"]
+    search_fields = ["username", "osm_id"]
 
 
 class AOIViewSet(viewsets.ModelViewSet):

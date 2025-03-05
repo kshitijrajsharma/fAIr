@@ -9,3 +9,4 @@ class OsmUser(AbstractUser):
     REQUIRED_FIELDS = ("osm_id",)
     osm_id = models.BigIntegerField(blank=False, unique=True, null=False)
     img_url = models.URLField(null=True, blank=True, max_length=1000)
+    email = models.EmailField(unique=True, null=True, blank=True) 
