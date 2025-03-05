@@ -6,7 +6,7 @@ export const ProfileNavigationTabs = () => {
   const { pathname } = useLocation();
 
   return (
-    <section className="border-b border-gray-border px-12">
+    <section className="border-b border-gray-border px-8">
       <ul className="flex gap-x-20 transition-all duration-300 overflow-x-auto px-4">
         {PROFILE_NAVIGATION_TABS.filter((route) => route.active).map(
           (route) => (
