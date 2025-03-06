@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.serializers import UserSerializer
+from core.serializers import UserStatsSerializer
 from login.authentication import OsmAuthentication
 from login.permissions import IsOsmAuthenticated
 
@@ -48,7 +48,7 @@ class callback(APIView):
             json: access_token
         """
         # Generating token through osm_auth library method
-        uri=request.build_absolute_uri()
+        uri = request.build_absolute_uri()
         token = osm_auth.callback(uri)
         return JsonResponse(json.loads(token))
 
@@ -58,5 +58,5 @@ class GetMyData(APIView):
     permission_classes = [IsOsmAuthenticated]
 
     def get(self, request, format=None):
-        serialized_field = UserSerializer(instance=request.user)
+        serialized_field = UserStatsSerializer(instance=request.user)
         return Response(serialized_field.data, status=status.HTTP_201_CREATED)

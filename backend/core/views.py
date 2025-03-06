@@ -33,10 +33,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django_q.tasks import async_task
 from drf_yasg.utils import swagger_auto_schema
 from geojson2osm import geojson2osm
-from login.authentication import OsmAuthentication
-from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 from osmconflator import conflate_geojson
-from rest_framework import decorators,generics, filters, serializers, status, viewsets
+from rest_framework import decorators, filters, generics, serializers, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -44,6 +42,9 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_gis.filters import InBBoxFilter, TMSTileFilter
+
+from login.authentication import OsmAuthentication
+from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 
 from .models import (
     AOI,
@@ -73,7 +74,7 @@ from .serializers import (
     ModelSerializer,
     PredictionParamSerializer,
     UserSerializer,
-    UserStatsSerializer
+    UserStatsSerializer,
 )
 from .tasks import train_model
 from .utils import (
@@ -239,7 +240,7 @@ class TrainingViewSet(
     )
     serializer_class = TrainingSerializer  # connecting serializer
     filterset_fields = ["model", "status", "user", "id"]
-    
+
     ordering_fields = ["finished_at", "accuracy", "id", "model", "status"]
     search_fields = ["description", "id"]
 
@@ -338,7 +339,7 @@ class ModelCentroidView(ListAPIView):
 
 class UsersView(ListAPIView):
     authentication_classes = [OsmAuthentication]
-    permission_classes = [IsOsmAuthenticated]
+    permission_classes = [IsAdminUser, IsStaffUser]
     queryset = OsmUser.objects.all()
     serializer_class = UserStatsSerializer
     filter_backends = (
