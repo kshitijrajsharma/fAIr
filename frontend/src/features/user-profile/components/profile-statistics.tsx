@@ -7,6 +7,7 @@ import {
 import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { IconProps } from "@/types";
 import { FC } from "react";
+import { useAuth } from "@/app/providers/auth-provider";
 
 type TProfileStatsItems = {
   stat: number;
@@ -14,30 +15,33 @@ type TProfileStatsItems = {
   icon: FC<IconProps>;
 }[];
 
-const profileStatsItems: TProfileStatsItems = [
-  {
-    stat: 5,
-    icon: BotIcon,
-    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.modelsCreated,
-  },
-  {
-    stat: 5,
-    icon: ProductionCheckmarkIcon,
-    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.acceptedFeaturesTitle,
-  },
-  {
-    stat: 1235,
-    icon: DatabaseIcon,
-    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.datasets,
-  },
-  {
-    stat: 533,
-    icon: FeedbackIcon,
-    label: USER_PROFILE_PAGE_CONTENT.overview.statistics.feedbacks,
-  },
-];
-
 export const ProfileStatistics = () => {
+  const { user } = useAuth();
+
+  const profileStatsItems: TProfileStatsItems = [
+    {
+      stat: user.models_count,
+      icon: BotIcon,
+      label: USER_PROFILE_PAGE_CONTENT.overview.statistics.modelsCreated,
+    },
+    {
+      stat: user.approved_predictions_count,
+      icon: ProductionCheckmarkIcon,
+      label:
+        USER_PROFILE_PAGE_CONTENT.overview.statistics.acceptedFeaturesTitle,
+    },
+    {
+      stat: user.datasets_count,
+      icon: DatabaseIcon,
+      label: USER_PROFILE_PAGE_CONTENT.overview.statistics.datasets,
+    },
+    {
+      stat: user.feedbacks_count,
+      icon: FeedbackIcon,
+      label: USER_PROFILE_PAGE_CONTENT.overview.statistics.feedbacks,
+    },
+  ];
+
   return (
     <section className="w-full h-40 bg-frosted-blue rounded-xl">
       <div className="flex items-center h-full w-full justify-around">

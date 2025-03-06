@@ -25,6 +25,10 @@ export type TUser = {
   osm_id: number;
   user_permission: [];
   username: string;
+  models_count: number;
+  approved_predictions_count: number;
+  feedbacks_count: number;
+  datasets_count: number;
 };
 
 type TOSMUser = {
@@ -108,6 +112,7 @@ export type TTrainingDataset = {
   status: number;
   user: number;
   source_imagery: string;
+  models_count: number;
 };
 
 // Training API response types

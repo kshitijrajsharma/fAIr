@@ -90,7 +90,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const fetchUserProfile = async () => {
     try {
-      const user = await authService.getUser();
+      const user_ = await authService.getUser();
+      const user = await authService.getUserProfile(user_.osm_id);
       setUser(user);
       handleRedirection();
     } catch (error) {

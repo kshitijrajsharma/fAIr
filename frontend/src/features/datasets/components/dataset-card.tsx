@@ -21,7 +21,9 @@ export const DatasetCard = ({ dataset }: { dataset: TTrainingDataset }) => {
         </div>
         <div>
           <p>Used by:</p>
-          <p className="font-semibold">8 Models</p>
+          <p className="font-semibold">
+            {dataset.models_count} Model{dataset.models_count ? "s" : ""}
+          </p>
         </div>
       </div>
     </Link>
