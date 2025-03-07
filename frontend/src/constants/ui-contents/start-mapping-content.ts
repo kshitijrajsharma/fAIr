@@ -8,7 +8,11 @@ export const START_MAPPING_PAGE_CONTENT: TStartMappingPageContent = {
         tooltip: "Click to adjust the map view to fit the imagery bounds.",
       },
       legendControl: {
-        title: "Legend",
+        toolTip: {
+          show: 'Show Legend',
+          hide: 'Hide Legend'
+        },
+        title: "Predictions",
         acceptedPredictions: "Accepted Predictions",
         rejectedPredictions: "Rejected Predictions",
         predictionResults: "Prediction Results",

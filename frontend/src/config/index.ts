@@ -316,7 +316,7 @@ export const TRAINING_AREAS_AOI_LABELS_OUTLINE_COLOR: string = parseStringEnv(
 
 // Start Mapping Legend - only the fill layers are in the legend.
 export const LEGEND_NAME_MAPPING: Record<string, string> = {
-  [ALL_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Map Result",
+  [ALL_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Default",
   [REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Rejected",
   [ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Accepted",
 };
@@ -403,7 +403,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-    1000 +
+  1000 +
   REFRESH_BUFFER_MS;
 
 // ==============================================================================================================================

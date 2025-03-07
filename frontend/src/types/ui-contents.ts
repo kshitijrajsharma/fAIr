@@ -504,6 +504,10 @@ export type TStartMappingPageContent = {
         tooltip: string;
       };
       legendControl: {
+        toolTip: {
+          show: string,
+          hide: string
+        },
         title: string;
         acceptedPredictions: string;
         rejectedPredictions: string;
