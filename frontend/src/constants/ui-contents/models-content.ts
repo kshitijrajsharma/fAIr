@@ -219,7 +219,7 @@ export const MODELS_CONTENT: TModelsContent = {
       ctaButton: "Create Model",
       filtersSection: {
         searchPlaceHolder: "Search",
-        mapViewToggleText: "Map View",
+        mapViewToggleText: "Show map",
       },
       sortingAndPaginationSection: {
         modelCountSuffix: "models",
