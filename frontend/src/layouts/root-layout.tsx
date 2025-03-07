@@ -1,10 +1,10 @@
-import { APPLICATION_ROUTES } from "@/constants";
+import { APPLICATION_ROUTES, MODELS_ROUTES } from "@/constants";
 import { Banner } from "@/components/ui/banner";
 import { Footer } from "@/components/layout";
 import { HotTracking } from "@/components/shared";
 import { NavBar } from "@/components/layout";
 import { Outlet, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useScrollToTop } from "@/hooks/use-scroll-to-element";
 import { useAuth } from "@/app/providers/auth-provider";
 import { AuthenticationModal } from "@/components/auth";
@@ -17,10 +17,22 @@ export const RootLayout = () => {
     scrollToTop();
   }, [pathname]);
   const { isAuthenticated } = useAuth();
+  const [showTracking, setShowTracking] = useState<boolean>(false);
+
+  useEffect(() => {
+    /**
+     * Show the tracking 5 seconds after the page renders.
+     */
+    const timer = setTimeout(() => {
+      setShowTracking(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  })
 
   return (
     <>
-      <HotTracking />
+      {showTracking && <HotTracking />}
       {/* Show the auth modal when a `backgroundLocation` is set and when the user is not authenticated. */}
       <AuthenticationModal
         isOpen={state?.backgroundLocation && !isAuthenticated}
@@ -40,7 +52,7 @@ export const RootLayout = () => {
         >
           <Outlet />
         </div>
-        {!pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
+        {!pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && !pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) && !pathname.includes(MODELS_ROUTES.EDIT_MODEL_BASE) &&
           !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Footer />}
       </main>
     </>
