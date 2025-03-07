@@ -35,7 +35,7 @@ const Banner = () => {
     <div className="w-full px-4 py-2 bg-primary flex items-center justify-between">
       <Markdown
         remarkPlugins={[remarkGfm]}
-        className="w-full md:text-nowrap prose"
+        className="w-[90%] text-wrap xl:text-nowrap prose"
       >
         {data?.[0]?.message}
       </Markdown>

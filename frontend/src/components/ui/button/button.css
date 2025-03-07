@@ -34,12 +34,13 @@ sl-button.default::part(base) {
   border: 1px solid var(--hot-fair-color-gray-border);
 }
 
-sl-button.primary::part(base):hover {
-  background-color: #dd5f60;
+
+sl-button.default::part(base):hover,sl-button.secondary::part(base):hover {
+  background-color: #f4f4f4;
 }
 
-sl-button.secondary::part(base):hover {
-  background-color: #f4f4f4;
+sl-button.primary::part(base):hover {
+  background-color: #dd5f60;
 }
 
 @media (min-width: 768px) {

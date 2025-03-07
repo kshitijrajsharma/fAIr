@@ -15,7 +15,7 @@ const baseModelOptions = [
     value: BASE_MODELS.RAMP,
     suffix:
       MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-        BASE_MODELS.RAMP
+      BASE_MODELS.RAMP
       ],
   },
   {
@@ -23,7 +23,7 @@ const baseModelOptions = [
     value: BASE_MODELS.YOLOV8_V1,
     suffix:
       MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-        BASE_MODELS.YOLOV8_V1
+      BASE_MODELS.YOLOV8_V1
       ],
   },
   {
@@ -31,7 +31,7 @@ const baseModelOptions = [
     value: BASE_MODELS.YOLOV8_V2,
     suffix:
       MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-        BASE_MODELS.YOLOV8_V2
+      BASE_MODELS.YOLOV8_V2
       ],
   },
 ];
@@ -39,12 +39,12 @@ const baseModelOptions = [
 const ModelDetailsForm = () => {
   const { formData, handleChange } = useModelsContext();
   return (
-    <div className="flex flex-col gap-y-6">
+    <div className="flex flex-col gap-y-2 md:gap-y-4">
       <StepHeading
         heading={MODELS_CONTENT.modelCreation.modelDetails.pageTitle}
         description={MODELS_CONTENT.modelCreation.modelDetails.pageDescription}
       />
-      <div className="flex flex-col gap-y-10">
+      <div className="flex flex-col gap-y-6">
         <ModelNameFormInput
           value={formData.modelName}
           handleChange={(value) =>

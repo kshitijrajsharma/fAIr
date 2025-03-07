@@ -83,7 +83,7 @@ export const ModelFormsLayout = () => {
       />
       <Head title="Create New Model" />
       <BackButton />
-      <div className="min-h-screen grid grid-cols-12 grid-rows-[auto_1fr_auto] gap-y-4 w-full justify-center my-2">
+      <div className="h-screen grid grid-cols-12 grid-rows-[auto_1fr_auto] gap-y-4 w-full justify-center my-2">
         <div className="col-span-12 lg:col-start-2 lg:col-span-10 w-full">
           <ProgressBar
             currentPath={pathname}
@@ -91,13 +91,19 @@ export const ModelFormsLayout = () => {
             pages={pages}
           />
         </div>
-        <Outlet />
+
+        <div className={`col-span-12 mb-24 pb-20 ${pathname.includes(MODELS_ROUTES.TRAINING_AREA) ? '' : 'md:col-start-2 md:col-span-10 lg:col-start-4 lg:col-span-6'}`}>
+          <Outlet />
+        </div>
+
         {!pathname.includes(MODELS_ROUTES.CONFIRMATION) && (
-          <ProgressButtons
-            pages={pages}
-            currentPageIndex={currentPageIndex}
-            currentPath={pathname}
-          />
+          <div className="fixed left-0 right-0 bottom-0 h-16 md:h-20 bg-white w-full app-padding border-t border-light-gray z-[10000] py-2 md:py-4">
+            <ProgressButtons
+              pages={pages}
+              currentPageIndex={currentPageIndex}
+              currentPath={pathname}
+            />
+          </div>
         )}
       </div>
     </ModelsProvider>
