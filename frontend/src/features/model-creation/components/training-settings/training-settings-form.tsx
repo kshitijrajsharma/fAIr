@@ -99,7 +99,7 @@ const TrainingSettingsForm = () => {
       MODEL_CREATION_FORM_NAME.BOUNDARY_WIDTH,
       defaultTrainingSettings[formData.trainingType].boundaryWidth,
     );
-  }, [formData.trainingType]);
+  }, [formData.trainingType, formData.baseModel]);
 
   return (
     <div className="flex flex-col gap-y-20 w-full">
