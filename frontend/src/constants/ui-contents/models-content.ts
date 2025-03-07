@@ -167,7 +167,7 @@ export const MODELS_CONTENT: TModelsContent = {
         },
         trainingType: {
           label: "Select Model Training Type",
-          toolTip: "Choose the type of model training to apply.",
+          toolTip: "Choose the type of model training to apply. Basic training is the fastest, ideal for quick results. Intermediate takes more time for balanced performance, while Advanced requires the longest time but provides the most optimized results.",
         },
         advancedSettings: {
           label: "Advanced Settings",
@@ -339,6 +339,7 @@ export const MODELS_CONTENT: TModelsContent = {
         submitButtonText: "Submit",
       },
       modelEnhancement: {
+        dialogHeading: "Enhance Model",
         newSettings: {
           title: "Enhance with New Settings",
           description:
@@ -351,5 +352,10 @@ export const MODELS_CONTENT: TModelsContent = {
         },
       },
     },
+  },
+  information: {
+    basic: "Basic information about the models and their usage.",
+    intermediate: "Intermediate details including model training and datasets.",
+    advanced: "Advanced settings and fine-tuning options for expert users.",
   },
 };

@@ -56,7 +56,7 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
         isOpened={isOpened}
         closeDialog={closeDialog}
         label={
-          MODELS_CONTENT.models.modelsDetailsCard.modelUpdate.dialogHeading
+          MODELS_CONTENT.models.modelsDetailsCard.modelEnhancement.dialogHeading
         }
       >
         <ModelTrainingSettingsDialog

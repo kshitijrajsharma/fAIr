@@ -296,6 +296,7 @@ export type TModelsContent = {
         submitButtonText: string;
       };
       modelEnhancement: {
+        dialogHeading: string;
         newSettings: {
           title: string;
           description: string;
