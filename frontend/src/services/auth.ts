@@ -72,18 +72,6 @@ class AuthService {
     }
   }
 
-  async getUserProfile(osmId: number): Promise<TUser> {
-    try {
-      const response = await apiClient.get(
-        API_ENDPOINTS.GET_USER_PROFILE(osmId),
-      );
-      return response.data.results[0];
-    } catch (error) {
-      showErrorToast(undefined, "Failed to fetch user profile data");
-      throw new Error("Unable to retrieve user profile data.");
-    }
-  }
-
   /**
    * @param state The state token retrieved from OSM.
    * @param code The code token retrieved from OSM.

@@ -89,7 +89,4 @@ export const API_ENDPOINTS = {
   DOWNLOAD_TRAINING_FILE: (trainingId: number, directory_name: string) =>
     `workspace/download/training_${trainingId}/${directory_name}/`,
 
-  // User Profile
-
-  GET_USER_PROFILE: (osmId: number) => `users/?osm_id=${osmId}`,
 };
