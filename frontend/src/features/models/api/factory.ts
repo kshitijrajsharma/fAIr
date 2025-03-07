@@ -6,9 +6,9 @@ import {
   getModelsMapData,
 } from "@/features/models/api/get-models";
 import {
-  getModelTrainingHistory,
   getTrainingDetails,
   getTrainingFeedbacks,
+  getTrainingHistory,
   getTrainingStatus,
   getTrainingWorkspace,
 } from "@/features/models/api/get-trainings";
@@ -125,15 +125,15 @@ export const getTrainingWorkspaceQueryOptions = (
 };
 
 export const getTrainingHistoryQueryOptions = (
-  modelId: string,
   offset: number,
   limit: number,
   ordering: string,
+  modelId?: string,
+  userId?: number
 ) => {
   return queryOptions({
-    queryKey: ["training-history", modelId, offset, limit, ordering],
-    queryFn: () => getModelTrainingHistory(modelId, offset, limit, ordering),
+    queryKey: ["training-history", modelId, offset, limit, ordering, userId],
+    queryFn: () => getTrainingHistory(offset, limit, ordering, modelId, userId),
     placeholderData: keepPreviousData,
-    refetchInterval: 10000,
   });
 };

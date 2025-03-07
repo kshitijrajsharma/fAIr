@@ -69,7 +69,7 @@ export const API_ENDPOINTS = {
     `aoi/?dataset=${datasetId}&offset=${offset}&limit=${limit}`,
   GET_TRAINING_AREA: (aoiId: number) => `aoi/${aoiId}/`,
   GET_TRAINING_STATUS: (taskId: string) => `training/status/${taskId}`,
-  GET_MODEL_TRAINING_HISTORY: (id: string) => `training/?model=${id}`,
+  GET_TRAINING_HISTORY: 'training/',
   GET_TRAINING_FEEDBACKS: (trainingId: number) =>
     `feedback/?training=${trainingId}`,
   CREATE_TRAINING_DATASET: "dataset/",

@@ -22,10 +22,12 @@ export const useUpdateTraining = ({
     !!modelId,
   );
   const { refetch: refetchTrainingHistory } = useTrainingHistory(
-    String(modelId),
     0,
     PAGE_LIMIT,
     "-id",
+    String(modelId),
+    undefined,
+    !!modelId
   );
 
   const { onSuccess, ...restConfig } = mutationConfig || {};

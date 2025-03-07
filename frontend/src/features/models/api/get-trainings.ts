@@ -21,19 +21,22 @@ export const getTrainingStatus = async (
   return res.data;
 };
 
-export const getModelTrainingHistory = async (
-  id: string,
+export const getTrainingHistory = async (
   offset: number,
   limit: number,
   ordering: string,
+  modelId?: string,
+  userId?: number,
 ): Promise<PaginatedTrainings> => {
   const res = await apiClient.get(
-    API_ENDPOINTS.GET_MODEL_TRAINING_HISTORY(id),
+    API_ENDPOINTS.GET_TRAINING_HISTORY,
     {
       params: {
         limit,
         offset,
         ordering,
+        model: modelId,
+        user: userId
       },
     },
   );

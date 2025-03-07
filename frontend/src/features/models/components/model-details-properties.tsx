@@ -99,15 +99,13 @@ type ModelPropertiesProps = {
   datasetId?: number;
   isTrainingDetailsDialog?: boolean;
   baseModel: string;
-  tmsUrl?: string;
 };
 
 const ModelProperties: React.FC<ModelPropertiesProps> = ({
   trainingId,
   datasetId,
   isTrainingDetailsDialog = false,
-  baseModel,
-  tmsUrl,
+  baseModel
 }) => {
   const { isPending, data, error, isError } = useTrainingDetails(
     trainingId,
@@ -149,7 +147,7 @@ const ModelProperties: React.FC<ModelPropertiesProps> = ({
         isOpened={isTrainingAreaDrawerOpened}
         closeDialog={closeTrainingAreaDrawer}
         trainingAreaId={trainingId}
-        tmsURL={tmsUrl as string}
+        tmsURL={String(source_imagery)}
       />
 
       <ModelFilesDialog

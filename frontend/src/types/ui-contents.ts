@@ -267,6 +267,7 @@ export type TModelsContent = {
         epochAndBatchSize: string;
         startedAt: string;
         sumittedBy: string;
+        model: string
         duration: string;
         dsSize: string;
         accuracy: string;
