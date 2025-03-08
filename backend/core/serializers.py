@@ -11,21 +11,20 @@ from .models import *
 # from .tasks import train_model
 
 
-class DatasetSerializer(
-    serializers.ModelSerializer
-):
-    models_count = serializers.SerializerMethodField()  
+class DatasetSerializer(serializers.ModelSerializer):
+    models_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Dataset
         fields = [
-            'id',
-            'name',
-            'source_imagery',
-            'last_modified',
-            'created_at',
-            'status',
-            'models_count',
-            'user',
+            "id",
+            "name",
+            "source_imagery",
+            "last_modified",
+            "created_at",
+            "status",
+            "models_count",
+            "user",
         ]
         read_only_fields = (
             "user",
@@ -42,6 +41,7 @@ class DatasetSerializer(
     def get_models_count(self, obj):
         return Model.objects.filter(dataset=obj).count()
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = OsmUser
@@ -56,7 +56,8 @@ class UserSerializer(serializers.ModelSerializer):
             # "img_url",
             # "user_permissions",
         ]
-    read_only_fields = ['osm_id', 'username']
+
+    read_only_fields = ["osm_id", "username"]
 
 
 class ModelSerializer(serializers.ModelSerializer):
@@ -453,16 +454,17 @@ class UserStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OsmUser
         fields = [
-            'osm_id',
-            'username',
-            'date_joined',
-            'img_url',
-            'models_count',
-            'datasets_count',
-            'feedbacks_count',
-            'approved_predictions_count',
+            "osm_id",
+            "username",
+            "date_joined",
+            "img_url",
+            "models_count",
+            "datasets_count",
+            "feedbacks_count",
+            "approved_predictions_count",
+            "completion_percentage",
         ]
-        read_only_fields = ['osm_id', 'username', 'date_joined', 'img_url']
+        read_only_fields = ["osm_id", "username", "date_joined", "img_url"]
 
     def get_models_count(self, obj):
         return Model.objects.filter(user=obj).count()
@@ -474,5 +476,14 @@ class UserStatsSerializer(serializers.ModelSerializer):
         return Feedback.objects.filter(user=obj).count()
 
     def get_approved_predictions_count(self, obj):
-       
         return ApprovedPredictions.objects.filter(user=obj).count()
+
+    def get_completion_percentage(self, obj):
+        percentile_start = 25
+        if obj.username is not None:
+            percentile_start += 25
+        if obj.img_url is not None:
+            percentile_start += 25
+        if obj.email is not None:
+            percentile_start += 25
+        return percentile_start
