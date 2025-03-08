@@ -123,7 +123,7 @@ class DatasetViewSet(
 class ModelMetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
-        fields = ["id", "name", "base_model", "status"]
+        fields = ["id", "name", "dataset", "base_model", "status"]
 
 
 class TrainingSerializer(
