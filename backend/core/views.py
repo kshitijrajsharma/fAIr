@@ -33,6 +33,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django_q.tasks import async_task
 from drf_yasg.utils import swagger_auto_schema
 from geojson2osm import geojson2osm
+from login.authentication import OsmAuthentication
+from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 from osmconflator import conflate_geojson
 from rest_framework import decorators, filters, generics, serializers, status, viewsets
 from rest_framework.decorators import api_view
@@ -42,9 +44,6 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_gis.filters import InBBoxFilter, TMSTileFilter
-
-from login.authentication import OsmAuthentication
-from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 
 from .models import (
     AOI,
@@ -121,6 +120,12 @@ class DatasetViewSet(
     search_fields = ["name", "id"]
 
 
+class ModelMetaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = ["id", "name", "base_model", "status"]
+
+
 class TrainingSerializer(
     serializers.ModelSerializer
 ):  # serializers are used to translate models objects to api
@@ -132,6 +137,7 @@ class TrainingSerializer(
     input_boundary_width = serializers.IntegerField(
         required=False, default=3, min_value=0, max_value=10
     )
+    model = ModelMetaSerializer()
 
     class Meta:
         model = Training
