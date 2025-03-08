@@ -450,6 +450,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
     datasets_count = serializers.SerializerMethodField()
     feedbacks_count = serializers.SerializerMethodField()
     approved_predictions_count = serializers.SerializerMethodField()
+    profile_completion_percentage = serializers.SerializerMethodField()
 
     class Meta:
         model = OsmUser
