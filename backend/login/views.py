@@ -1,15 +1,14 @@
 import json
 
+from core.serializers import UserStatsSerializer
 from django.conf import settings
 from django.http import JsonResponse
+from login.authentication import OsmAuthentication
+from login.permissions import IsOsmAuthenticated
 from osm_login_python.core import Auth
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from core.serializers import UserStatsSerializer
-from login.authentication import OsmAuthentication
-from login.permissions import IsOsmAuthenticated
 
 # Create your views here.
 # initialize osm_auth with our credentials
@@ -60,3 +59,12 @@ class GetMyData(APIView):
     def get(self, request, format=None):
         serialized_field = UserStatsSerializer(instance=request.user)
         return Response(serialized_field.data, status=status.HTTP_201_CREATED)
+
+    def patch(self, request, format=None):
+        user = request.user
+        data = {"email": request.data.get("email")}  # ensure only email can be updated
+        serializer = UserStatsSerializer(user, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
