@@ -457,6 +457,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
         fields = [
             "osm_id",
             "username",
+            "email",
             "date_joined",
             "img_url",
             "models_count",
