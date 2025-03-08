@@ -247,7 +247,7 @@ class TrainingViewSet(
     serializer_class = TrainingSerializer  # connecting serializer
     filterset_fields = ["model", "status", "user", "id"]
 
-    ordering_fields = ["finished_at", "accuracy", "id", "model", "status"]
+    ordering_fields = ["created_at", "accuracy", "id", "model", "status"]
     search_fields = ["description", "id"]
 
     def retrieve(self, request, *args, **kwargs):
