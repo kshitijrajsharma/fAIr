@@ -3,6 +3,8 @@ import json
 from core.serializers import UserStatsSerializer
 from django.conf import settings
 from django.http import JsonResponse
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from login.authentication import OsmAuthentication
 from login.permissions import IsOsmAuthenticated
 from osm_login_python.core import Auth
@@ -60,6 +62,17 @@ class GetMyData(APIView):
         serialized_field = UserStatsSerializer(instance=request.user)
         return Response(serialized_field.data, status=status.HTTP_201_CREATED)
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "email": openapi.Schema(
+                    type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL
+                )
+            },
+            required=["email"],
+        )
+    )
     def patch(self, request, format=None):
         user = request.user
         data = {"email": request.data.get("email")}  # ensure only email can be updated
