@@ -462,7 +462,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "datasets_count",
             "feedbacks_count",
             "approved_predictions_count",
-            "completion_percentage",
+            "profile_completion_percentage",
         ]
         read_only_fields = ["osm_id", "username", "date_joined", "img_url"]
 
@@ -478,12 +478,12 @@ class UserStatsSerializer(serializers.ModelSerializer):
     def get_approved_predictions_count(self, obj):
         return ApprovedPredictions.objects.filter(user=obj).count()
 
-    def get_completion_percentage(self, obj):
-        percentile_start = 25
+    def get_profile_completion_percentage(self, obj):
+        profile_percentage = 25
         if obj.username is not None:
-            percentile_start += 25
+            profile_percentage += 25
         if obj.img_url is not None:
-            percentile_start += 25
+            profile_percentage += 25
         if obj.email is not None:
-            percentile_start += 25
-        return percentile_start
+            profile_percentage += 25
+        return profile_percentage
