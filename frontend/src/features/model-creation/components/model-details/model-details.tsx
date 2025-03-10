@@ -15,7 +15,7 @@ const baseModelOptions = [
     value: BASE_MODELS.RAMP,
     suffix:
       MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-      BASE_MODELS.RAMP
+        BASE_MODELS.RAMP
       ],
   },
   {
@@ -23,7 +23,7 @@ const baseModelOptions = [
     value: BASE_MODELS.YOLOV8_V1,
     suffix:
       MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-      BASE_MODELS.YOLOV8_V1
+        BASE_MODELS.YOLOV8_V1
       ],
   },
   {
@@ -31,7 +31,7 @@ const baseModelOptions = [
     value: BASE_MODELS.YOLOV8_V2,
     suffix:
       MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-      BASE_MODELS.YOLOV8_V2
+        BASE_MODELS.YOLOV8_V2
       ],
   },
 ];

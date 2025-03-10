@@ -1,13 +1,12 @@
 import useDebounce from "@/hooks/use-debounce";
 import { ControlsPosition, DrawingModes } from "@/enums";
-import { GeoJSONSource, Map } from "maplibre-gl";
+import { Map } from "maplibre-gl";
 import { geojsonToWKT } from "@terraformer/wkt";
-import { GeoJSONType, PaginatedTrainingArea } from "@/types";
+import { PaginatedTrainingArea, TileJSON } from "@/types";
 import { MapComponent, MapCursorToolTip } from "@/components/map";
 import { Polygon } from "geojson";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { TerraDraw } from "terra-draw";
-import { useMapLayers } from "@/hooks/use-map-layer";
 import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
 import {
   useCreateTrainingArea,
@@ -17,23 +16,18 @@ import {
   MAP_STYLES_PREFIX,
   MAX_TRAINING_AREA_SIZE,
   MIN_TRAINING_AREA_SIZE,
-  TRAINING_AREAS_AOI_FILL_COLOR,
-  TRAINING_AREAS_AOI_FILL_OPACITY,
-  TRAINING_AREAS_AOI_LABELS_FILL_COLOR,
-  TRAINING_AREAS_AOI_LABELS_FILL_OPACITY,
-  TRAINING_AREAS_AOI_LABELS_OUTLINE_COLOR,
-  TRAINING_AREAS_AOI_LABELS_OUTLINE_WIDTH,
-  TRAINING_AREAS_AOI_OUTLINE_COLOR,
-  TRAINING_AREAS_AOI_OUTLINE_WIDTH,
-  MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
 } from "@/config";
 import {
   calculateGeoJSONArea,
+  featureIsWithinBounds,
   formatAreaInAppropriateUnit,
   showSuccessToast,
+  showWarningToast,
   snapGeoJSONPolygonToClosestTile,
   validateGeoJSONArea,
 } from "@/utils";
+import { TrainingAreasLayers } from "../map-layers";
+import { TrainingAreasLabelsLayers } from "../map-layers/training-areas-labels-layers";
 
 // Debounce delay in milliseconds.
 const DEBOUNCE_DELAY: number = 300;
@@ -49,6 +43,8 @@ const TrainingAreaMap = ({
   currentZoom,
   terraDraw,
   mapContainerRef,
+  trainingAreaIsPending,
+  OAMData,
 }: {
   tileJSONURL: string;
   data?: PaginatedTrainingArea;
@@ -60,13 +56,17 @@ const TrainingAreaMap = ({
   currentZoom: number;
   terraDraw?: TerraDraw;
   mapContainerRef: RefObject<HTMLDivElement> | null;
+  trainingAreaIsPending: boolean;
+  OAMData: TileJSON;
 }) => {
-  const trainingAreasLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-area-layer`;
+  // Training Areas
+  const trainingAreasOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-area-layer`;
   const trainingAreasFillLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-area-fill-layer`;
-  const trainingDatasetLabelsSourceId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-source`;
   const trainingAreasSourceId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-area-source`;
-  const trainingDatasetLabelsLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-fill-layer`;
-  const trainingDatasetLabelsOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-outline-layer`;
+  // Trainings Labels
+  const trainingAreasLabelsSourceId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-source`;
+  const trainingAreasLabelsFillLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-fill-layer`;
+  const trainingAreasLabelsOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-outline-layer`;
 
   const [bbox, setBbox] = useState<string>("");
 
@@ -79,7 +79,7 @@ const TrainingAreaMap = ({
 
   const debouncedZoom = useDebounce(currentZoom.toString(), DEBOUNCE_DELAY);
 
-  const { data: labels } = useGetTrainingDatasetLabels(
+  const { data: labels, isPending: trainingAreasLabelsIsPending } = useGetTrainingDatasetLabels(
     trainingDatasetId,
     debouncedBbox,
     Number(debouncedZoom),
@@ -89,101 +89,6 @@ const TrainingAreaMap = ({
     datasetId: Number(trainingDatasetId),
     offset,
   });
-
-  /**
-   * Callbacks
-   */
-
-  useMapLayers(
-    [
-      {
-        id: trainingDatasetLabelsLayerId,
-        type: "fill",
-        source: trainingDatasetLabelsSourceId,
-        paint: {
-          "fill-color": TRAINING_AREAS_AOI_LABELS_FILL_COLOR,
-          "fill-opacity": TRAINING_AREAS_AOI_LABELS_FILL_OPACITY,
-        },
-        minzoom: MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
-        layout: { visibility: "visible" },
-      },
-      {
-        id: trainingDatasetLabelsOutlineLayerId,
-        type: "line",
-        source: trainingDatasetLabelsSourceId,
-        paint: {
-          "line-color": TRAINING_AREAS_AOI_LABELS_OUTLINE_COLOR,
-          "line-width": TRAINING_AREAS_AOI_LABELS_OUTLINE_WIDTH,
-        },
-        minzoom: MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
-        layout: { visibility: "visible" },
-      },
-      {
-        id: trainingAreasFillLayerId,
-        type: "fill",
-        source: trainingAreasSourceId,
-        paint: {
-          "fill-color": TRAINING_AREAS_AOI_FILL_COLOR,
-          "fill-opacity": TRAINING_AREAS_AOI_FILL_OPACITY,
-        },
-        layout: { visibility: "visible" },
-      },
-      {
-        id: trainingAreasLayerId,
-        type: "line",
-        source: trainingAreasSourceId,
-        paint: {
-          "line-color": TRAINING_AREAS_AOI_OUTLINE_COLOR,
-          "line-width": TRAINING_AREAS_AOI_OUTLINE_WIDTH,
-        },
-        layout: { visibility: "visible" },
-      },
-    ],
-    [
-      {
-        id: trainingAreasSourceId,
-        spec: {
-          type: "geojson",
-          data: data?.results as GeoJSONType,
-        },
-      },
-      {
-        id: trainingDatasetLabelsSourceId,
-        spec: {
-          type: "geojson",
-          data: (labels as GeoJSONType) ?? {
-            type: "FeatureCollection",
-            features: [],
-          },
-        },
-      },
-    ],
-    map,
-  );
-
-  // useLayerReorder(map, {
-  //   featureLayerIds: [trainingDatasetLabelsOutlineLayerId, trainingDatasetLabelsLayerId, trainingAreasLayerId, trainingAreasFillLayerId,]
-  // });
-
-  const updateTrainingLabels = useCallback(() => {
-    if (map) {
-      if (map.getSource(trainingDatasetLabelsSourceId) && labels) {
-        const source = map.getSource(
-          trainingDatasetLabelsSourceId,
-        ) as GeoJSONSource;
-        source?.setData(labels as GeoJSONType);
-      }
-    }
-  }, [map, labels]);
-
-  const updateTrainingArea = useCallback(() => {
-    if (map) {
-      if (map.getSource(trainingAreasSourceId) && data?.results) {
-        const source = map.getSource(trainingAreasSourceId) as GeoJSONSource;
-        source.setData(data.results as GeoJSONType);
-      }
-    }
-  }, [map, data?.results]);
 
   const updateBbox = useCallback(() => {
     if (!map) return;
@@ -202,16 +107,6 @@ const TrainingAreaMap = ({
       map.off("moveend", updateBbox);
     };
   }, [map]);
-
-  useEffect(() => {
-    if (!data?.results) return;
-    updateTrainingArea();
-  }, [data?.results]);
-
-  useEffect(() => {
-    if (!labels) return;
-    updateTrainingLabels();
-  }, [labels]);
 
   /**
    * Drawing events and tooltip
@@ -233,9 +128,23 @@ const TrainingAreaMap = ({
         const drawnFeature = snapshot[snapshot.length - 1];
         // Don't accept the drawing if they don't meet the size criteria
         if (validateGeoJSONArea(drawnFeature)) {
+          showWarningToast(
+            `Area is too small or too large. Please adjust the area to meet the size requirements.`,
+          );
           terraDraw.clear();
           return;
         }
+        // Don't accept the drawing if it's outside the bbox of the OAM imagery
+        if (OAMData?.bounds) {
+          if (!featureIsWithinBounds(OAMData.bounds, drawnFeature)) {
+            showWarningToast(
+              "The drawn polygon extends beyond the OAM bounds. Please ensure the training area is within the specified bounds.",
+            );
+            terraDraw.clear();
+            return;
+          }
+        }
+
         snapGeoJSONPolygonToClosestTile(drawnFeature.geometry as Polygon);
         const wkt = geojsonToWKT(drawnFeature.geometry);
         await createTrainingArea.mutateAsync(
@@ -255,7 +164,7 @@ const TrainingAreaMap = ({
       terraDraw.off("change", handleFeatureChange);
       terraDraw.off("finish", handleFinish);
     };
-  }, [terraDraw, drawingMode, setDrawingMode]);
+  }, [terraDraw, drawingMode, setDrawingMode, OAMData]);
 
   const showLabelsToolTip = currentZoom >= 14 && currentZoom < 18;
 
@@ -295,7 +204,7 @@ const TrainingAreaMap = ({
 
   return (
     <MapComponent
-      openAerialMap
+      openAerialMap={!trainingAreaIsPending}
       oamTileJSONURL={tileJSONURL}
       controlsPosition={ControlsPosition.TOP_LEFT}
       drawControl
@@ -312,25 +221,48 @@ const TrainingAreaMap = ({
       layerControlLayers={[
         ...(data?.results?.features?.length
           ? [
-              {
-                value: "Training Areas",
-                subLayers: [trainingAreasLayerId, trainingAreasFillLayerId],
-              },
-            ]
+            {
+              value: "Training Areas",
+              subLayers: [
+                trainingAreasOutlineLayerId,
+                trainingAreasFillLayerId,
+              ],
+            },
+          ]
           : []),
         ...(labels && labels?.features.length > 0
           ? [
-              {
-                value: "Training Labels",
-                subLayers: [
-                  trainingDatasetLabelsLayerId,
-                  trainingDatasetLabelsOutlineLayerId,
-                ],
-              },
-            ]
+            {
+              value: "Training Labels",
+              subLayers: [
+                trainingAreasLabelsFillLayerId,
+                trainingAreasLabelsOutlineLayerId,
+              ],
+            },
+          ]
           : []),
       ]}
     >
+      {!trainingAreaIsPending && (
+        <TrainingAreasLayers
+          map={map}
+          features={data?.results.features}
+          trainingAreasFillLayerId={trainingAreasFillLayerId}
+          trainingAreasOutlineLayerId={trainingAreasOutlineLayerId}
+          trainingAreasSourceId={trainingAreasSourceId}
+        />
+      )}
+
+      {!trainingAreasLabelsIsPending && (
+        <TrainingAreasLabelsLayers
+          map={map}
+          features={labels?.features}
+          trainingAreasLabelsFillLayerId={trainingAreasLabelsFillLayerId}
+          trainingAreasLabelsOutlineLayerId={trainingAreasLabelsOutlineLayerId}
+          trainingAreasLabelsSourceId={trainingAreasLabelsSourceId}
+        />
+      )}
+
       <MapCursorToolTip
         tooltipVisible={showTooltip}
         color={getTooltipColor()}

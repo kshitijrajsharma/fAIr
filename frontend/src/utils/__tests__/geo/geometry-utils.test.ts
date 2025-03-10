@@ -2,12 +2,16 @@ import { Feature } from "geojson";
 import { describe, expect, it } from "vitest";
 
 import { TModelPredictions, TModelPredictionsConfig } from "@/types";
+
 import {
   calculateGeoJSONArea,
+  featureIsWithinBounds,
   formatAreaInAppropriateUnit,
   getGeoJSONFeatureBounds,
   handleConflation,
 } from "@/utils";
+import { LngLatBoundsLike } from "maplibre-gl";
+
 
 const predictionConfig: TModelPredictionsConfig = {
   area_threshold: 6,
@@ -319,5 +323,117 @@ describe("geometry-utils", () => {
     expect(result.all.length).toBe(0);
     expect(result.rejected.length).toBe(1);
     expect(result.accepted.length).toBe(0);
+  });
+});
+
+describe("featureIsWithinBounds", () => {
+  it("should return true if feature is within bounds", () => {
+    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;
+    const feature: Feature = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [-5, -5],
+            [5, -5],
+            [5, 5],
+            [-5, 5],
+            [-5, -5],
+          ],
+        ],
+      },
+      properties: {},
+    };
+    const result = featureIsWithinBounds(bounds, feature);
+    expect(result).toBe(true);
+  });
+
+  it("should return false if feature is outside bounds", () => {
+    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;
+    const feature: Feature = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [15, 15],
+            [25, 15],
+            [25, 25],
+            [15, 25],
+            [15, 15],
+          ],
+        ],
+      },
+      properties: {},
+    };
+    const result = featureIsWithinBounds(bounds, feature);
+    expect(result).toBe(false);
+  });
+
+  it("should return false if feature intersects bounds but is not fully within", () => {
+    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;
+    const feature: Feature = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [5, 5],
+            [15, 5],
+            [15, 15],
+            [5, 15],
+            [5, 5],
+          ],
+        ],
+      },
+      properties: {},
+    };
+    const result = featureIsWithinBounds(bounds, feature);
+    expect(result).toBe(false);
+  });
+
+  it("should return true if feature is exactly on the bounds", () => {
+    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;
+    const feature: Feature = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [-10, -10],
+            [10, -10],
+            [10, 10],
+            [-10, 10],
+            [-10, -10],
+          ],
+        ],
+      },
+      properties: {},
+    };
+    const result = featureIsWithinBounds(bounds, feature);
+    expect(result).toBe(true);
+  });
+
+  it("should return false if feature is partially within bounds", () => {
+    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;;
+    const feature: Feature = {
+      type: "Feature",
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [-15, -15],
+            [5, -15],
+            [5, 5],
+            [-15, 5],
+            [-15, -15],
+          ],
+        ],
+      },
+      properties: {},
+    };
+    const result = featureIsWithinBounds(bounds, feature);
+    expect(result).toBe(false);
   });
 });

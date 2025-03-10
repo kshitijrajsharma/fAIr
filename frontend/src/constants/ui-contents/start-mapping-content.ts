@@ -9,8 +9,8 @@ export const START_MAPPING_PAGE_CONTENT: TStartMappingPageContent = {
       },
       legendControl: {
         toolTip: {
-          show: 'Show Legend',
-          hide: 'Hide Legend'
+          show: "Show Legend",
+          hide: "Hide Legend",
         },
         title: "Predictions",
         acceptedPredictions: "Accepted Predictions",

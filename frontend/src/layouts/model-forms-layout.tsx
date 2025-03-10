@@ -26,43 +26,43 @@ const pages: {
   icon: React.ElementType;
   path: string;
 }[] = [
-    {
-      id: 1,
-      title: MODELS_CONTENT.modelCreation.progressStepper.modelDetails,
-      icon: TagsIcon,
-      path: MODELS_ROUTES.DETAILS,
-    },
-    {
-      id: 2,
-      title: MODELS_CONTENT.modelCreation.progressStepper.trainingDataset,
-      icon: DatabaseIcon,
-      path: MODELS_ROUTES.TRAINING_DATASET,
-    },
-    {
-      id: 3,
-      title: MODELS_CONTENT.modelCreation.progressStepper.trainingArea,
-      icon: SquareShadowIcon,
-      path: MODELS_ROUTES.TRAINING_AREA,
-    },
-    {
-      id: 4,
-      title: MODELS_CONTENT.modelCreation.progressStepper.trainingSettings,
-      icon: SettingsIcon,
-      path: MODELS_ROUTES.TRAINING_SETTINGS,
-    },
-    {
-      id: 5,
-      title: MODELS_CONTENT.modelCreation.progressStepper.submitModel,
-      icon: CloudIcon,
-      path: MODELS_ROUTES.MODEL_SUMMARY,
-    },
-    {
-      id: 6,
-      title: MODELS_CONTENT.modelCreation.progressStepper.confirmation,
-      icon: StarIcon,
-      path: MODELS_ROUTES.CONFIRMATION,
-    },
-  ];
+  {
+    id: 1,
+    title: MODELS_CONTENT.modelCreation.progressStepper.modelDetails,
+    icon: TagsIcon,
+    path: MODELS_ROUTES.DETAILS,
+  },
+  {
+    id: 2,
+    title: MODELS_CONTENT.modelCreation.progressStepper.trainingDataset,
+    icon: DatabaseIcon,
+    path: MODELS_ROUTES.TRAINING_DATASET,
+  },
+  {
+    id: 3,
+    title: MODELS_CONTENT.modelCreation.progressStepper.trainingArea,
+    icon: SquareShadowIcon,
+    path: MODELS_ROUTES.TRAINING_AREA,
+  },
+  {
+    id: 4,
+    title: MODELS_CONTENT.modelCreation.progressStepper.trainingSettings,
+    icon: SettingsIcon,
+    path: MODELS_ROUTES.TRAINING_SETTINGS,
+  },
+  {
+    id: 5,
+    title: MODELS_CONTENT.modelCreation.progressStepper.submitModel,
+    icon: CloudIcon,
+    path: MODELS_ROUTES.MODEL_SUMMARY,
+  },
+  {
+    id: 6,
+    title: MODELS_CONTENT.modelCreation.progressStepper.confirmation,
+    icon: StarIcon,
+    path: MODELS_ROUTES.CONFIRMATION,
+  },
+];
 
 export const ModelFormsLayout = () => {
   const { pathname } = useLocation();
@@ -92,7 +92,9 @@ export const ModelFormsLayout = () => {
           />
         </div>
 
-        <div className={`col-span-12 mb-24 pb-20 ${pathname.includes(MODELS_ROUTES.TRAINING_AREA) ? '' : 'md:col-start-2 md:col-span-10 lg:col-start-4 lg:col-span-6'}`}>
+        <div
+          className={`col-span-12 mb-24 pb-20 ${pathname.includes(MODELS_ROUTES.TRAINING_AREA) ? "" : "md:col-start-2 md:col-span-10 lg:col-start-4 lg:col-span-6"}`}
+        >
           <Outlet />
         </div>
 

@@ -26,6 +26,8 @@ import {
   showSuccessToast,
   snapGeoJSONPolygonToClosestTile,
 } from "@/utils";
+import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
+import { TileJSON } from "@/types";
 
 const TrainingAreaForm = () => {
   const { formData } = useModelsContext();
@@ -37,16 +39,25 @@ const TrainingAreaForm = () => {
     terraDraw,
     currentZoom,
   } = useMapInstance();
+
   const tileJSONURL = extractTileJSONURL(formData.tmsURL);
 
   const { closeDialog, isOpened, toggle } = useDialog();
+
   const { handleChange } = useModelsContext();
+
   const [offset, setOffset] = useState<number>(0);
+
   const {
     data: trainingAreasData,
     isPending: trainingAreaIsPending,
     isPlaceholderData,
   } = useGetTrainingAreas(Number(formData.selectedTrainingDatasetId), offset);
+
+  const { isPending, data, isError } = useGetTMSTileJSON(
+    tileJSONURL,
+    !!formData.selectedTrainingDatasetId,
+  );
 
   useEffect(() => {
     if (!trainingAreasData) return;
@@ -106,9 +117,11 @@ const TrainingAreaForm = () => {
 
         <div className="border-t-8 border-x-8 border-off-white  fullscreen lg:no-fullscreen lg:hidden">
           <OpenAerialMap
-            tileJSONURL={tileJSONURL}
             map={map}
             trainingDatasetId={Number(formData.selectedTrainingDatasetId)}
+            OAMIsPending={isPending}
+            OAMIsError={isError}
+            OAMData={data as TileJSON}
           />
         </div>
         <div className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen xl:no-fullscreen">
@@ -124,13 +137,17 @@ const TrainingAreaForm = () => {
               setDrawingMode={setDrawingMode}
               drawingMode={drawingMode}
               currentZoom={currentZoom}
+              trainingAreaIsPending={trainingAreaIsPending}
+              OAMData={data as TileJSON}
             />
           </div>
           <div className="hidden lg:flex h-[90vh] max-h-screen col-span-12 lg:col-span-3 2xl:col-span-2 flex-col w-full border-l-8 border-off-white gap-y-6 py-4 ">
             <OpenAerialMap
-              tileJSONURL={tileJSONURL}
               map={map}
               trainingDatasetId={Number(formData.selectedTrainingDatasetId)}
+              OAMIsPending={isPending}
+              OAMIsError={isError}
+              OAMData={data as TileJSON}
             />
             <TrainingAreaList
               offset={offset}

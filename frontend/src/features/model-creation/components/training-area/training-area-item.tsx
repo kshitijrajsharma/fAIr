@@ -41,6 +41,7 @@ import {
 } from "@/features/model-creation/hooks/use-training-areas";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/services";
+import { Spinner } from "@/components/ui/spinner";
 
 type LabelState = {
   isFetching: boolean;
@@ -88,7 +89,12 @@ const LabelFetchStatus = ({
   }, [fetchedDate]);
 
   const getFetchStatus = () => {
-    if (isFetching) return "Fetching labels...";
+    if (isFetching)
+      return (
+        <span className="inline-flex items-center gap-x-1">
+          Fetching... <Spinner />
+        </span>
+      );
     if (isError) return "Error occurred. Please retry.";
     if (status === LabelStatus.DOWNLOADED) {
       return timeSince

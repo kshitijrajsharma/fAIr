@@ -51,14 +51,26 @@ export const Legend = ({ map }: { map: Map | null }) => {
       onClick={handleToggleExpand}
     >
       {!expandLegend && isSmallViewport && (
-        <ToolTip content={START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip.show}>
+        <ToolTip
+          content={
+            START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip.show
+          }
+        >
           <LegendBookIcon className="icon-lg" />
         </ToolTip>
       )}
       {!isSmallViewport && (
         <p className="w-full text-dark font-semibold text-body-2base flex items-center gap-x-10 justify-between">
           {START_MAPPING_PAGE_CONTENT.map.controls.legendControl.title}
-          <ToolTip content={expandLegend ? START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip.hide : START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip.show}>
+          <ToolTip
+            content={
+              expandLegend
+                ? START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip
+                    .hide
+                : START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip
+                    .show
+            }
+          >
             <LegendBookIcon className="icon" />
           </ToolTip>
         </p>
@@ -84,7 +96,11 @@ export const Legend = ({ map }: { map: Map | null }) => {
         </div>
       ) : null}
       {expandLegend && isSmallViewport ? (
-        <ToolTip content={START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip.hide}>
+        <ToolTip
+          content={
+            START_MAPPING_PAGE_CONTENT.map.controls.legendControl.toolTip.hide
+          }
+        >
           <LegendBookIcon className="icon-lg" />
         </ToolTip>
       ) : null}

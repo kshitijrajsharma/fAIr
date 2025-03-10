@@ -72,7 +72,7 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
               className="border border-gray-border rounded-lg px-2 hover:border-primary flex items-center justify-between"
             >
               <button
-                className="text-start transition-colors p-6"
+                className="text-start transition-colors p-6 w-5/6"
                 onClick={option.onClick}
               >
                 <span className="flex flex-col gap-y-2">
@@ -80,7 +80,9 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
                   <p className="text-gray text-body-3">{option.description}</p>
                 </span>
               </button>
-              <ChevronDownIcon className="icon -rotate-90" />
+              <div className="w-1/6 text-right">
+                <ChevronDownIcon className="icon -rotate-90" />
+              </div>
             </li>
           ))}
         </ul>

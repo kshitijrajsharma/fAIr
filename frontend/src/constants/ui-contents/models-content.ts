@@ -167,7 +167,8 @@ export const MODELS_CONTENT: TModelsContent = {
         },
         trainingType: {
           label: "Select Model Training Type",
-          toolTip: "Choose the type of model training to apply. Basic training is the fastest, ideal for quick results. Intermediate takes more time for balanced performance, while Advanced requires the longest time but provides the most optimized results.",
+          toolTip:
+            "Choose the type of model training to apply. Basic training is the fastest, ideal for quick results. Intermediate takes more time for balanced performance, while Advanced requires the longest time but provides the most optimized results.",
         },
         advancedSettings: {
           label: "Advanced Settings",
@@ -321,7 +322,8 @@ export const MODELS_CONTENT: TModelsContent = {
       modelFilesDialog: {
         rootDirectory: "Root Directory",
         dialogTitle: "Model Files",
-        dialogDescription: "Click to download each file...",
+        dialogDescription:
+          "Model files contain trained parameters, weights, and configurations used for training the model. Browse expandable directories to access files. Hover over a file to reveal download and copy options.",
         error: "Error loading directories.",
       },
       trainingInfoDialog: {

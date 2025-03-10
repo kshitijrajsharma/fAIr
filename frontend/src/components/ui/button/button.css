@@ -34,8 +34,8 @@ sl-button.default::part(base) {
   border: 1px solid var(--hot-fair-color-gray-border);
 }
 
-
-sl-button.default::part(base):hover,sl-button.secondary::part(base):hover {
+sl-button.default::part(base):hover,
+sl-button.secondary::part(base):hover {
   background-color: #f4f4f4;
 }
 

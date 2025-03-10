@@ -60,7 +60,8 @@ export const TOAST_NOTIFICATIONS = {
     "An error occurred while opening in JOSM. Confirm you have JOSM opened on your computer and remote control enabled.",
 
   // File download
-
+  fileDownloadBlocked:
+    "File download blocked by browser. Enable to download files.",
   fileDownloadFailed: "Failed to download file.",
   fileDownloadSuccess: "File downloaded successfully!",
 

@@ -3,7 +3,7 @@ import { Banner } from "@/components/ui/banner";
 import { Footer } from "@/components/layout";
 import { HotTracking } from "@/components/shared";
 import { NavBar } from "@/components/layout";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useScrollToTop } from "@/hooks/use-scroll-to-element";
 import { useAuth } from "@/app/providers/auth-provider";
@@ -12,12 +12,22 @@ import { AuthenticationModal } from "@/components/auth";
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
   const { scrollToTop } = useScrollToTop();
-  // Scroll to top on pages switch.
+
+  /**
+   * Scroll to top on pages switch.
+   */
   useEffect(() => {
     scrollToTop();
   }, [pathname]);
+
   const { isAuthenticated } = useAuth();
   const [showTracking, setShowTracking] = useState<boolean>(false);
+  /**
+   * Get the model id from the URL. If it exists,
+   * we can safely assume the user is in edit mode.
+   * Therefore, we can disable the footer.
+   */
+  const { modelId } = useParams();
 
   useEffect(() => {
     /**
@@ -28,7 +38,7 @@ export const RootLayout = () => {
     }, 5000);
 
     return () => clearTimeout(timer);
-  })
+  });
 
   return (
     <>
@@ -52,7 +62,9 @@ export const RootLayout = () => {
         >
           <Outlet />
         </div>
-        {!pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && !pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) && !pathname.includes(MODELS_ROUTES.EDIT_MODEL_BASE) &&
+        {!pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
+          !pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) &&
+          !modelId &&
           !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) && <Footer />}
       </main>
     </>
