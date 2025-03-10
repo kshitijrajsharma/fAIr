@@ -39,6 +39,12 @@ importers:
       '@turf/boolean-within':
         specifier: ^7.2.0
         version: 7.2.0
+      '@turf/difference':
+        specifier: ^7.2.0
+        version: 7.2.0
+      '@turf/helpers':
+        specifier: ^7.2.0
+        version: 7.2.0
       axios:
         specifier: ^1.7.7
         version: 1.7.7
@@ -962,8 +968,8 @@ packages:
   '@turf/boolean-within@7.2.0':
     resolution: {integrity: sha512-zB3AiF59zQZ27Dp1iyhp9mVAKOFHat8RDH45TZhLY8EaqdEPdmLGvwMFCKfLryQcUDQvmzP8xWbtUR82QM5C4g==}
 
-  '@turf/helpers@7.1.0':
-    resolution: {integrity: sha512-dTeILEUVeNbaEeoZUOhxH5auv7WWlOShbx7QSd4s0T4Z0/iz90z9yaVCtZOLbU89umKotwKaJQltBNO9CzVgaQ==}
+  '@turf/difference@7.2.0':
+    resolution: {integrity: sha512-NHKD1v3s8RX+9lOpvHJg6xRuJOKiY3qxHhz5/FmE0VgGqnCkE7OObqWZ5SsXG+Ckh0aafs5qKhmDdDV/gGi6JA==}
 
   '@turf/helpers@7.2.0':
     resolution: {integrity: sha512-cXo7bKNZoa7aC7ydLmUR02oB3IgDe7MxiPuRz3cCtYQHn+BJ6h1tihmamYDWWUlPHgSNF0i3ATc4WmDECZafKw==}
@@ -1348,6 +1354,9 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  bignumber.js@9.1.2:
+    resolution: {integrity: sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==}
 
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
@@ -2695,6 +2704,9 @@ packages:
   point-in-polygon-hao@1.1.0:
     resolution: {integrity: sha512-3hTIM2j/v9Lio+wOyur3kckD4NxruZhpowUbEgmyikW+a2Kppjtu1eN+AhnMQtoHW46zld88JiYWv6fxpsDrTQ==}
 
+  polyclip-ts@0.16.8:
+    resolution: {integrity: sha512-JPtKbDRuPEuAjuTdhR62Gph7Is2BS1Szx69CFOO3g71lpJDFo78k4tFyi+qFOMVPePEzdSKkpGU3NBXPHHjvKQ==}
+
   possible-typed-array-names@1.0.0:
     resolution: {integrity: sha512-d7Uw+eZoloe0EHDIYoe+bQ5WXnGMOpmiZFTuMWCwpjzzkL2nTjcKiAk4hh8TjnGye2TwWOk3UXucZ+3rbmBa8Q==}
     engines: {node: '>= 0.4'}
@@ -3060,6 +3072,9 @@ packages:
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
+
+  splaytree-ts@1.0.2:
+    resolution: {integrity: sha512-0kGecIZNIReCSiznK3uheYB8sbstLjCZLiwcQwbmLhgHJj2gz6OnSPkVzJQCMnmEz1BQ4gPK59ylhBoEWOhGNA==}
 
   split-string@3.1.0:
     resolution: {integrity: sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw==}
@@ -4213,14 +4228,14 @@ snapshots:
 
   '@turf/area@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@turf/meta': 7.1.0
       '@types/geojson': 7946.0.14
       tslib: 2.7.0
 
   '@turf/bbox@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@turf/meta': 7.1.0
       '@types/geojson': 7946.0.14
       tslib: 2.7.0
@@ -4235,7 +4250,7 @@ snapshots:
   '@turf/boolean-disjoint@7.1.0':
     dependencies:
       '@turf/boolean-point-in-polygon': 7.1.0
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@turf/line-intersect': 7.1.0
       '@turf/meta': 7.1.0
       '@turf/polygon-to-line': 7.1.0
@@ -4245,14 +4260,14 @@ snapshots:
   '@turf/boolean-intersects@7.1.0':
     dependencies:
       '@turf/boolean-disjoint': 7.1.0
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@turf/meta': 7.1.0
       '@types/geojson': 7946.0.14
       tslib: 2.7.0
 
   '@turf/boolean-point-in-polygon@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@turf/invariant': 7.1.0
       '@types/geojson': 7946.0.14
       point-in-polygon-hao: 1.1.0
@@ -4283,10 +4298,13 @@ snapshots:
       '@types/geojson': 7946.0.14
       tslib: 2.8.1
 
-  '@turf/helpers@7.1.0':
+  '@turf/difference@7.2.0':
     dependencies:
+      '@turf/helpers': 7.2.0
+      '@turf/meta': 7.2.0
       '@types/geojson': 7946.0.14
-      tslib: 2.7.0
+      polyclip-ts: 0.16.8
+      tslib: 2.8.1
 
   '@turf/helpers@7.2.0':
     dependencies:
@@ -4295,9 +4313,9 @@ snapshots:
 
   '@turf/invariant@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@types/geojson': 7946.0.14
-      tslib: 2.7.0
+      tslib: 2.8.1
 
   '@turf/invariant@7.2.0':
     dependencies:
@@ -4307,14 +4325,14 @@ snapshots:
 
   '@turf/line-intersect@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@types/geojson': 7946.0.14
       sweepline-intersections: 1.5.0
       tslib: 2.7.0
 
   '@turf/meta@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@types/geojson': 7946.0.14
 
   '@turf/meta@7.2.0':
@@ -4324,7 +4342,7 @@ snapshots:
 
   '@turf/polygon-to-line@7.1.0':
     dependencies:
-      '@turf/helpers': 7.1.0
+      '@turf/helpers': 7.2.0
       '@turf/invariant': 7.1.0
       '@types/geojson': 7946.0.14
       tslib: 2.7.0
@@ -4674,7 +4692,7 @@ snapshots:
 
   aria-hidden@1.2.4:
     dependencies:
-      tslib: 2.7.0
+      tslib: 2.8.1
 
   aria-query@5.3.0:
     dependencies:
@@ -4778,6 +4796,8 @@ snapshots:
   bail@2.0.2: {}
 
   balanced-match@1.0.2: {}
+
+  bignumber.js@9.1.2: {}
 
   binary-extensions@2.3.0: {}
 
@@ -6517,6 +6537,11 @@ snapshots:
 
   point-in-polygon-hao@1.1.0: {}
 
+  polyclip-ts@0.16.8:
+    dependencies:
+      bignumber.js: 9.1.2
+      splaytree-ts: 1.0.2
+
   possible-typed-array-names@1.0.0: {}
 
   postcss-import@15.1.0(postcss@8.4.47):
@@ -6682,7 +6707,7 @@ snapshots:
     dependencies:
       react: 18.3.1
       react-style-singleton: 2.2.3(@types/react@18.3.10)(react@18.3.1)
-      tslib: 2.7.0
+      tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.10
 
@@ -6691,7 +6716,7 @@ snapshots:
       react: 18.3.1
       react-remove-scroll-bar: 2.3.8(@types/react@18.3.10)(react@18.3.1)
       react-style-singleton: 2.2.3(@types/react@18.3.10)(react@18.3.1)
-      tslib: 2.7.0
+      tslib: 2.8.1
       use-callback-ref: 1.3.3(@types/react@18.3.10)(react@18.3.1)
       use-sidecar: 1.1.3(@types/react@18.3.10)(react@18.3.1)
     optionalDependencies:
@@ -6713,7 +6738,7 @@ snapshots:
     dependencies:
       get-nonce: 1.0.1
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.10
 
@@ -6947,6 +6972,8 @@ snapshots:
   source-map-js@1.2.1: {}
 
   space-separated-tokens@2.0.2: {}
+
+  splaytree-ts@1.0.2: {}
 
   split-string@3.1.0:
     dependencies:
@@ -7295,7 +7322,7 @@ snapshots:
   use-callback-ref@1.3.3(@types/react@18.3.10)(react@18.3.1):
     dependencies:
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.10
 
@@ -7303,7 +7330,7 @@ snapshots:
     dependencies:
       detect-node-es: 1.1.0
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.10
 

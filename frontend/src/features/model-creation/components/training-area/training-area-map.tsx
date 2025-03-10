@@ -1,6 +1,6 @@
 import useDebounce from "@/hooks/use-debounce";
 import { ControlsPosition, DrawingModes } from "@/enums";
-import { Map } from "maplibre-gl";
+import { LngLatBounds, Map } from "maplibre-gl";
 import { geojsonToWKT } from "@terraformer/wkt";
 import { PaginatedTrainingArea, TileJSON } from "@/types";
 import { MapComponent, MapCursorToolTip } from "@/components/map";
@@ -26,8 +26,11 @@ import {
   snapGeoJSONPolygonToClosestTile,
   validateGeoJSONArea,
 } from "@/utils";
-import { TrainingAreasLayers } from "../map-layers";
-import { TrainingAreasLabelsLayers } from "../map-layers/training-areas-labels-layers";
+import {
+  TrainingAreasLayers,
+  TrainingAreasLabelsLayers,
+  MaskBoundsLayers,
+} from "@/features/model-creation/components/map-layers";
 
 // Debounce delay in milliseconds.
 const DEBOUNCE_DELAY: number = 300;
@@ -68,6 +71,8 @@ const TrainingAreaMap = ({
   const trainingAreasLabelsFillLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-fill-layer`;
   const trainingAreasLabelsOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-outline-layer`;
 
+  const [mapBounds, setMapBounds] = useState<LngLatBounds | null>(null);
+
   const [bbox, setBbox] = useState<string>("");
 
   const [featureArea, setFeatureArea] = useState<number>(0);
@@ -79,11 +84,12 @@ const TrainingAreaMap = ({
 
   const debouncedZoom = useDebounce(currentZoom.toString(), DEBOUNCE_DELAY);
 
-  const { data: labels, isPending: trainingAreasLabelsIsPending } = useGetTrainingDatasetLabels(
-    trainingDatasetId,
-    debouncedBbox,
-    Number(debouncedZoom),
-  );
+  const { data: labels, isPending: trainingAreasLabelsIsPending } =
+    useGetTrainingDatasetLabels(
+      trainingDatasetId,
+      debouncedBbox,
+      Number(debouncedZoom),
+    );
 
   const createTrainingArea = useCreateTrainingArea({
     datasetId: Number(trainingDatasetId),
@@ -93,6 +99,7 @@ const TrainingAreaMap = ({
   const updateBbox = useCallback(() => {
     if (!map) return;
     const bounds = map.getBounds();
+    setMapBounds(bounds);
     const newBbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
     setBbox(newBbox);
   }, [map]);
@@ -260,6 +267,13 @@ const TrainingAreaMap = ({
           trainingAreasLabelsFillLayerId={trainingAreasLabelsFillLayerId}
           trainingAreasLabelsOutlineLayerId={trainingAreasLabelsOutlineLayerId}
           trainingAreasLabelsSourceId={trainingAreasLabelsSourceId}
+        />
+      )}
+      {OAMData?.bounds && mapBounds && (
+        <MaskBoundsLayers
+          map={map}
+          mapBounds={mapBounds}
+          OAMBounds={OAMData.bounds}
         />
       )}
 

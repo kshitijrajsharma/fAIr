@@ -11,7 +11,7 @@ type PaginationProps = {
   disableNextPage: boolean;
   disablePrevPage: boolean;
   totalLength?: number;
-  pageLimit: number;
+  pageLimit?: number;
   query?: TQueryParams;
   updateQuery?: (params: TQueryParams) => void;
   isPlaceholderData?: boolean;
@@ -28,7 +28,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   disableNextPage,
   totalLength = 0,
   disablePrevPage,
-  pageLimit,
+  pageLimit = 20,
   query,
   updateQuery,
   isPlaceholderData,
@@ -77,7 +77,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           className={`"text-body-4 text-nowrap md:inline-block  ${showCountOnMobile ? "inline-block" : "hidden"}`}
         >
           <span className="md:font-semibold text-body-4">
-            {_offset + 1} -{" "}
+            {totalLength > 0 ? _offset + 1 : 0} -{" "}
             {_offset + pageLimit < (totalLength ? totalLength : 0)
               ? _offset + pageLimit
               : totalLength}

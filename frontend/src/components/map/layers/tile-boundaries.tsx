@@ -3,12 +3,19 @@ import { GeoJSONType } from "@/types";
 import { getTileBoundariesGeoJSON } from "@/utils";
 import { TILE_BOUNDARY_LAYER_ID, TILE_BOUNDARY_SOURCE_ID } from "@/config";
 import { useCallback, useEffect } from "react";
-import { useMapLayers } from "@/hooks/use-map-layer";
 
 export const TileBoundaries = ({ map }: { map: Map | null }) => {
-  useMapLayers(
-    [
-      {
+  useEffect(() => {
+    if (!map) return;
+    if (!map.getSource(TILE_BOUNDARY_SOURCE_ID)) {
+      map.addSource(TILE_BOUNDARY_SOURCE_ID, {
+        type: "geojson",
+        data: { type: "FeatureCollection", features: [] },
+      });
+    }
+
+    if (!map.getLayer(TILE_BOUNDARY_LAYER_ID)) {
+      map.addLayer({
         id: TILE_BOUNDARY_LAYER_ID,
         type: "line",
         source: TILE_BOUNDARY_SOURCE_ID,
@@ -17,19 +24,9 @@ export const TileBoundaries = ({ map }: { map: Map | null }) => {
           "line-width": 0.5,
         },
         layout: { visibility: "visible" },
-      },
-    ],
-    [
-      {
-        id: TILE_BOUNDARY_SOURCE_ID,
-        spec: {
-          type: "geojson",
-          data: { type: "FeatureCollection", features: [] },
-        },
-      },
-    ],
-    map,
-  );
+      });
+    }
+  }, [map]);
 
   const updateTileBoundary = useCallback(() => {
     if (map) {

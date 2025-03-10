@@ -72,7 +72,6 @@ const TrainingAreaList = ({
             offset={offset}
             disableNextPage={!data?.hasNext || isPlaceholderData}
             disablePrevPage={!data?.hasPrev}
-            pageLimit={20}
             totalLength={data?.count}
             setOffset={setOffset}
             isPlaceholderData={isPlaceholderData}

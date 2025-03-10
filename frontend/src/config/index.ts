@@ -314,6 +314,11 @@ export const TRAINING_AREAS_AOI_LABELS_OUTLINE_COLOR: string = parseStringEnv(
   "#D73434",
 );
 
+export const TRAINING_AREAS_MASK_FILL_COLOR: string = parseStringEnv(
+  ENVS.TRAINING_AREAS_MASK_FILL_COLOR,
+  "#D73434",
+);
+
 // Start Mapping Legend - only the fill layers are in the legend.
 export const LEGEND_NAME_MAPPING: Record<string, string> = {
   [ALL_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Default",

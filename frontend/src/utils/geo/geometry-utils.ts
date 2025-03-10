@@ -399,24 +399,27 @@ export const handleConflation = (
   };
 };
 
-
-
 /**
  * Checks if a GeoJSON feature is within the specified bounding box.
  *
  * This function determines whether a given GeoJSON feature is entirely
  * contained within the specified bounding box coordinates.
  *
- * @param {LngLatBoundsLike} oAMBounds - The bounding box defined by [west, south, east, north] coordinates.
+ * @param {LngLatBoundsLike} OAMBounds - The bounding box defined by [west, south, east, north] coordinates.
  * @param {Feature} feature - The GeoJSON feature to check.
  *
  * @returns {boolean} True if the feature is within the bounding box, false otherwise.
  */
 export const featureIsWithinBounds = (
-  oAMBounds: LngLatBoundsLike,
+  OAMBounds: LngLatBoundsLike,
   feature: Feature,
 ): boolean => {
-  const [west, south, east, north] = oAMBounds as [number, number, number, number];
+  const [west, south, east, north] = OAMBounds as [
+    number,
+    number,
+    number,
+    number,
+  ];
   const OAMFeature = {
     type: "Feature",
     geometry: {
@@ -432,5 +435,5 @@ export const featureIsWithinBounds = (
       ],
     },
   };
-  return booleanWithin(feature, OAMFeature as Feature,);
+  return booleanWithin(feature, OAMFeature as Feature);
 };

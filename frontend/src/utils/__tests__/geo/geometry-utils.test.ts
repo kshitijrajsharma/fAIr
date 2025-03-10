@@ -12,7 +12,6 @@ import {
 } from "@/utils";
 import { LngLatBoundsLike } from "maplibre-gl";
 
-
 const predictionConfig: TModelPredictionsConfig = {
   area_threshold: 6,
   bbox: [0, 0, 0, 0],
@@ -416,7 +415,7 @@ describe("featureIsWithinBounds", () => {
   });
 
   it("should return false if feature is partially within bounds", () => {
-    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;;
+    const bounds = [-10, -10, 10, 10] as LngLatBoundsLike;
     const feature: Feature = {
       type: "Feature",
       geometry: {
