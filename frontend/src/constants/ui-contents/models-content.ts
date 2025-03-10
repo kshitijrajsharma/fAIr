@@ -355,9 +355,5 @@ export const MODELS_CONTENT: TModelsContent = {
       },
     },
   },
-  information: {
-    basic: "Basic information about the models and their usage.",
-    intermediate: "Intermediate details including model training and datasets.",
-    advanced: "Advanced settings and fine-tuning options for expert users.",
-  },
+
 };
