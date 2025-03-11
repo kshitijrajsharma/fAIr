@@ -71,7 +71,6 @@ urlpatterns = [
     path(
         "feedback-aoi/gpx/<int:feedback_aoi_id>/", GenerateFeedbackAOIGpxView.as_view()
     ),
-    # path("workspace/", TrainingWorkspaceView.as_view()),
     path(
         "workspace/download/<path:lookup_dir>/", TrainingWorkspaceDownloadView.as_view()
     ),

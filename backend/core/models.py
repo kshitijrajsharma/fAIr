@@ -173,3 +173,26 @@ class Banner(models.Model):
 
     def __str__(self):
         return self.message
+
+
+class UserNotification(models.Model):
+
+    user = models.ForeignKey(
+        OsmUser,
+        to_field="osm_id",
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+    is_read = models.BooleanField(default=False)
+    create_date = models.DateTimeField(default=timezone.now)
+    read_date = models.DateTimeField(null=True, blank=True)
+    text = models.TextField()
+
+    def mark_as_read(self):
+        if not self.is_read:
+            self.is_read = True
+            self.read_date = timezone.now()
+            self.save()
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.text[:50]}..."

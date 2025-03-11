@@ -460,6 +460,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "email",
             "date_joined",
             "img_url",
+            "notifications_delivery_methods",
             "models_count",
             "datasets_count",
             "feedbacks_count",
