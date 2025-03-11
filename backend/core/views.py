@@ -72,6 +72,7 @@ from .serializers import (
     ModelCentroidSerializer,
     ModelSerializer,
     PredictionParamSerializer,
+    UserNotificationSerializer,
     UserSerializer,
     UserStatsSerializer,
 )
@@ -992,3 +993,12 @@ def get_kpi_stats(request):
     }
 
     return Response(data)
+
+
+class GetMyNotification(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    def get(self, request, format=None):
+        serialized_field = UserNotificationSerializer(user=request.user)
+        return Response(serialized_field.data, status=status.HTTP_200_OK)

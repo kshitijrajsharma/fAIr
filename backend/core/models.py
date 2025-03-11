@@ -186,7 +186,7 @@ class UserNotification(models.Model):
     is_read = models.BooleanField(default=False)
     create_date = models.DateTimeField(default=timezone.now)
     read_date = models.DateTimeField(null=True, blank=True)
-    text = models.TextField()
+    message = models.TextField(max_length=500)
 
     def mark_as_read(self):
         if not self.is_read:
@@ -195,4 +195,4 @@ class UserNotification(models.Model):
             self.save()
 
     def __str__(self):
-        return f"Notification for {self.user.username}: {self.text[:50]}..."
+        return f"Notification for {self.user.username}: {self.message[:50]}..."

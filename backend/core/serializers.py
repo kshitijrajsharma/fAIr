@@ -490,3 +490,9 @@ class UserStatsSerializer(serializers.ModelSerializer):
         if obj.email is not None and obj.email != "":
             profile_percentage += 25
         return profile_percentage
+
+
+class UserNotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserNotification
+        fields = ("id", "is_read", "create_date", "read_date", "message")

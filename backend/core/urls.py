@@ -16,6 +16,7 @@ from .views import (  # APIStatus,
     FeedbackViewset,
     GenerateFeedbackAOIGpxView,
     GenerateGpxView,
+    GetMyNotification,
     LabelUploadView,
     LabelViewSet,
     ModelCentroidView,
@@ -76,6 +77,7 @@ urlpatterns = [
     ),
     path("workspace/<path:lookup_dir>/", TrainingWorkspaceView.as_view()),
     path("kpi/stats/", get_kpi_stats, name="get_kpi_stats"),
+    path("notfications/me/", GetMyNotification.as_view()),
 ]
 if settings.ENABLE_PREDICTION_API:
     urlpatterns.append(path("prediction/", PredictionView.as_view()))
