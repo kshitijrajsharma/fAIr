@@ -42,7 +42,7 @@ describe("HotTracking Component", () => {
     getValueMock.mockReturnValue("true");
     render(<HotTracking showTracking={true} />);
     expect(
-      screen.queryByText("About the information we collect")
+      screen.queryByText("About the information we collect"),
     ).not.toBeInTheDocument();
   });
 
@@ -74,10 +74,9 @@ describe("HotTracking Component", () => {
     await new Promise((resolve) => setTimeout(resolve, 650));
 
     expect(
-      screen.queryByText("About the information we collect")
+      screen.queryByText("About the information we collect"),
     ).not.toBeInTheDocument();
   });
-
 
   it("clicking 'I Do Not Agree' injects Matomo script, sets consent to false and hides banner", async () => {
     getValueMock.mockReturnValue(undefined);
@@ -90,7 +89,7 @@ describe("HotTracking Component", () => {
     await new Promise((resolve) => setTimeout(resolve, 650));
 
     expect(
-      screen.queryByText("About the information we collect")
+      screen.queryByText("About the information we collect"),
     ).not.toBeInTheDocument();
   });
 });
