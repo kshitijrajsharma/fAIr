@@ -22,3 +22,5 @@ class OsmUser(AbstractUser):
         default=list,
         blank=True,
     )
+    newsletter_subscription = models.BooleanField(default=False)
+    account_deletion_requested = models.BooleanField(default=False)
