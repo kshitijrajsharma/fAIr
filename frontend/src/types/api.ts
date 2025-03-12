@@ -29,6 +29,7 @@ export type TUser = {
   approved_predictions_count: number;
   feedbacks_count: number;
   datasets_count: number;
+  profile_completion_percentage: number
 };
 
 type TOSMUser = {
@@ -165,10 +166,10 @@ export type Feature = {
   type: "Feature";
   geometry: Geometry;
   properties:
-    | {
-        mid: string;
-      }
-    | GeoJsonProperties;
+  | {
+    mid: string;
+  }
+  | GeoJsonProperties;
 };
 
 export type FeatureCollection = {

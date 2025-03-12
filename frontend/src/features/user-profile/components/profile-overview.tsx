@@ -31,11 +31,12 @@ export const ProfileOverview = ({ user }: { user: TUser }) => {
       <div className="flex flex-col gap-y-6">
         <div className="flex flex-col gap-y-2">
           <h3 className="font-bold text-body-3">
-            90% {USER_PROFILE_PAGE_CONTENT.overview.profileCompletionSuffix}
+            {user.profile_completion_percentage
+            } {USER_PROFILE_PAGE_CONTENT.overview.profileCompletionSuffix}
           </h3>
           <div className="bg-light-gray h-1.5 w-full rounded-xl">
             <div
-              style={{ width: "90%" }}
+              style={{ width: user.profile_completion_percentage + "%" }}
               className="bg-primary h-1.5 rounded-xl"
             ></div>
           </div>

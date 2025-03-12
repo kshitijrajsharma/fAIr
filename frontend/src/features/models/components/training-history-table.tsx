@@ -89,7 +89,7 @@ const columnDefinitions = (
           accessorKey: "model",
           header: ({ column }: { column: any }) => <SortableHeader title={MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader.model} column={column} />,
           cell: ({ row }: { row: any }) => {
-            return <span className="hover:underline"><Link nativeAnchor={false} disableLinkStyle href={`${APPLICATION_ROUTES.MODELS}/${row.original.model}`} title={row.original.model}>{row.original.model}</Link></span>;
+            return <span className="hover:underline"><Link nativeAnchor={false} disableLinkStyle href={`${APPLICATION_ROUTES.MODELS}/${row.original.model.id}`} title={row.original.model.id}>{row.original.model.id}</Link></span>;
           },
         },
       ]
