@@ -2,7 +2,7 @@ import { ButtonWithIcon } from "@/components/ui/button";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { MODELS_BASE, MODELS_ROUTES } from "@/constants";
 import { MODELS_CONTENT } from "@/constants";
-import { TrainingDatasetOption } from "@/enums";
+import { ButtonVariant, TrainingDatasetOption } from "@/enums";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -97,11 +97,11 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
     if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
       return (
         formData.modelName.length >=
-          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME]
-            .minLength &&
+        FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME]
+          .minLength &&
         formData.modelDescription.length >=
-          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]
-            .minLength
+        FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]
+          .minLength
       );
     } else if (currentPath.includes(MODELS_ROUTES.TRAINING_DATASET)) {
       // if the user hasn't selected any of the options, then they can not proceed to next page.
@@ -120,8 +120,8 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
         return (
           formData.tmsURLValidation.valid &&
           formData.datasetName.length >=
-            FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.DATASET_NAME]
-              .minLength
+          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.DATASET_NAME]
+            .minLength
         );
       } else if (
         formData.trainingDatasetOption === TrainingDatasetOption.USE_EXISTING
@@ -146,7 +146,7 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
   return (
     <div className="col-span-12 md:col-start-4 md:col-span-6 w-full flex items-center justify-between">
       <ButtonWithIcon
-        variant="default"
+        variant={ButtonVariant.DEFAULT}
         prefixIcon={ChevronDownIcon}
         label={MODELS_CONTENT.modelCreation.progressButtons.back}
         iconClassName="rotate-90"
@@ -162,7 +162,7 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
         }
       />
       <ButtonWithIcon
-        variant="primary"
+        variant={ButtonVariant.PRIMARY}
         suffixIcon={ChevronDownIcon}
         label={
           trainingDatasetCreationInProgress

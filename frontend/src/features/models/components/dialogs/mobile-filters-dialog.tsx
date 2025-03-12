@@ -10,6 +10,7 @@ import {
   OrderingFilter,
   StatusFilter,
 } from "@/features/models/components/filters";
+import { ButtonVariant } from "@/enums";
 
 type TrainingAreaDrawerProps = DialogProps & {
   updateQuery: (updatedParams: TQueryParams) => void;
@@ -80,7 +81,7 @@ const MobileModelFiltersDialog: React.FC<TrainingAreaDrawerProps> = ({
         <div className="flex items-center justify-between gap-x-4">
           <Button
             slot="footer"
-            variant="default"
+            variant={ButtonVariant.DEFAULT}
             onClick={closeDialog}
             size="medium"
           >

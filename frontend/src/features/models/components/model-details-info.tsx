@@ -13,6 +13,7 @@ import { TrainingAreaButton } from "./training-area-button";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
 import { useNavigate } from "react-router-dom";
+import { ButtonVariant } from "@/enums";
 
 const ModelDetailsInfo = ({
   data,
@@ -60,7 +61,7 @@ const ModelDetailsInfo = ({
               <div className="max-w-fit">
                 <ButtonWithIcon
                   label={MODELS_CONTENT.models.modelsDetailsCard.startMapping}
-                  variant="primary"
+                  variant={ButtonVariant.PRIMARY}
                   size="medium"
                   prefixIcon={MapIcon}
                   disabled={data?.published_training === null}

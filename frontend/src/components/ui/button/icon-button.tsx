@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ButtonSize, ButtonVariant } from "@/types";
+import { ButtonVariant } from "@/enums";
+import { ButtonSize, } from "@/types";
 import { cn } from "@/utils";
 
 type ButtonWithIconProps = {
@@ -20,7 +21,7 @@ const ButtonWithIcon: React.FC<ButtonWithIconProps> = ({
   prefixIcon: PrefixIcon,
   suffixIcon: SuffixIcon,
   label,
-  variant = "default",
+  variant = ButtonVariant.DEFAULT,
   className,
   iconClassName,
   disabled,

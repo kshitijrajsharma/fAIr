@@ -4,7 +4,7 @@ import TrainingAreaList from "@/features/model-creation/components/training-area
 import TrainingAreaMap from "@/features/model-creation/components/training-area/training-area-map";
 import useScreenSize from "@/hooks/use-screen-size";
 import { Button, ButtonWithIcon } from "@/components/ui/button";
-import { DrawingModes, SHOELACE_SIZES } from "@/enums";
+import { ButtonVariant, DrawingModes, SHOELACE_SIZES } from "@/enums";
 import { geojsonToWKT } from "@terraformer/wkt";
 import { MODELS_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import { Polygon } from "geojson";
@@ -206,7 +206,7 @@ const ActionButtons = ({
     >
       <div className="w-full">
         <Button
-          variant="primary"
+
           size={isTablet ? SHOELACE_SIZES.SMALL : SHOELACE_SIZES.MEDIUM}
           onClick={() => {
             setDrawingMode(DrawingModes.RECTANGLE);
@@ -223,7 +223,7 @@ const ActionButtons = ({
         <ButtonWithIcon
           size={isTablet ? SHOELACE_SIZES.SMALL : SHOELACE_SIZES.MEDIUM}
           label={MODELS_CONTENT.modelCreation.trainingArea.form.upload}
-          variant="dark"
+          variant={ButtonVariant.DARK}
           suffixIcon={UploadIcon}
           onClick={toggle}
         />

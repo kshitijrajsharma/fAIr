@@ -1,7 +1,7 @@
 import { ButtonWithIcon } from "@/components/ui/button";
 import { DirectoryIcon } from "@/components/ui/icons";
 import { MODELS_CONTENT } from "@/constants";
-import { SHOELACE_SIZES } from "@/enums";
+import { ButtonVariant, SHOELACE_SIZES } from "@/enums";
 
 const ModelFilesButton = ({
   openModelFilesDialog,
@@ -14,7 +14,7 @@ const ModelFilesButton = ({
     <ButtonWithIcon
       label={MODELS_CONTENT.models.modelsDetailsCard.modelFiles}
       className="border-dark border"
-      variant={"none"}
+      variant={ButtonVariant.NONE}
       onClick={openModelFilesDialog}
       prefixIcon={DirectoryIcon}
       disabled={disabled}

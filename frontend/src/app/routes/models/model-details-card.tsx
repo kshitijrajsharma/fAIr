@@ -18,6 +18,7 @@ import {
   TrainingHistoryTable,
 } from "@/features/models/components";
 import { useModelsContext } from "@/app/providers/models-provider";
+import { ButtonVariant } from "@/enums";
 
 export const ModelDetailsPage = () => {
   const {
@@ -95,7 +96,7 @@ export const ModelDetailsPage = () => {
         <div className="flex md:hidden">
           <ButtonWithIcon
             label={MODELS_CONTENT.models.modelsDetailsCard.enhanceModel}
-            variant="dark"
+            variant={ButtonVariant.DARK}
             size="medium"
             prefixIcon={StarStackIcon}
             onClick={openModelEnhancementDialog}
@@ -111,7 +112,7 @@ export const ModelDetailsPage = () => {
           <div className="md:flex self-end hidden">
             <ButtonWithIcon
               label={MODELS_CONTENT.models.modelsDetailsCard.enhanceModel}
-              variant="dark"
+              variant={ButtonVariant.DARK}
               size="medium"
               prefixIcon={StarStackIcon}
               onClick={openModelEnhancementDialog}

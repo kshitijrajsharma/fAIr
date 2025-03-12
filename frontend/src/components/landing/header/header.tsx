@@ -4,6 +4,7 @@ import { APPLICATION_ROUTES, SHARED_CONTENT } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
+import { ButtonVariant } from "@/enums";
 
 export const Header = () => {
   return (
@@ -20,7 +21,7 @@ export const Header = () => {
               title={SHARED_CONTENT.homepage.ctaPrimaryButton}
               nativeAnchor={false}
             >
-              <Button variant="primary">
+              <Button>
                 {SHARED_CONTENT.homepage.ctaPrimaryButton}
               </Button>
             </Link>
@@ -29,7 +30,7 @@ export const Header = () => {
               title={SHARED_CONTENT.homepage.ctaPrimaryButton}
               nativeAnchor={false}
             >
-              <Button variant="secondary">
+              <Button variant={ButtonVariant.SECONDARY}>
                 {SHARED_CONTENT.homepage.ctaSecondaryButton}
               </Button>
             </Link>

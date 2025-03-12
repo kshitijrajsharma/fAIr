@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { MODELS_CONTENT } from "@/constants";
+import { ButtonVariant } from "@/enums";
 import { useTrainingFeedbacks } from "@/features/models/hooks/use-training";
 
 const ModelFeedbacks = ({ trainingId }: { trainingId: number }) => {
@@ -12,7 +13,7 @@ const ModelFeedbacks = ({ trainingId }: { trainingId: number }) => {
   return (
     <div className="max-w-fit">
       <div className="max-w-fit">
-        <Button variant="dark" size="medium" disabled={trainingId === null}>
+        <Button variant={ButtonVariant.DARK} size="medium" disabled={trainingId === null}>
           {`${MODELS_CONTENT.models.modelsDetailsCard.feedbacks} (${data?.count ?? 0})`}
         </Button>
       </div>

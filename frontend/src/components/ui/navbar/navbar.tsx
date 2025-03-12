@@ -38,7 +38,7 @@ export const NavBar = () => {
             {isAuthenticated ? (
               <UserProfile />
             ) : (
-              <Button variant="primary" onClick={handleLogin} spinner={loading}>
+              <Button onClick={handleLogin} spinner={loading}>
                 {loading
                   ? SHARED_CONTENT.loginButtonLoading
                   : SHARED_CONTENT.navbar.loginButton}
@@ -59,7 +59,7 @@ export const NavBar = () => {
             </div>
           ) : (
             <Button
-              variant="primary"
+
               className={styles.loginButton}
               onClick={handleLogin}
               spinner={loading}

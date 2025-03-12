@@ -4,7 +4,7 @@ import { ButtonWithIcon } from "@/components/ui/button";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { MODELS_CONTENT } from "@/constants";
 import { StepHeading } from "@/features/model-creation/components/";
-import { TrainingDatasetOption } from "@/enums";
+import { ButtonVariant, TrainingDatasetOption } from "@/enums";
 import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
@@ -29,7 +29,7 @@ const TrainingDatasetForm = () => {
             }
             suffixIcon={ChevronDownIcon}
             iconClassName="-rotate-90"
-            variant={"dark"}
+            variant={ButtonVariant.DARK}
             uppercase={false}
             disabled={isEditMode}
             onClick={() =>
@@ -54,7 +54,7 @@ const TrainingDatasetForm = () => {
                 TrainingDatasetOption.USE_EXISTING,
               )
             }
-            variant={"default"}
+            variant={ButtonVariant.DEFAULT}
           ></ButtonWithIcon>
         </div>
       ) : null}

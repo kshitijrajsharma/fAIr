@@ -2,6 +2,7 @@ import { AddIcon } from "@/components/ui/icons";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ButtonVariant } from "@/enums";
 
 const PageHeader = ({
   title,
@@ -30,7 +31,7 @@ const PageHeader = ({
         <div className="self-start">
           <ButtonWithIcon
             onClick={handleClick}
-            variant="primary"
+            variant={ButtonVariant.PRIMARY}
             prefixIcon={AddIcon}
             label={MODELS_CONTENT.models.modelsList.ctaButton}
           />

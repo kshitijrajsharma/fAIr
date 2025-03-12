@@ -11,6 +11,7 @@ import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
 } from "@/app/providers/models-provider";
+import { ButtonVariant } from "@/enums";
 
 type ModelEnhancementDialogProps = {
   isOpened: boolean;
@@ -103,7 +104,7 @@ const ModelTrainingSettingsDialog: React.FC<ModelEnhancementDialogProps> = ({
           <div className="self-end">
             <ButtonWithIcon
               disabled={disableButton}
-              variant="primary"
+              variant={ButtonVariant.PRIMARY}
               suffixIcon={ChevronDownIcon}
               onClick={handleClick}
               label={

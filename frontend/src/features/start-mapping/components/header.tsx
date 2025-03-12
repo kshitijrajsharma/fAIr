@@ -3,7 +3,7 @@ import { BrandLogoWithDropDown } from "./logo-with-dropdown";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { DropDown } from "@/components/ui/dropdown";
-import { DropdownPlacement, SHOELACE_SIZES } from "@/enums";
+import { ButtonVariant, DropdownPlacement, SHOELACE_SIZES } from "@/enums";
 import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { Map } from "maplibre-gl";
 import { ModelDetailsButton } from "@/features/start-mapping/components/model-details-button";
@@ -107,8 +107,8 @@ const StartMappingHeader = ({
                   content={
                     !modelPredictionsExist
                       ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                          "see actions",
-                        )
+                        "see actions",
+                      )
                       : null
                   }
                 >
@@ -119,7 +119,7 @@ const StartMappingHeader = ({
                     label={START_MAPPING_PAGE_CONTENT.buttons.download.label}
                     size={SHOELACE_SIZES.SMALL}
                     textClassName="text-body-3"
-                    variant="secondary"
+                    variant={ButtonVariant.SECONDARY}
                     disabled={!modelPredictionsExist}
                     iconClassName={
                       dropdownIsOpened ? "rotate-180 transition-all" : ""

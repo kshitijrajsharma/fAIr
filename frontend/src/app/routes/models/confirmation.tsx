@@ -7,6 +7,7 @@ import { ModelFormConfirmation } from "@/assets/images";
 import { useModelsContext } from "@/app/providers/models-provider";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import { ButtonVariant } from "@/enums";
 
 export const ModelConfirmationPage = () => {
   const [searchParams] = useSearchParams();
@@ -60,7 +61,7 @@ export const ModelConfirmationPage = () => {
               MODELS_CONTENT.modelCreation.confirmation.buttons.exploreModels
             }
           >
-            <Button variant="dark">
+            <Button variant={ButtonVariant.DARK}>
               {MODELS_CONTENT.modelCreation.confirmation.buttons.exploreModels}
             </Button>
           </Link>

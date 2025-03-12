@@ -12,7 +12,7 @@ export const MainErrorFallback = () => {
         </div>
 
         <Button
-          variant="primary"
+
           onClick={() => window.location.reload()}
           className="max-w-80"
         >
