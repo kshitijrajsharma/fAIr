@@ -36,7 +36,7 @@ from geojson2osm import geojson2osm
 from login.authentication import OsmAuthentication
 from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 from osmconflator import conflate_geojson
-from rest_framework import decorators, filters, serializers, status, viewsets
+from rest_framework import decorators, filters, generics, serializers, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -73,6 +73,7 @@ from .serializers import (
     ModelSerializer,
     PredictionParamSerializer,
     UserSerializer,
+    UserStatsSerializer,
 )
 from .tasks import train_model
 from .utils import (
@@ -119,6 +120,12 @@ class DatasetViewSet(
     search_fields = ["name", "id"]
 
 
+class ModelMetaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = ["id", "name", "dataset", "base_model", "status"]
+
+
 class TrainingSerializer(
     serializers.ModelSerializer
 ):  # serializers are used to translate models objects to api
@@ -130,6 +137,7 @@ class TrainingSerializer(
     input_boundary_width = serializers.IntegerField(
         required=False, default=3, min_value=0, max_value=10
     )
+    model = ModelMetaSerializer()
 
     class Meta:
         model = Training
@@ -237,8 +245,9 @@ class TrainingViewSet(
         filters.OrderingFilter,
     )
     serializer_class = TrainingSerializer  # connecting serializer
-    filterset_fields = ["model", "status"]
-    ordering_fields = ["finished_at", "accuracy", "id", "model", "status"]
+    filterset_fields = ["model", "status", "user", "id"]
+
+    ordering_fields = ["created_at", "accuracy", "id", "model", "status"]
     search_fields = ["description", "id"]
 
     def retrieve(self, request, *args, **kwargs):
@@ -247,8 +256,12 @@ class TrainingViewSet(
         feedback_count = Feedback.objects.filter(
             training=instance.id
         ).count()  # cal feedback count
+        approved_predictions_count = ApprovedPredictions.objects.filter(
+            training=instance.id
+        ).count()
         data = serializer.data
         data["feedback_count"] = feedback_count
+        data["approved_predictions_count"] = approved_predictions_count
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -332,16 +345,15 @@ class ModelCentroidView(ListAPIView):
 
 class UsersView(ListAPIView):
     authentication_classes = [OsmAuthentication]
-    permission_classes = [IsOsmAuthenticated]
+    permission_classes = [IsAdminUser, IsStaffUser]
     queryset = OsmUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserStatsSerializer
     filter_backends = (
-        # InBBoxFilter,
         DjangoFilterBackend,
         filters.SearchFilter,
     )
-    filterset_fields = ["id"]
-    search_fields = ["username", "id"]
+    filterset_fields = ["osm_id"]
+    search_fields = ["username", "osm_id"]
 
 
 class AOIViewSet(viewsets.ModelViewSet):

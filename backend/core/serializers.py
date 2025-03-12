@@ -11,22 +11,35 @@ from .models import *
 # from .tasks import train_model
 
 
-class DatasetSerializer(
-    serializers.ModelSerializer
-):  # serializers are used to translate models objects to api
+class DatasetSerializer(serializers.ModelSerializer):
+    models_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Dataset
-        fields = "__all__"  # defining all the fields to  be included in curd for now , we can restrict few if we want
+        fields = [
+            "id",
+            "name",
+            "source_imagery",
+            "last_modified",
+            "created_at",
+            "status",
+            "models_count",
+            "user",
+        ]
         read_only_fields = (
             "user",
             "created_at",
             "last_modified",
+            "models_count",
         )
 
     def create(self, validated_data):
         user = self.context["request"].user
         validated_data["user"] = user
         return super().create(validated_data)
+
+    def get_models_count(self, obj):
+        return Model.objects.filter(dataset=obj).count()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,9 +53,11 @@ class UserSerializer(serializers.ModelSerializer):
             # "is_staff",
             # "date_joined",
             # "email",
-            "img_url",
+            # "img_url",
             # "user_permissions",
         ]
+
+    read_only_fields = ["osm_id", "username"]
 
 
 class ModelSerializer(serializers.ModelSerializer):
@@ -428,3 +443,49 @@ class BannerSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
         ]
+
+
+class UserStatsSerializer(serializers.ModelSerializer):
+    models_count = serializers.SerializerMethodField()
+    datasets_count = serializers.SerializerMethodField()
+    feedbacks_count = serializers.SerializerMethodField()
+    approved_predictions_count = serializers.SerializerMethodField()
+    profile_completion_percentage = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OsmUser
+        fields = [
+            "osm_id",
+            "username",
+            "email",
+            "date_joined",
+            "img_url",
+            "models_count",
+            "datasets_count",
+            "feedbacks_count",
+            "approved_predictions_count",
+            "profile_completion_percentage",
+        ]
+        read_only_fields = ["osm_id", "username", "date_joined", "img_url"]
+
+    def get_models_count(self, obj):
+        return Model.objects.filter(user=obj).count()
+
+    def get_datasets_count(self, obj):
+        return Dataset.objects.filter(user=obj).count()
+
+    def get_feedbacks_count(self, obj):
+        return Feedback.objects.filter(user=obj).count()
+
+    def get_approved_predictions_count(self, obj):
+        return ApprovedPredictions.objects.filter(user=obj).count()
+
+    def get_profile_completion_percentage(self, obj):
+        profile_percentage = 25
+        if obj.username is not None and obj.username != "":
+            profile_percentage += 25
+        if obj.img_url is not None and obj.img_url != "":
+            profile_percentage += 25
+        if obj.email is not None and obj.email != "":
+            profile_percentage += 25
+        return profile_percentage

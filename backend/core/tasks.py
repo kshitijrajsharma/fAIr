@@ -7,8 +7,6 @@ import subprocess
 import sys
 import tarfile
 import time
-import traceback
-from shutil import rmtree
 
 from celery import shared_task
 from core.models import (
@@ -197,7 +195,7 @@ def ramp_model_training(
 
     base_path = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id))
     if os.path.exists(base_path):
-        rmtree(base_path)
+        shutil.rmtree(base_path)
     destination_image_input = os.path.join(base_path, "input")
 
     if not os.path.exists(training_input_image_source):
@@ -339,7 +337,7 @@ def yolo_model_training(
 
     base_path = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id))
     if os.path.exists(base_path):
-        rmtree(base_path)
+        shutil.rmtree(base_path)
     destination_image_input = os.path.join(base_path, "input")
 
     if not os.path.exists(training_input_image_source):
