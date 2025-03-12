@@ -4,6 +4,15 @@ export enum BASE_MODELS {
   YOLOV8_V2 = "YOLO_V8_V2",
 }
 
+export enum ButtonVariant {
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
+  DARK = "dark",
+  DEFAULT = "default",
+  TERTIARY = "tertiary",
+  NONE = "none",
+}
+
 export enum TrainingType {
   BASIC = "Basic",
   INTERMEDIATE = "Intermediate",

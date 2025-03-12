@@ -11,6 +11,7 @@ const PageHeader = ({
   description?: string;
 }) => {
   const navigate = useNavigate();
+
   const handleClick = () => {
     navigate(APPLICATION_ROUTES.CREATE_NEW_MODEL);
   };

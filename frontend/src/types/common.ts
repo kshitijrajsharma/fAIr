@@ -23,14 +23,6 @@ export type TQueryParams = Record<
 
 export type TBadgeVariants = "green" | "red" | "yellow" | "blue" | "default";
 
-export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "tertiary"
-  | "default"
-  | "dark"
-  | "none";
-
 export type ButtonSize = "large" | "medium" | "small";
 
 export type TileJSON = {
