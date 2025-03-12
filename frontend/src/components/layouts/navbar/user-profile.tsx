@@ -1,5 +1,5 @@
 import SlAvatar from "@shoelace-style/shoelace/dist/react/avatar/index.js";
-import styles from "@/components/layout/navbar/navbar.module.css";
+import styles from "@/components/layouts/navbar/navbar.module.css";
 import useScreenSize from "@/hooks/use-screen-size";
 import { DropDown } from "@/components/ui/dropdown";
 import { DropdownPlacement } from "@/enums";

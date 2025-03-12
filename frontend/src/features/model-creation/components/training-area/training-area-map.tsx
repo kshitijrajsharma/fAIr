@@ -228,25 +228,25 @@ const TrainingAreaMap = ({
       layerControlLayers={[
         ...(data?.results?.features?.length
           ? [
-            {
-              value: "Training Areas",
-              subLayers: [
-                trainingAreasOutlineLayerId,
-                trainingAreasFillLayerId,
-              ],
-            },
-          ]
+              {
+                value: "Training Areas",
+                subLayers: [
+                  trainingAreasOutlineLayerId,
+                  trainingAreasFillLayerId,
+                ],
+              },
+            ]
           : []),
         ...(labels && labels?.features.length > 0
           ? [
-            {
-              value: "Training Labels",
-              subLayers: [
-                trainingAreasLabelsFillLayerId,
-                trainingAreasLabelsOutlineLayerId,
-              ],
-            },
-          ]
+              {
+                value: "Training Labels",
+                subLayers: [
+                  trainingAreasLabelsFillLayerId,
+                  trainingAreasLabelsOutlineLayerId,
+                ],
+              },
+            ]
           : []),
       ]}
     >

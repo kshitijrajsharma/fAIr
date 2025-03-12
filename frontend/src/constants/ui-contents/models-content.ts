@@ -355,5 +355,4 @@ export const MODELS_CONTENT: TModelsContent = {
       },
     },
   },
-
 };

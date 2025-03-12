@@ -66,6 +66,7 @@ export type TFAQs = {
 export type TNavBarLinks = {
   title: string;
   href: string;
+  active: boolean;
 }[];
 
 // Extending with shoelace properties.
@@ -75,3 +76,10 @@ export type TCSSWithVars = React.CSSProperties & {
 };
 
 export type TShoelaceSize = `${SHOELACE_SELECT_SIZES}`;
+
+export type TFooterLinks = {
+  title: string;
+  route: string;
+  active: boolean;
+  isExternalLink?: boolean;
+}[];

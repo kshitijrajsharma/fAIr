@@ -14,7 +14,7 @@ import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilej
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { UserProfile } from "@/components/layout";
+import { UserProfile } from "@/components/layouts";
 import { Feature, TileJSON, TModelPredictions } from "@/types";
 import {
   BrandLogoWithDropDown,

@@ -1,4 +1,4 @@
-import styles from "@/components/layout/navbar/navbar.module.css";
+import styles from "@/components/layouts/navbar/navbar.module.css";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
 import { DrawerPlacements } from "@/enums";
@@ -6,12 +6,12 @@ import { HamburgerIcon } from "@/assets/svgs";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { navLinks } from "@/constants/general";
-import { NavLogo } from "@/components/layout";
+import { NavLogo } from "@/components/layouts";
 import { SHARED_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { UserProfile } from "@/components/layout";
+import { UserProfile } from "@/components/layouts";
 import { useState } from "react";
 
 export const NavBar = () => {
@@ -108,20 +108,22 @@ const NavBarLinks: React.FC<NavBarLinksProps> = ({ className, setOpen }) => {
 
   return (
     <ul className={className}>
-      {navLinks.map((link, id) => (
-        <li
-          key={`navbar-item-${id}`}
-          onClick={() => {
-            //close the drawer after navigating to a new page on mobile
-            setOpen && setOpen(false);
-          }}
-          className={`${styles.navLinkItem} ${location.pathname.includes(link.href) && styles.activeLink}`}
-        >
-          <Link href={link.href} title={link.title} nativeAnchor={false}>
-            {link.title}
-          </Link>
-        </li>
-      ))}
+      {navLinks
+        .filter((link) => link.active)
+        .map((link, id) => (
+          <li
+            key={`navbar-item-${id}`}
+            onClick={() => {
+              //close the drawer after navigating to a new page on mobile
+              setOpen && setOpen(false);
+            }}
+            className={`${styles.navLinkItem} ${location.pathname.includes(link.href) && styles.activeLink}`}
+          >
+            <Link href={link.href} title={link.title} nativeAnchor={false}>
+              {link.title}
+            </Link>
+          </li>
+        ))}
     </ul>
   );
 };

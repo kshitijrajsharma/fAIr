@@ -1,8 +1,8 @@
 import { APPLICATION_ROUTES, MODELS_ROUTES } from "@/constants";
 import { Banner } from "@/components/ui/banner";
-import { Footer } from "@/components/layout";
+import { Footer } from "@/components/layouts";
 import { HotTracking } from "@/components/shared";
-import { NavBar } from "@/components/layout";
+import { NavBar } from "@/components/layouts";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useScrollToTop } from "@/hooks/use-scroll-to-element";

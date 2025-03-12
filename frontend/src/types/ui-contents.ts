@@ -347,34 +347,6 @@ export type TSharedContent = {
       thirdSegment: string;
       fourthSegment: string;
     };
-    siteMap: {
-      groupOne: [
-        {
-          title: string;
-          route: string;
-        },
-        {
-          title: string;
-          route: string;
-        },
-        {
-          title: string;
-          route: string;
-        },
-      ];
-      groupTwo: [
-        {
-          title: string;
-          route: string;
-          isExternalLink: boolean;
-        },
-        {
-          title: string;
-          route: string;
-          isExternalLink: boolean;
-        },
-      ];
-    };
   };
   homepage: {
     jumbotronTitle: string;

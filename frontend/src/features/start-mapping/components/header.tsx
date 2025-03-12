@@ -14,7 +14,7 @@ import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
 import { TModelDetails, TModelPredictions } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
-import { UserProfile } from "@/components/layout";
+import { UserProfile } from "@/components/layouts";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 
 const StartMappingHeader = ({

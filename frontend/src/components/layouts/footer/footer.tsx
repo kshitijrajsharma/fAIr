@@ -10,6 +10,7 @@ import {
   YouTubeIcon,
 } from "@/assets/svgs";
 import { MadeWithLove } from "@/components/shared";
+import { footerLinks } from "@/constants/general";
 
 const socials = [
   {
@@ -48,34 +49,38 @@ export const Footer = () => {
           </div>
           <div className="col-span-8 uppercase text-body-2 flex  lg:col-start-7 lg:col-span-4  w-full justify-between">
             <ul className="space-y-4">
-              {SHARED_CONTENT.footer.siteMap.groupOne.map((route, id) => (
-                <li key={`footer-link-${id}`}>
-                  <Link
-                    href={route.route}
-                    title={route.title}
-                    className="!text-white"
-                    nativeAnchor={false}
-                  >
-                    {route.title}
-                  </Link>
-                </li>
-              ))}
+              {footerLinks.groupOne
+                .filter((link) => link.active)
+                .map((route, id) => (
+                  <li key={`footer-link-${id}`}>
+                    <Link
+                      href={route.route}
+                      title={route.title}
+                      className="!text-white"
+                      nativeAnchor={false}
+                    >
+                      {route.title}
+                    </Link>
+                  </li>
+                ))}
             </ul>
 
             <ul className="space-y-4">
-              {SHARED_CONTENT.footer.siteMap.groupTwo.map((route, id) => (
-                <li key={`footer-links2-${id}`}>
-                  <Link
-                    href={route.route}
-                    title={route.title}
-                    className="!text-white"
-                    nativeAnchor={route.isExternalLink}
-                    blank={route.isExternalLink}
-                  >
-                    {route.title}
-                  </Link>
-                </li>
-              ))}
+              {footerLinks.groupTwo
+                .filter((link) => link.active)
+                .map((route, id) => (
+                  <li key={`footer-links2-${id}`}>
+                    <Link
+                      href={route.route}
+                      title={route.title}
+                      className="!text-white"
+                      nativeAnchor={route.isExternalLink}
+                      blank={route.isExternalLink}
+                    >
+                      {route.title}
+                    </Link>
+                  </li>
+                ))}
             </ul>
           </div>
         </div>

@@ -37,34 +37,6 @@ export const SHARED_CONTENT: TSharedContent = {
       thirdSegment: "&",
       fourthSegment: "friends",
     },
-    siteMap: {
-      groupOne: [
-        {
-          title: "explore models",
-          route: APPLICATION_ROUTES.MODELS,
-        },
-        {
-          title: "learn",
-          route: APPLICATION_ROUTES.LEARN,
-        },
-        {
-          title: "about",
-          route: APPLICATION_ROUTES.ABOUT,
-        },
-      ],
-      groupTwo: [
-        {
-          title: "resources",
-          route: APPLICATION_ROUTES.RESOURCES,
-          isExternalLink: false,
-        },
-        {
-          title: "privacy policy",
-          route: "https://www.hotosm.org/privacy",
-          isExternalLink: true,
-        },
-      ],
-    },
   },
   homepage: {
     jumbotronTitle: "Your AI Mapping Partner",
