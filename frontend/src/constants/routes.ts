@@ -52,3 +52,6 @@ export const APPLICATION_ROUTES = {
   ACCOUNT_SETTINGS: "/account/settings",
   ACCOUNT_MODELS: "/account/models",
 };
+
+
+export const HOT_PRIVACY_POLICY_URL: string = "https://www.hotosm.org/privacy";

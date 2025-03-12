@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useScrollToTop } from "@/hooks/use-scroll-to-element";
 import { useAuth } from "@/app/providers/auth-provider";
 import { AuthenticationModal } from "@/components/auth";
+import { MATOMO_TRACKING_TIMEOUT_DURATION } from "@/config";
 
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
@@ -29,20 +30,35 @@ export const RootLayout = () => {
    */
   const { modelId } = useParams();
 
+  /**
+   * Show the tracking 3 seconds after the page renders.
+   */
   useEffect(() => {
     /**
-     * Show the tracking 5 seconds after the page renders.
+     * Tracking component can show only on these public pages.
+     * It can only show up on these pages, and when it shows up, it won't close until the user choose an action,
+     * even if they navigate to other routes.
+     * However, if the user navigates to a route not listed here, it won't show up.
      */
+    const canShowTracker = [
+      APPLICATION_ROUTES.LEARN,
+      APPLICATION_ROUTES.MODELS,
+      APPLICATION_ROUTES.RESOURCES,
+      APPLICATION_ROUTES.HOMEPAGE,
+    ];
+
     const timer = setTimeout(() => {
-      setShowTracking(true);
-    }, 5000);
+      if (canShowTracker.some((route) => pathname === route)) {
+        setShowTracking(true);
+      }
+    }, MATOMO_TRACKING_TIMEOUT_DURATION);
 
     return () => clearTimeout(timer);
   });
 
   return (
     <>
-      {showTracking && <HotTracking />}
+      <HotTracking showTracking={showTracking} />
       {/* Show the auth modal when a `backgroundLocation` is set and when the user is not authenticated. */}
       <AuthenticationModal
         isOpen={state?.backgroundLocation && !isAuthenticated}

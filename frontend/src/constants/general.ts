@@ -1,4 +1,4 @@
-import { APPLICATION_ROUTES } from "./routes";
+import { APPLICATION_ROUTES, HOT_PRIVACY_POLICY_URL } from "./routes";
 import { SHARED_CONTENT } from "@/constants";
 import { TNavBarLinks, TFooterLinks } from "@/types";
 
@@ -57,7 +57,7 @@ export const footerLinks: TFooterGroupLinks = {
     },
     {
       title: "privacy policy",
-      route: "https://www.hotosm.org/privacy",
+      route: HOT_PRIVACY_POLICY_URL,
       isExternalLink: true,
       active: true,
     },

@@ -331,11 +331,6 @@ export const LEGEND_NAME_MAPPING: Record<string, string> = {
 // ==============================================================================================================================
 
 /**
- * The web component tag name used in `hotosm/ui` for the tracking component.
- */
-export const HOT_TRACKING_HTML_TAG_NAME: string = "hot-tracking";
-
-/**
  * The matomo application ID.
  * Default value: "0".
  * Matomo will be used as an attribute in the hot-tracking component, so we need to pass it as string to the component.
@@ -348,6 +343,23 @@ export const MATOMO_ID: string = parseStringEnv(ENVS.MATOMO_ID, "0");
 export const MATOMO_APP_DOMAIN: string = parseStringEnv(
   ENVS.MATOMO_APP_DOMAIN,
   "fair.hotosm.org",
+);
+
+/**
+ * The matomo tracking URL.
+ */
+export const MATOMO_TRACKING_URL: string = parseStringEnv(
+  ENVS.MATOMO_TRACKING_URL,
+  "https://matomo.hotosm.org",
+);
+
+/**
+ * The timeout duration in milliseconds to show the tracking component.
+ * Default value: 2000 ms (2 seconds).
+ */
+export const MATOMO_TRACKING_TIMEOUT_DURATION: number = parseIntEnv(
+  ENVS.MATOMO_TRACKING_TIMEOUT_DURATION,
+  2000,
 );
 
 /**
@@ -408,7 +420,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-    1000 +
+  1000 +
   REFRESH_BUFFER_MS;
 
 // ==============================================================================================================================
