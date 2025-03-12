@@ -206,7 +206,6 @@ const ActionButtons = ({
     >
       <div className="w-full">
         <Button
-
           size={isTablet ? SHOELACE_SIZES.SMALL : SHOELACE_SIZES.MEDIUM}
           onClick={() => {
             setDrawingMode(DrawingModes.RECTANGLE);

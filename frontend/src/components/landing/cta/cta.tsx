@@ -20,9 +20,7 @@ export const CallToAction = () => {
             nativeAnchor
             blank
           >
-            <Button>
-              {SHARED_CONTENT.homepage.callToAction.ctaButton}
-            </Button>
+            <Button>{SHARED_CONTENT.homepage.callToAction.ctaButton}</Button>
           </Link>
         </div>
       </div>

@@ -11,11 +11,7 @@ export const MainErrorFallback = () => {
           </p>
         </div>
 
-        <Button
-
-          onClick={() => window.location.reload()}
-          className="max-w-80"
-        >
+        <Button onClick={() => window.location.reload()} className="max-w-80">
           {SHARED_CONTENT.errorBoundary.button}
         </Button>
       </section>

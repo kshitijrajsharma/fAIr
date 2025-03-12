@@ -80,7 +80,7 @@ export const PageNotFound = () => {
             ? SHARED_CONTENT.pageNotFound.actionButtons.modelNotFound
             : trainingDatasetNotFound
               ? SHARED_CONTENT.pageNotFound.actionButtons
-                .trainingDatasetNotFound
+                  .trainingDatasetNotFound
               : SHARED_CONTENT.pageNotFound.actionButtons.pageNotFound}
         </Button>
       </section>

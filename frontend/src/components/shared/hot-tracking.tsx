@@ -1,7 +1,7 @@
 import { MATOMO_APP_DOMAIN, MATOMO_ID, MATOMO_TRACKING_URL } from "@/config";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/use-storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@/components/ui/link";
 import { ButtonVariant, SHOELACE_SIZES } from "@/enums";
 import { HOT_PRIVACY_POLICY_URL } from "@/constants";
@@ -12,7 +12,6 @@ declare global {
   }
 }
 
-
 /**
  * Adapted from - https://github.com/hotosm/ui/blob/main/src/components/tracking/tracking.component.ts
  * Last accessed - 2025/26/02
@@ -22,9 +21,23 @@ declare global {
 export const HotTracking = ({ showTracking }: { showTracking: boolean }) => {
   const { setValue, getValue } = useLocalStorage();
   const storageKey = `${MATOMO_ID}-consent-agree`;
-  const [showConsent, setShowConsent] = useState(
+  const [showConsent, setShowConsent] = useState<boolean>(
     getValue(storageKey) === undefined,
   );
+
+
+  const [isVisible, setIsVisible] = useState<boolean>(showConsent);
+
+
+  useEffect(() => {
+    if (!showConsent) {
+      // Wait for animation duration (650ms) before removing from DOM
+      const timer = setTimeout(() => setIsVisible(false), 650);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(true);
+    }
+  }, [showConsent]);
 
 
 
@@ -34,11 +47,13 @@ export const HotTracking = ({ showTracking }: { showTracking: boolean }) => {
       console.warn(
         `Matomo init failed. ${window.location.hostname} does not match ${MATOMO_APP_DOMAIN}.`,
       );
+
       return;
     }
     // Close and halt execution if siteId or domain not set
     if (MATOMO_ID.length === 0 || MATOMO_APP_DOMAIN.length === 0) {
       console.warn("Matomo init failed. No site id or domains provided.");
+
       return;
     }
 
@@ -55,7 +70,6 @@ export const HotTracking = ({ showTracking }: { showTracking: boolean }) => {
     if (method) {
       _paq.push([method]);
     }
-
 
     (function (matomoURL) {
       _paq.push(["setTrackerUrl", `${matomoURL}/matomo.php`]);
@@ -87,15 +101,14 @@ export const HotTracking = ({ showTracking }: { showTracking: boolean }) => {
     setShowConsent(false);
   };
 
-  if (!showConsent) {
-    return null;
-  }
+
+  if (!isVisible) return null;
 
   return (
     <div
-      className={`fixed bottom-0 left-1/2 transform ease-in-out duration-500 -translate-x-1/2  ${showTracking ? "translate-y-0" : "translate-y-full"
-        } mx-auto w-full lg:w-[70%] z-[100000000000] px-3  transition-transform  duration-500 
-        `}
+      className={`fixed bottom-0 left-1/2 transform transition-all duration-[650ms] -translate-x-1/2 ${showTracking ? "translate-y-0" : "translate-y-full"
+        } ${showConsent ? "opacity-100 visible" : "opacity-0 invisible"
+        } mx-auto w-full lg:w-[70%] z-[100000000000] px-3`}
     >
       <div className="bg-[#2C3038] rounded-t-2xl p-4 text-white flex flex-col sm:flex-row gap-10 items-center">
         <div className="flex gap-y-4 flex-col">

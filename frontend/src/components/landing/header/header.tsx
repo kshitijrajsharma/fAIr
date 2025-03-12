@@ -21,9 +21,7 @@ export const Header = () => {
               title={SHARED_CONTENT.homepage.ctaPrimaryButton}
               nativeAnchor={false}
             >
-              <Button>
-                {SHARED_CONTENT.homepage.ctaPrimaryButton}
-              </Button>
+              <Button>{SHARED_CONTENT.homepage.ctaPrimaryButton}</Button>
             </Link>
             <Link
               href={APPLICATION_ROUTES.MODELS}

@@ -59,7 +59,6 @@ export const NavBar = () => {
             </div>
           ) : (
             <Button
-
               className={styles.loginButton}
               onClick={handleLogin}
               spinner={loading}

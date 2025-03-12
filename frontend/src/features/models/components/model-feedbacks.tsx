@@ -13,7 +13,11 @@ const ModelFeedbacks = ({ trainingId }: { trainingId: number }) => {
   return (
     <div className="max-w-fit">
       <div className="max-w-fit">
-        <Button variant={ButtonVariant.DARK} size="medium" disabled={trainingId === null}>
+        <Button
+          variant={ButtonVariant.DARK}
+          size="medium"
+          disabled={trainingId === null}
+        >
           {`${MODELS_CONTENT.models.modelsDetailsCard.feedbacks} (${data?.count ?? 0})`}
         </Button>
       </div>

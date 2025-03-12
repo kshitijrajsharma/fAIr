@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ButtonVariant } from "@/enums";
-import { ButtonSize, } from "@/types";
+import { ButtonSize } from "@/types";
 import { cn } from "@/utils";
 
 type ButtonWithIconProps = {

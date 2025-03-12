@@ -11,7 +11,6 @@ export const PageUnderConstruction = () => {
       </div>
 
       <Button
-
         onClick={() => window.location.assign(window.location.origin)}
         className="max-w-80"
       >
