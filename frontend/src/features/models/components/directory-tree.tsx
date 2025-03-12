@@ -59,9 +59,9 @@ const FileItem = ({
   const { copyToClipboard } = useCopyToClipboard();
 
   return (
-    <div className="flex items-center gap-x-2 group cursor-pointer">
+    <div className="flex items-center gap-x-2 cursor-pointer group pr-20">
       <FileIcon className="w-4 h-4" />
-      <div className="flex flex-col md:flex-row gap-x-2">
+      <div className="flex flex-col sm:flex-row gap-x-2">
         <span title={keyName} className="text-dark text-nowrap text-body-2base">
           {truncateString(keyName)}
         </span>
@@ -70,7 +70,7 @@ const FileItem = ({
           {isDownloading && <Spinner />}
         </span>
         {validPath && trainingId && (
-          <div className="flex items-center gap-x-4 md:hidden group-hover:inline-flex">
+          <div className="flex items-center gap-x-4 sm:hidden group-hover:inline-flex">
             <ToolTip content="Click to download file.">
               <button disabled={isDownloading} onClick={onDownload}>
                 <span className="group-hover:inline">
@@ -83,10 +83,10 @@ const FileItem = ({
                 onClick={() =>
                   copyToClipboard(
                     BASE_API_URL +
-                      API_ENDPOINTS.DOWNLOAD_TRAINING_FILE(
-                        trainingId,
-                        validPath,
-                      ),
+                    API_ENDPOINTS.DOWNLOAD_TRAINING_FILE(
+                      trainingId,
+                      validPath,
+                    ),
                   )
                 }
               >
@@ -175,24 +175,24 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
     const subdirectories =
       dir && currentDepth < maxDepth
         ? await Promise.all(
-            Object.keys(dir).map(async (key: string) => {
-              const fullPath = currentDirectory
-                ? `${currentDirectory}/${key}/`
-                : key;
-              const subDirData = await fetchDirectoryRecursive(
-                fullPath,
-                currentDepth + 1,
-                maxDepth,
-              );
-              return {
-                [key]: {
-                  ...subDirData,
-                  size: dir[key]?.size || 0,
-                  length: dir[key]?.len || 0,
-                },
-              };
-            }),
-          )
+          Object.keys(dir).map(async (key: string) => {
+            const fullPath = currentDirectory
+              ? `${currentDirectory}/${key}/`
+              : key;
+            const subDirData = await fetchDirectoryRecursive(
+              fullPath,
+              currentDepth + 1,
+              maxDepth,
+            );
+            return {
+              [key]: {
+                ...subDirData,
+                size: dir[key]?.size || 0,
+                length: dir[key]?.len || 0,
+              },
+            };
+          }),
+        )
         : [];
 
     return {
