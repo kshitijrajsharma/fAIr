@@ -19,7 +19,7 @@ class OsmUser(AbstractUser):
 
     notifications_delivery_methods = ArrayField(
         models.CharField(max_length=10, choices=NOTIFICATION_METHOD_CHOICES),
-        default=list,
+        default=["web"],
         blank=True,
     )
     newsletter_subscription = models.BooleanField(default=False)
