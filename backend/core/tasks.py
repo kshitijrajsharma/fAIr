@@ -17,6 +17,7 @@ from core.models import (
     Label,
     Model,
     Training,
+    UserNotification,
 )
 from core.serializers import (
     AOISerializer,
@@ -29,6 +30,7 @@ from core.utils import bbox, is_dir_empty
 from django.conf import settings
 from django.contrib.gis.db.models.aggregates import Extent
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -514,6 +516,8 @@ def train_model(
 
     training_instance = get_object_or_404(Training, id=training_id)
     model_instance = get_object_or_404(Model, id=training_instance.model.id)
+    
+    send_notification(training_instance.user, f"Hi, Your training {training_id} has started.")
 
     training_instance.status = "RUNNING"
     training_instance.started_at = timezone.now()
@@ -567,10 +571,27 @@ def train_model(
                 )
 
             logging.info(f"Training task {training_id} completed successfully")
+            send_notification(training_instance.user, f"Training {training_id} has completed successfully.")
             return response
 
     except Exception as ex:
         training_instance.status = "FAILED"
         training_instance.finished_at = timezone.now()
         training_instance.save()
+        send_notification(training_instance.user, f"Training {training_id} has failed.")
         raise ex
+
+
+
+def send_notification(user, message):
+    """Send notification based on user's preferred methods."""
+    if any(method in user.notifications_delivery_methods for method in ["web", "email"]):
+        UserNotification.objects.create(user=user, message=message)
+    if "email" in user.notifications_delivery_methods:
+        send_mail(
+            subject="Training Notification",
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
