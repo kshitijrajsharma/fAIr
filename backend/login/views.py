@@ -75,13 +75,8 @@ class GetMyData(APIView):
     )
     def patch(self, request, format=None):
         user = request.user
-        data = {
-            "email": request.data.get("email"),
-            "notifications_delivery_methods": request.data.get(
-                "notifications_delivery_methods"
-            ),
-        }  # ensure only intended field can be updated
-        serializer = UserStatsSerializer(user, data=data, partial=True)
+
+        serializer = UserStatsSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

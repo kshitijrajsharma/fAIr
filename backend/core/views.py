@@ -57,6 +57,7 @@ from .models import (
     Model,
     OsmUser,
     Training,
+    UserNotification,
 )
 from .serializers import (
     AOISerializer,
@@ -138,7 +139,6 @@ class TrainingSerializer(
     input_boundary_width = serializers.IntegerField(
         required=False, default=3, min_value=0, max_value=10
     )
-    model = ModelMetaSerializer()
 
     class Meta:
         model = Training
@@ -231,6 +231,15 @@ class TrainingSerializer(
         print(f"Saved train model request to queue with id {task.id}")
         return instance
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and request.method.upper() == "GET":
+            ret["model"] = ModelMetaSerializer(
+                instance.model, context=self.context
+            ).data
+        return ret
+
 
 class TrainingViewSet(
     viewsets.ModelViewSet
@@ -272,7 +281,14 @@ class FeedbackViewset(viewsets.ModelViewSet):
     public_methods = ["GET"]
     queryset = Feedback.objects.all()
     http_method_names = ["get", "post", "patch", "delete"]
-    serializer_class = FeedbackSerializer  # connecting serializer
+    serializer_class = FeedbackSerializer
+    bbox_filter_field = "geom"
+    filter_backends = (
+        InBBoxFilter,
+        # TMSTileFilter,
+        DjangoFilterBackend,
+    )
+    bbox_filter_include_overlapping = True
     filterset_fields = ["training", "user", "feedback_type"]
 
 
@@ -885,22 +901,9 @@ def publish_training(request, training_id: int):
     return Response("Training Published", status=status.HTTP_201_CREATED)
 
 
-# class APIStatus(APIView):
-#     def get(self, request):
-#         res = {
-#             "tensorflow_version": tf.__version__,
-#             "No of GPU Available": len(
-#                 tf.config.experimental.list_physical_devices("GPU")
-#             ),
-#             "API Status": "Healthy",  # static for now should be dynamic TODO
-#         }
-#         return Response(res, status=status.HTTP_200_OK)
-
-
 class GenerateGpxView(APIView):
     def get(self, request, aoi_id: int):
         aoi = get_object_or_404(AOI, id=aoi_id)
-        # Convert the polygon field to GPX format
         geom_json = json.loads(aoi.geom.json)
         # Create a new GPX object
         gpx_xml = gpx_generator(geom_json)
@@ -910,7 +913,6 @@ class GenerateGpxView(APIView):
 class GenerateFeedbackAOIGpxView(APIView):
     def get(self, request, feedback_aoi_id: int):
         aoi = get_object_or_404(FeedbackAOI, id=feedback_aoi_id)
-        # Convert the polygon field to GPX format
         geom_json = json.loads(aoi.geom.json)
         # Create a new GPX object
         gpx_xml = gpx_generator(geom_json)
@@ -933,17 +935,6 @@ class TrainingWorkspaceView(APIView):
 
 
 class TrainingWorkspaceDownloadView(APIView):
-    # authentication_classes = [OsmAuthentication]
-    # permission_classes = [IsOsmAuthenticated]
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     lookup_dir = kwargs.get("lookup_dir")
-    #     if lookup_dir.endswith("training_accuracy.png"):
-    #         # bypass
-    #         self.authentication_classes = []
-    #         self.permission_classes = []
-
-    #     return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, lookup_dir):
         s3_key = os.path.join(settings.PARENT_BUCKET_FOLDER, lookup_dir)
@@ -1000,5 +991,6 @@ class GetMyNotification(APIView):
     permission_classes = [IsOsmAuthenticated]
 
     def get(self, request, format=None):
-        serialized_field = UserNotificationSerializer(user=request.user)
-        return Response(serialized_field.data, status=status.HTTP_200_OK)
+        notifications = UserNotification.objects.filter(user=request.user)
+        serializer = UserNotificationSerializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
