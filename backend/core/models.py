@@ -184,14 +184,14 @@ class UserNotification(models.Model):
         related_name="notifications",
     )
     is_read = models.BooleanField(default=False)
-    create_date = models.DateTimeField(default=timezone.now)
-    read_date = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    read_at = models.DateTimeField(null=True, blank=True)
     message = models.TextField(max_length=500)
 
     def mark_as_read(self):
         if not self.is_read:
             self.is_read = True
-            self.read_date = timezone.now()
+            self.read_at = timezone.now()
             self.save()
 
     def __str__(self):
