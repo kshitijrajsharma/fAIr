@@ -1033,3 +1033,29 @@ class MarkNotificationsAsRead(APIView):
         
         notifications.update(is_read=True, read_at=timezone.now())
         return Response({"detail": "Notifications marked as read."}, status=status.HTTP_200_OK)
+    
+
+
+class MarkAllNotificationsAsRead(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Mark all unread notifications as read.",
+        responses={
+            200: openapi.Response(
+                description="All unread notifications marked as read.",
+                examples={
+                    "application/json": {"detail": "All unread notifications marked as read."}
+                },
+            ),
+        },
+    )
+    def post(self, request, format=None):
+        unread_notifications = UserNotification.objects.filter(user=request.user, is_read=False)
+
+        if not unread_notifications.exists():
+            return Response({"detail": "No unread notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        unread_notifications.update(is_read=True, read_at=timezone.now())
+        return Response({"detail": "All unread notifications marked as read."}, status=status.HTTP_200_OK)
