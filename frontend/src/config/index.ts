@@ -362,6 +362,11 @@ export const MATOMO_TRACKING_TIMEOUT_DURATION: number = parseIntEnv(
   1000,
 );
 
+export const BANNER_TIMEOUT_DURATION: number = parseIntEnv(
+  ENVS.BANNER_TIMEOUT_DURATION,
+  3000,
+);
+
 /**
  * The file extensions for the prediction api.
  */
@@ -420,7 +425,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-    1000 +
+  1000 +
   REFRESH_BUFFER_MS;
 
 // ==============================================================================================================================

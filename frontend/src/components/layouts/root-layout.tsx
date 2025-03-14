@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useScrollToTop } from "@/hooks/use-scroll-to-element";
 import { useAuth } from "@/app/providers/auth-provider";
 import { AuthenticationModal } from "@/components/auth";
-import { MATOMO_TRACKING_TIMEOUT_DURATION } from "@/config";
+import { BANNER_TIMEOUT_DURATION, MATOMO_TRACKING_TIMEOUT_DURATION } from "@/config";
 
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
@@ -23,6 +23,21 @@ export const RootLayout = () => {
 
   const { isAuthenticated } = useAuth();
   const [showTracking, setShowTracking] = useState<boolean>(false);
+  const [showBanner, setShowBanner] = useState<boolean>(false);
+
+
+
+  /**
+   * Show the banner after 3 seconds.
+   */
+  useEffect(() => {
+    const bannerTimer = setTimeout(() => {
+      setShowBanner(true);
+    }, BANNER_TIMEOUT_DURATION);
+
+    return () => clearTimeout(bannerTimer);
+  }, []);
+
   /**
    * Get the model id from the URL. If it exists,
    * we can safely assume the user is in edit mode.
@@ -67,7 +82,7 @@ export const RootLayout = () => {
         {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
           !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && (
             <>
-              <Banner />
+              {showBanner && <Banner />}
               <NavBar />
             </>
           )}
