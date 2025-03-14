@@ -10,12 +10,14 @@ type SearchFilterProps = {
   query: TQueryParams;
   updateQuery: (param: any) => void;
   placeholder: string;
+  className?: string;
 };
 
 export const SearchFilter: React.FC<SearchFilterProps> = ({
   updateQuery,
   query,
   placeholder,
+  className,
 }) => {
   const onSearchInput = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +30,9 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   );
 
   return (
-    <div className={`flex max-w-[60%] items-center border border-gray-border`}>
+    <div
+      className={`flex max-w-[60%] items-center border border-gray-border ${className}`}
+    >
       <SearchIcon className={`ml-2 icon-lg text-dark`} />
       <Input
         handleInput={onSearchInput}

@@ -39,6 +39,7 @@ export enum INPUT_TYPES {
   TEXT = "text",
   NUMBER = "number",
   URL = "url",
+  EMAIL = "email",
 }
 
 export enum SHOELACE_SELECT_SIZES {

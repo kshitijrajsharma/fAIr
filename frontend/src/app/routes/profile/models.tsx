@@ -74,15 +74,15 @@ export const UserModelsPage = () => {
         disabled={isPending}
       />
       <Head title={USER_PROFILE_PAGE_CONTENT.models.pageTitle} />
-      <section className="min-h-screen gap-y-10 flex flex-col">
+      <section className="min-h-screen gap-y-2 flex flex-col">
         <ProfileSectionHeader
           title={USER_PROFILE_PAGE_CONTENT.models.sectionTitle}
           createButtonAlt={USER_PROFILE_PAGE_CONTENT.models.createNewButtonText}
           createRoute={APPLICATION_ROUTES.CREATE_NEW_MODEL}
         />
         {/* Filters */}
-        <div className="sticky top-0 bg-white z-10 py-2">
-          <div className="flex flex-col gap-y-4">
+        <div className="sticky top-0 bg-white z-10 py-1">
+          <div className="flex flex-col gap-y-1">
             <div className=" flex items-center justify-between w-full ">
               <div className="flex items-center justify-between w-full md:gap-x-4 gap-y-2 md:gap-y-0  md:w-auto">
                 <SearchFilter
@@ -133,7 +133,7 @@ export const UserModelsPage = () => {
           {isPending ? (
             <div className="w-full h-10 mt-10 bg-light-gray animate-pulse text-dark"></div>
           ) : (
-            <div className="flex items-center justify-between w-full my-10 top-16">
+            <div className="flex items-center justify-between w-full my-4 top-16">
               <div className="w-full flex items-center justify-between">
                 <p className="font-semibold text-body-3">
                   {data?.count}{" "}

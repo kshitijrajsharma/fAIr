@@ -14,6 +14,7 @@ type ButtonWithIconProps = {
   disabled?: boolean;
   size?: ButtonSize;
   uppercase?: boolean;
+
 };
 const ButtonWithIcon: React.FC<ButtonWithIconProps> = ({
   onClick,

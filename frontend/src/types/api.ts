@@ -31,6 +31,8 @@ export type TUser = {
   feedbacks_count: number;
   datasets_count: number;
   profile_completion_percentage: number;
+  newsletter_subscription: boolean;
+  notifications_delivery_methods: string[];
 };
 
 type TOSMUser = {
