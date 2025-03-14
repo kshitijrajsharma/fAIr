@@ -994,3 +994,15 @@ class GetMyNotification(APIView):
         notifications = UserNotification.objects.filter(user=request.user)
         serializer = UserNotificationSerializer(notifications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        notification_ids = request.data.get("notification_ids", [])
+        if not notification_ids:
+            return Response({"detail": "No notification IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        notifications = UserNotification.objects.filter(id__in=notification_ids, user=request.user)
+        if not notifications.exists():
+            return Response({"detail": "No matching notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        notifications.update(is_read=True, read_at=timezone.now())
+        return Response({"detail": "Notifications marked as read."}, status=status.HTTP_200_OK)

@@ -588,10 +588,11 @@ def send_notification(user, message):
     if any(method in user.notifications_delivery_methods for method in ["web", "email"]):
         UserNotification.objects.create(user=user, message=message)
     if "email" in user.notifications_delivery_methods:
-        send_mail(
-            subject="Training Notification",
-            message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+        if user.email and user.email != '':
+            send_mail(
+                subject="Training Notification",
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
