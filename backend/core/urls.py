@@ -49,7 +49,7 @@ router.register(r"feedback", FeedbackViewset)
 router.register(r"feedback-aoi", FeedbackAOIViewset)
 router.register(r"feedback-label", FeedbackLabelViewset)
 router.register(r"banner", BannerViewSet)
-router.register(r'notifications', UserNotificationViewSet, basename='notifications')
+router.register(r'notifications/me', UserNotificationViewSet, basename='notifications')
 
 urlpatterns = [
     path("", include(router.urls)),
