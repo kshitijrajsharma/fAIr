@@ -134,13 +134,15 @@ export const NavBar = () => {
           )}
         </div>
         <div className="flex items-center gap-x-2 mdx:hidden">
-          <NotificationBell
-            notificationExists={Number(data?.results?.length) > 0}
-            setShowNotificationPanel={setShowNotificationPanel}
-            showNotificationPanel={showNotificationPanel}
-            notificationAnchor={notificationAnchor}
-          />
-
+          {
+            isAuthenticated &&
+            <NotificationBell
+              notificationExists={Number(data?.results?.length) > 0}
+              setShowNotificationPanel={setShowNotificationPanel}
+              showNotificationPanel={showNotificationPanel}
+              notificationAnchor={notificationAnchor}
+            />
+          }
           <button
             className={styles.hamburgerMenu}
             onClick={() => setOpen(true)}
