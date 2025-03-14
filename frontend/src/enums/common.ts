@@ -66,3 +66,12 @@ export enum DropdownPlacement {
   BOTTOM_END = "bottom-end",
   TOP_END = "top-end",
 }
+
+export enum ButtonVariant {
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
+  DARK = "dark",
+  DEFAULT = "default",
+  TERTIARY = "tertiary",
+  NONE = "none",
+}

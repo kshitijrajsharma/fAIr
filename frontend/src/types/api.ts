@@ -33,6 +33,7 @@ export type TUser = {
   profile_completion_percentage: number;
   newsletter_subscription: boolean;
   notifications_delivery_methods: string[];
+  account_deletion_requested: boolean;
 };
 
 type TOSMUser = {
