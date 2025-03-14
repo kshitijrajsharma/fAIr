@@ -492,4 +492,4 @@ class UserStatsSerializer(serializers.ModelSerializer):
 class UserNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserNotification
-        fields = ("id", "is_read", "create_date", "read_date", "message")
+        fields = ("id", "is_read", "created_at", "read_at", "message")
