@@ -19,6 +19,7 @@ from .views import (  # APIStatus,
     GetMyNotification,
     LabelUploadView,
     LabelViewSet,
+    MarkNotificationsAsRead,
     ModelCentroidView,
     ModelViewSet,
     RawdataApiAOIView,
@@ -78,6 +79,8 @@ urlpatterns = [
     path("workspace/<path:lookup_dir>/", TrainingWorkspaceView.as_view()),
     path("kpi/stats/", get_kpi_stats, name="get_kpi_stats"),
     path("notifications/me/", GetMyNotification.as_view()),
+    path("notifications/mark-as-read/", MarkNotificationsAsRead.as_view(), name="mark_notifications_as_read"),
+
 ]
 if settings.ENABLE_PREDICTION_API:
     urlpatterns.append(path("prediction/", PredictionView.as_view()))

@@ -31,6 +31,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 from django_filters.rest_framework import DjangoFilterBackend
 from django_q.tasks import async_task
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from geojson2osm import geojson2osm
 from login.authentication import OsmAuthentication
@@ -995,14 +996,56 @@ class GetMyNotification(APIView):
         serializer = UserNotificationSerializer(notifications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+
+class MarkNotificationsAsRead(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Mark specific notifications as read.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "notification_ids": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                    description="List of notification IDs to mark as read.",
+                )
+            },
+            required=["notification_ids"],
+        ),
+        responses={
+            200: openapi.Response(
+                description="Notifications marked as read.",
+                examples={
+                    "application/json": {"detail": "Notifications marked as read."}
+                },
+            ),
+            400: openapi.Response(
+                description="Bad Request - No notification IDs provided.",
+                examples={
+                    "application/json": {"detail": "No notification IDs provided."}
+                },
+            ),
+            404: openapi.Response(
+                description="Not Found - No matching notifications found.",
+                examples={
+                    "application/json": {"detail": "No matching notifications found."}
+                },
+            ),
+        },
+    )
+
     def post(self, request, format=None):
         notification_ids = request.data.get("notification_ids", [])
         if not notification_ids:
             return Response({"detail": "No notification IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
 
         notifications = UserNotification.objects.filter(id__in=notification_ids, user=request.user)
+        
         if not notifications.exists():
             return Response({"detail": "No matching notifications found."}, status=status.HTTP_404_NOT_FOUND)
-
+        
         notifications.update(is_read=True, read_at=timezone.now())
         return Response({"detail": "Notifications marked as read."}, status=status.HTTP_200_OK)
