@@ -68,7 +68,6 @@ export const UserProfileSettingsPage = () => {
       user.notifications_delivery_methods.includes("web"),
   });
 
-
   const [isNotificationPending, setIsNotificationPending] =
     useState<boolean>(false);
 
@@ -283,7 +282,9 @@ export const UserProfileSettingsPage = () => {
               <div className="flex flex-col gap-y-1">
                 <p className="text-body-3 md:text-body-2">Delete Account</p>
                 <p className="text-gray text-body-3">
-                  {!user.account_deletion_requested ? 'If you no longer want to use fAIr, request to delete your account.' : '⚠️ Your request to delete your account is pending.'}
+                  {!user.account_deletion_requested
+                    ? "If you no longer want to use fAIr, request to delete your account."
+                    : "⚠️ Your request to delete your account is pending."}
                 </p>
               </div>
               <ButtonWithIcon

@@ -77,6 +77,22 @@ export type PaginatedTrainings = {
   hasPrev: boolean;
 };
 
+export type TNotification = {
+  id: number;
+  created_at: string;
+  message: string;
+  is_read: boolean;
+};
+
+export type PaginatedNotifications = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: TNotification[];
+  hasNext: boolean;
+  hasPrev: boolean;
+};
+
 export type TModelDetails = TModel & {
   description: string;
   dataset: TTrainingDataset;

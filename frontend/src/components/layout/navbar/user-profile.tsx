@@ -23,7 +23,9 @@ export const UserProfile = ({
     useDropdownMenu();
   const navigate = useNavigate();
   const { isMobile, isTablet } = useScreenSize();
+
   const size = smallerSize ? "35px" : isTablet || isMobile ? "28px" : "40px";
+
   return (
     <DropDown
       onDropdownShow={onDropdownShow}

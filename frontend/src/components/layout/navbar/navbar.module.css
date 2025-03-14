@@ -137,7 +137,7 @@ nav {
   }
 
   .profileContainer {
-    display: block;
+    @apply flex items-center gap-x-3;
   }
 
   /* NavBar styles ends */

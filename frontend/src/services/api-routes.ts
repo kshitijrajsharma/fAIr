@@ -88,4 +88,11 @@ export const API_ENDPOINTS = {
     `workspace/training_${trainingId}/${directory_name}`,
   DOWNLOAD_TRAINING_FILE: (trainingId: number, directory_name: string) =>
     `workspace/download/training_${trainingId}/${directory_name}/`,
+
+  // Notifications
+  NOTIFICATIONS: "notifications/me",
+
+  UPDATE_NOTIFICATION: "notifications/mark-as-read/",
+
+  UPDATE_NOTIFICATIONS: "notifications/mark-all-as-read/",
 };

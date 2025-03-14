@@ -15,11 +15,13 @@ const useScreenSize = () => {
     isTablet: boolean;
     isLaptop: boolean;
     isLargeScreen: boolean;
+    screenWidth: number;
   }>({
     isMobile: false,
     isTablet: false,
     isLaptop: false,
     isLargeScreen: false,
+    screenWidth: 0,
   });
 
   const handleResize = () => {
@@ -28,6 +30,7 @@ const useScreenSize = () => {
       isTablet: window.innerWidth > 640 && window.innerWidth < 768,
       isLaptop: window.innerWidth > 768 && window.innerWidth < 1024,
       isLargeScreen: window.innerWidth > 1300,
+      screenWidth: window.innerWidth,
     });
   };
 
@@ -42,7 +45,9 @@ const useScreenSize = () => {
 
   const isSmallViewport = screenSize.isMobile || screenSize.isTablet;
 
-  return { ...screenSize, isSmallViewport };
+  const isLargeViewPort = screenSize.isLaptop || screenSize.isLargeScreen;
+
+  return { ...screenSize, isSmallViewport, isLargeViewPort };
 };
 
 export default useScreenSize;

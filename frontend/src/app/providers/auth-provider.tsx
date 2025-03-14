@@ -137,7 +137,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-
       value={{
         // @ts-expect-error bad type definition
         token,
