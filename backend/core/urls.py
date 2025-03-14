@@ -18,7 +18,7 @@ from .views import (
     LabelUploadView,
     LabelViewSet,
     MarkAllNotificationsAsRead,
-    MarkNotificationsAsRead,
+    MarkNotificationAsRead,
     ModelCentroidView,
     ModelViewSet,
     RawdataApiAOIView,
@@ -80,7 +80,7 @@ urlpatterns = [
     ),
     path("workspace/<path:lookup_dir>/", TrainingWorkspaceView.as_view()),
     path("kpi/stats/", get_kpi_stats, name="get_kpi_stats"),
-    path("notifications/mark-as-read/", MarkNotificationsAsRead.as_view(), name="mark_notifications_as_read"),
+    path("notifications/mark-as-read/<int:notification_id>/", MarkNotificationAsRead.as_view(), name="mark_notification_as_read"),
     path("notifications/mark-all-as-read/", MarkAllNotificationsAsRead.as_view(), name="mark_all_notifications_as_read"),
 
 ]

@@ -990,40 +990,42 @@ class UserNotificationViewSet(ReadOnlyModelViewSet):
     def get_queryset(self):
         return UserNotification.objects.filter(user=self.request.user)
 
-
-class MarkNotificationsAsRead(APIView):
+class MarkNotificationAsRead(APIView):
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
     @swagger_auto_schema(
-        operation_description="Mark specific notifications as read.",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "notification_ids": openapi.Schema(
-                    type=openapi.TYPE_ARRAY,
-                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
-                    description="List of notification IDs to mark as read.",
-                )
-            },
-            required=["notification_ids"],
-        )
+        operation_description="Mark a specific notification as read.",
+        responses={
+            200: openapi.Response(
+                description="Notification marked as read.",
+                examples={
+                    "application/json": {"detail": "Notification marked as read."}
+                },
+            ),
+            404: openapi.Response(
+                description="Notification not found.",
+                examples={
+                    "application/json": {"detail": "Notification not found."}
+                },
+            ),
+        },
     )
+    def post(self, request, notification_id, format=None):
+        try:
+            notification = UserNotification.objects.get(id=notification_id, user=request.user)
 
-    def post(self, request, format=None):
-        notification_ids = request.data.get("notification_ids", [])
-        if not notification_ids:
-            return Response({"detail": "No notification IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+            if notification.is_read:
+                return Response({"detail": "Notification is already marked as read."}, status=status.HTTP_200_OK)
 
-        notifications = UserNotification.objects.filter(id__in=notification_ids, user=request.user)
-        
-        if not notifications.exists():
-            return Response({"detail": "No matching notifications found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        notifications.update(is_read=True, read_at=timezone.now())
-        return Response({"detail": "Notifications marked as read."}, status=status.HTTP_200_OK)
-    
+            notification.is_read = True
+            notification.read_at = timezone.now()
+            notification.save()
 
+            return Response({"detail": "Notification marked as read."}, status=status.HTTP_200_OK)
+
+        except UserNotification.DoesNotExist:
+            return Response({"detail": "Notification not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class MarkAllNotificationsAsRead(APIView):
     authentication_classes = [OsmAuthentication]
