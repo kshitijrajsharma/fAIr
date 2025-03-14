@@ -17,7 +17,7 @@ type TAuthContext = {
   authenticateUser: (state: string, code: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
-  setUser: React.Dispatch<React.SetStateAction<TUser>>;
+  setUser: (user: TUser) => void;
 };
 
 // @ts-expect-error bad type definition
@@ -137,9 +137,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      // @ts-expect-error bad type definition
+
       value={{
+        // @ts-expect-error bad type definition
         token,
+        // @ts-expect-error bad type definition
         user,
         authenticateUser,
         logout,
