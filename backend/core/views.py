@@ -996,20 +996,6 @@ class MarkNotificationAsRead(APIView):
 
     @swagger_auto_schema(
         operation_description="Mark a specific notification as read.",
-        responses={
-            200: openapi.Response(
-                description="Notification marked as read.",
-                examples={
-                    "application/json": {"detail": "Notification marked as read."}
-                },
-            ),
-            404: openapi.Response(
-                description="Notification not found.",
-                examples={
-                    "application/json": {"detail": "Notification not found."}
-                },
-            ),
-        },
     )
     def post(self, request, notification_id, format=None):
         try:
