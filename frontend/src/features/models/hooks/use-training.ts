@@ -49,14 +49,11 @@ export const useTrainingHistory = (
   modelId?: string,
   userId?: number,
   enabled?: boolean,
-  refetchInterval?: number
-
+  refetchInterval?: number,
 ) => {
   return useQuery({
     ...getTrainingHistoryQueryOptions(offset, limit, ordering, modelId, userId),
     refetchInterval: refetchInterval,
-    enabled: enabled
+    enabled: enabled,
   });
 };
-
-

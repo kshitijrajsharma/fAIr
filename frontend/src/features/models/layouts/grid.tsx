@@ -12,11 +12,11 @@ const ModelListSkeleton = () => {
     <>
       {new Array(15).fill(1).map((_, id) => (
         <div
-          className="col-span-1 max-w-[299px] min-h-[300px] flex flex-col gap-[30px]"
+          className="col-span-1 w-full min-h-[300px] flex flex-col gap-[30px]"
           key={`model-skeleton-grid-layout-${id}`}
         >
           <div className="flex flex-col gap-y-[13px]">
-            <div className="max-w-[299px] h-[208px] bg-light-gray animate-pulse"></div>
+            <div className="w-full h-[208px] bg-light-gray animate-pulse"></div>
             <div className="flex justify-between items-center">
               <div className="w-[168px] h-[16.91px] bg-light-gray animate-pulse"></div>
               <div className="w-[22.54px] h-[16.91px] bg-light-gray animate-pulse"></div>

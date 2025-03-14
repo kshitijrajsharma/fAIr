@@ -87,8 +87,6 @@ export const ModelDetailsPage = () => {
           ) : (
             <ModelDetailsProperties
               trainingId={data?.published_training as number}
-              datasetId={data?.dataset?.id}
-              baseModel={data.base_model}
             />
           )}
         </ModelDetailsSection>
@@ -122,8 +120,6 @@ export const ModelDetailsPage = () => {
             modelId={data?.id as string}
             publishedTrainingId={data?.published_training as number}
             modelOwner={data?.user.username as string}
-            datasetId={data?.dataset.id as number}
-            baseModel={data?.base_model as string}
           />
         </ModelDetailsSection>
       </div>

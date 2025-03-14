@@ -28,18 +28,15 @@ export const getTrainingHistory = async (
   modelId?: string,
   userId?: number,
 ): Promise<PaginatedTrainings> => {
-  const res = await apiClient.get(
-    API_ENDPOINTS.GET_TRAINING_HISTORY,
-    {
-      params: {
-        limit,
-        offset,
-        ordering,
-        model: modelId,
-        user: userId
-      },
+  const res = await apiClient.get(API_ENDPOINTS.GET_TRAINING_HISTORY, {
+    params: {
+      limit,
+      offset,
+      ordering,
+      model: modelId,
+      user: userId,
     },
-  );
+  });
   return {
     ...res.data,
     hasNext: res.data.next !== null,

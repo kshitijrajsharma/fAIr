@@ -3,7 +3,6 @@ import { ProfileSectionHeader } from "./profile-section-header";
 import { TrainingHistoryTable } from "@/features/models/components";
 
 export const UserTrainingHistory = () => {
-
   return (
     <section>
       <ProfileSectionHeader

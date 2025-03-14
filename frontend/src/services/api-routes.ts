@@ -69,7 +69,7 @@ export const API_ENDPOINTS = {
     `aoi/?dataset=${datasetId}&offset=${offset}&limit=${limit}`,
   GET_TRAINING_AREA: (aoiId: number) => `aoi/${aoiId}/`,
   GET_TRAINING_STATUS: (taskId: string) => `training/status/${taskId}`,
-  GET_TRAINING_HISTORY: 'training/',
+  GET_TRAINING_HISTORY: "training/",
   GET_TRAINING_FEEDBACKS: (trainingId: number) =>
     `feedback/?training=${trainingId}`,
   CREATE_TRAINING_DATASET: "dataset/",
@@ -88,5 +88,4 @@ export const API_ENDPOINTS = {
     `workspace/training_${trainingId}/${directory_name}`,
   DOWNLOAD_TRAINING_FILE: (trainingId: number, directory_name: string) =>
     `workspace/download/training_${trainingId}/${directory_name}/`,
-
 };

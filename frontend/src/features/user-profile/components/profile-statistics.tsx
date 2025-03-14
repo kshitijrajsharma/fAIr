@@ -43,14 +43,14 @@ export const ProfileStatistics = () => {
   ];
 
   return (
-    <section className="w-full h-40 bg-frosted-blue rounded-xl">
-      <div className="flex items-center h-full w-full justify-around">
+    <section className="w-full h-full md:h-40 bg-frosted-blue rounded-xl">
+      <div className="p-4 flex flex-col md:flex-row items-center h-full w-full justify-center gap-y-8 md:gap-y-0 md:justify-around">
         {profileStatsItems.map((stat) => (
-          <div className="flex gap-x-3 items-center" key={stat.label}>
-            <div className="bg-primary rounded-full">
-              <stat.icon className="h-12 w-12 p-2 text-white" />
+          <div className="flex gap-x-3 items-center h-24 w-48" key={stat.label}>
+            <div className="bg-primary rounded-full flex items-center justify-center h-12 w-12">
+              <stat.icon className="h-8 w-8 text-white" />
             </div>
-            <div>
+            <div className="flex flex-col items-start">
               <h1 className="text-title-2 font-bold text-primary">
                 {stat.stat < 10 && "0"}
                 {stat.stat}

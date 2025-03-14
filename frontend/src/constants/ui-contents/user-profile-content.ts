@@ -2,10 +2,11 @@ import { TUserProfilePageContent } from "@/types";
 
 export const USER_PROFILE_PAGE_CONTENT: TUserProfilePageContent = {
   overview: {
-    pageTitle: "My Profile",
+    pageTitle: "My Profile 🎉",
     dateJoinedPrefix: "Joined",
     profileCompletionSuffix: "Complete",
     profileCompletionCTA: "Complete your profile",
+    profileCompletionSuccess: "Your profile is complete 🎉",
     trainingsSectionTitle: "My Trainings",
     statistics: {
       modelsCreated: "Models Created",
@@ -24,7 +25,7 @@ export const USER_PROFILE_PAGE_CONTENT: TUserProfilePageContent = {
     sectionTitle: "My Datasets",
   },
   settings: {
-    pageTitle: "Profile sSettings",
+    pageTitle: "Profile Settings",
     form: {
       email: {
         sectionHeading: "Enter email address",

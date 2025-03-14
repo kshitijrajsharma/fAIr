@@ -1,3 +1,4 @@
+import { BASE_MODELS } from "@/enums";
 import { BBOX } from "./common";
 import { GeoJsonProperties, Geometry } from "geojson";
 
@@ -29,7 +30,7 @@ export type TUser = {
   approved_predictions_count: number;
   feedbacks_count: number;
   datasets_count: number;
-  profile_completion_percentage: number
+  profile_completion_percentage: number;
 };
 
 type TOSMUser = {
@@ -136,7 +137,13 @@ export type TTrainingDetails = {
   chips_length: number;
   batch_size: number;
   freeze_layers: boolean;
-  model: number;
+  model: {
+    base_model: BASE_MODELS;
+    dataset: number;
+    id: number;
+    name: string;
+    status: number;
+  };
   created_by: number;
   user: TUser;
 };
@@ -166,10 +173,10 @@ export type Feature = {
   type: "Feature";
   geometry: Geometry;
   properties:
-  | {
-    mid: string;
-  }
-  | GeoJsonProperties;
+    | {
+        mid: string;
+      }
+    | GeoJsonProperties;
 };
 
 export type FeatureCollection = {

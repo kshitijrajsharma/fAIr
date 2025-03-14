@@ -96,16 +96,12 @@ const PropertyDisplay: React.FC<PropertyDisplayProps> = ({
 type ModelPropertiesProps = {
   trainingId: number;
   accuracy?: number;
-  datasetId?: number;
   isTrainingDetailsDialog?: boolean;
-  baseModel: string;
 };
 
 const ModelProperties: React.FC<ModelPropertiesProps> = ({
   trainingId,
-  datasetId,
   isTrainingDetailsDialog = false,
-  baseModel
 }) => {
   const { isPending, data, error, isError } = useTrainingDetails(
     trainingId,
@@ -135,6 +131,7 @@ const ModelProperties: React.FC<ModelPropertiesProps> = ({
     input_boundary_width,
     source_imagery,
     chips_length,
+    model,
   } = data || {};
 
   const trainingResultsGraph = `${BASE_API_URL}workspace/download/training_${data?.id}/graphs/training_accuracy.png`;
@@ -154,7 +151,7 @@ const ModelProperties: React.FC<ModelPropertiesProps> = ({
         closeDialog={closeDialog}
         isOpened={isOpened}
         trainingId={trainingId}
-        datasetId={datasetId as number}
+        datasetId={model.dataset}
       />
       <>
         <div
@@ -259,12 +256,11 @@ const ModelProperties: React.FC<ModelPropertiesProps> = ({
                 MODELS_CONTENT.models.modelsDetailsCard.properties.baseModel
                   .title
               }
-              value={baseModel}
+              value={model.base_model}
               isLink
               href={
-                // @ts-expect-error bad type definition
                 MODELS_CONTENT.models.modelsDetailsCard.properties.baseModel
-                  .href[baseModel]
+                  .href[model.base_model]
               }
             />
 

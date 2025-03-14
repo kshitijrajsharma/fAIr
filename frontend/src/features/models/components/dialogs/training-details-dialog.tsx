@@ -7,16 +7,12 @@ import { DrawerPlacements } from "@/enums";
 
 type TrainingDetailsDialogProps = DialogProps & {
   trainingId: number;
-  datasetId: number;
-  baseModel: string;
 };
 
 const TrainingDetailsDialog: React.FC<TrainingDetailsDialogProps> = ({
   isOpened,
   closeDialog,
   trainingId,
-  datasetId,
-  baseModel,
 }) => {
   const { isMobile } = useScreenSize();
 
@@ -28,12 +24,7 @@ const TrainingDetailsDialog: React.FC<TrainingDetailsDialogProps> = ({
         placement={DrawerPlacements.BOTTOM}
         noHeader={false}
       >
-        <ModelProperties
-          trainingId={trainingId}
-          isTrainingDetailsDialog
-          datasetId={datasetId}
-          baseModel={baseModel}
-        />
+        <ModelProperties trainingId={trainingId} isTrainingDetailsDialog />
       </Drawer>
     );
   }
@@ -45,12 +36,7 @@ const TrainingDetailsDialog: React.FC<TrainingDetailsDialogProps> = ({
         closeDialog={closeDialog}
         label={`Training ${trainingId}`}
       >
-        <ModelProperties
-          trainingId={trainingId}
-          isTrainingDetailsDialog
-          datasetId={datasetId}
-          baseModel={baseModel}
-        />
+        <ModelProperties trainingId={trainingId} isTrainingDetailsDialog />
       </Dialog>
     </>
   );

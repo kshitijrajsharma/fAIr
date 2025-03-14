@@ -267,7 +267,7 @@ export type TModelsContent = {
         epochAndBatchSize: string;
         startedAt: string;
         sumittedBy: string;
-        model: string
+        model: string;
         duration: string;
         dsSize: string;
         accuracy: string;
@@ -722,6 +722,7 @@ export type TUserProfilePageContent = {
     pageTitle: string;
     dateJoinedPrefix: string;
     profileCompletionSuffix: string;
+    profileCompletionSuccess: string;
     profileCompletionCTA: string;
     trainingsSectionTitle: string;
     statistics: {

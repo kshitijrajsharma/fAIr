@@ -27,7 +27,7 @@ export const useUpdateTraining = ({
     "-id",
     String(modelId),
     undefined,
-    !!modelId
+    !!modelId,
   );
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
