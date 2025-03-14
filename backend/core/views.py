@@ -1018,27 +1018,7 @@ class MarkNotificationsAsRead(APIView):
                 )
             },
             required=["notification_ids"],
-        ),
-        responses={
-            200: openapi.Response(
-                description="Notifications marked as read.",
-                examples={
-                    "application/json": {"detail": "Notifications marked as read."}
-                },
-            ),
-            400: openapi.Response(
-                description="Bad Request - No notification IDs provided.",
-                examples={
-                    "application/json": {"detail": "No notification IDs provided."}
-                },
-            ),
-            404: openapi.Response(
-                description="Not Found - No matching notifications found.",
-                examples={
-                    "application/json": {"detail": "No matching notifications found."}
-                },
-            ),
-        },
+        )
     )
 
     def post(self, request, format=None):
