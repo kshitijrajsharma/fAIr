@@ -18,6 +18,7 @@ app = Celery("aiproject")
 # read config from Django settings, the CELERY namespace would make celery
 # config keys has `CELERY` prefix
 app.config_from_object("django.conf:settings", namespace="CELERY")
+app.conf.task_track_started = True
 
 # discover and load tasks.py from from all registered Django apps
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

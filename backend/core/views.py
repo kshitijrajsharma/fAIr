@@ -4,29 +4,21 @@ import json
 import logging
 import os
 import pathlib
-import shutil
 import subprocess
-import sys
 import time
 import zipfile
 from datetime import datetime
-from tempfile import NamedTemporaryFile
 from urllib.parse import quote
 
 # import tensorflow as tf
 from celery import current_app
 from celery.result import AsyncResult
 from django.conf import settings
-from django.http import (
-    FileResponse,
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseRedirect,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 from django_filters.rest_framework import DjangoFilterBackend
@@ -37,7 +29,7 @@ from geojson2osm import geojson2osm
 from login.authentication import OsmAuthentication
 from login.permissions import IsAdminUser, IsOsmAuthenticated, IsStaffUser
 from osmconflator import conflate_geojson
-from rest_framework import decorators, filters, generics, serializers, status, viewsets
+from rest_framework import decorators, filters, serializers, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -67,7 +59,6 @@ from .serializers import (
     BannerSerializer,
     DatasetSerializer,
     FeedbackAOISerializer,
-    FeedbackFileSerializer,
     FeedbackLabelSerializer,
     FeedbackParamSerializer,
     FeedbackSerializer,
@@ -82,8 +73,6 @@ from .serializers import (
 from .tasks import train_model
 from .utils import (
     download_s3_file,
-    get_dir_size,
-    get_local_metadata,
     get_s3_directory,
     gpx_generator,
     process_rawdata,
@@ -1059,3 +1048,30 @@ class MarkAllNotificationsAsRead(APIView):
 
         unread_notifications.update(is_read=True, read_at=timezone.now())
         return Response({"detail": "All unread notifications marked as read."}, status=status.HTTP_200_OK)
+    
+
+
+class TerminateTrainingView(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    def post(self, request, training_id, format=None):
+        try:
+            training_instance = Training.objects.get(id=training_id, user=request.user)
+
+            task_id = training_instance.task_id
+            if not task_id:
+                return Response({"detail": "No task associated with this training."}, status=status.HTTP_400_BAD_REQUEST)
+
+            task = AsyncResult(task_id,app=current_app)
+            if task.state in ["PENDING", "STARTED", "RETRY"]:
+                current_app.control.revoke(task_id, terminate=True)
+                training_instance.status = "FAILED"
+                training_instance.finished_at = now()
+                training_instance.save()
+                return Response({"detail": "Training task cancelled successfully."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": f"Task cannot be cancelled. Current state: {task.state}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Training.DoesNotExist:
+            return Response({"detail": "Training not found or do not belong to you"}, status=status.HTTP_404_NOT_FOUND)
