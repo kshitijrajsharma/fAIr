@@ -3,8 +3,7 @@ from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
 
-# now import the views.py file into this code
-from .views import (  # APIStatus,
+from .views import (
     AOIViewSet,
     ApprovedPredictionsViewSet,
     BannerViewSet,
@@ -16,7 +15,6 @@ from .views import (  # APIStatus,
     FeedbackViewset,
     GenerateFeedbackAOIGpxView,
     GenerateGpxView,
-    GetMyNotification,
     LabelUploadView,
     LabelViewSet,
     MarkNotificationsAsRead,
@@ -27,6 +25,7 @@ from .views import (  # APIStatus,
     TrainingViewSet,
     TrainingWorkspaceDownloadView,
     TrainingWorkspaceView,
+    UserNotificationViewSet,
     UsersView,
     download_training_data,
     geojson2osmconverter,
@@ -50,7 +49,7 @@ router.register(r"feedback", FeedbackViewset)
 router.register(r"feedback-aoi", FeedbackAOIViewset)
 router.register(r"feedback-label", FeedbackLabelViewset)
 router.register(r"banner", BannerViewSet)
-
+router.register(r'notifications', UserNotificationViewSet, basename='notifications')
 
 urlpatterns = [
     path("", include(router.urls)),
@@ -78,7 +77,6 @@ urlpatterns = [
     ),
     path("workspace/<path:lookup_dir>/", TrainingWorkspaceView.as_view()),
     path("kpi/stats/", get_kpi_stats, name="get_kpi_stats"),
-    path("notifications/me/", GetMyNotification.as_view()),
     path("notifications/mark-as-read/", MarkNotificationsAsRead.as_view(), name="mark_notifications_as_read"),
 
 ]

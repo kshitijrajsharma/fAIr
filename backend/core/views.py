@@ -44,6 +44,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_gis.filters import InBBoxFilter, TMSTileFilter
 
 from .models import (
@@ -987,15 +988,18 @@ def get_kpi_stats(request):
     return Response(data)
 
 
-class GetMyNotification(APIView):
+class UserNotificationViewSet(ReadOnlyModelViewSet):
+
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
+    serializer_class = UserNotificationSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['is_read']  
+    ordering = ['-created_at'] 
+    ordering_fields = ['created_at', 'read_at','is_read'] 
 
-    def get(self, request, format=None):
-        notifications = UserNotification.objects.filter(user=request.user)
-        serializer = UserNotificationSerializer(notifications, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+    def get_queryset(self):
+        return UserNotification.objects.filter(user=self.request.user)
 
 
 class MarkNotificationsAsRead(APIView):
