@@ -587,21 +587,25 @@ def get_email_message(training_instance,status):
 
     message_template = (
         "Hi {username},\n\n"
-        "Your training task (ID: {training_id}) has {status}. You can view the details here:\n"
+        "Your training task (ID: {training_id}) of model {model_name} has {status}. You can view the details here:\n"
         "{training_model_url}\n\n"
-        "Thank you for using fAIr - AI Assisted Mapping Tool. You can raise issues in our repo if you find any\n\n"
+        "Thank you for using fAIr - AI Assisted Mapping Tool.\n\n"
         "Best regards,\n"
-        "The fAIr Dev Team\n"
-        "https://fair.hotosm.org/ , https://github.com/hotosm/fAIr/"
+        "The fAIr Dev Team\n\n"
+        "Get Involved : https://www.hotosm.org/get-involved/\n"
+        "https://github.com/hotosm/fAIr/"
     )
 
     message = message_template.format(
         username=training_instance.user.username,
         training_id=training_instance.id,
+        model_name=training_instance.model.name,
         status=status.lower(),
         training_model_url=training_model_url,
+        hostname=hostname,
+
     )
-    subject = f"Training {training_instance.id} {status.capitalize()}"
+    subject = f"fAIr : Training {training_instance.id} {status.capitalize()}"
     return message, subject
 
 
