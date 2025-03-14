@@ -249,7 +249,7 @@ class TrainingViewSet(
     filterset_fields = ["model", "status", "user", "id"]
 
     ordering_fields = ["created_at", "accuracy", "id", "model", "status"]
-    search_fields = ["description", "id"]
+    search_fields = ["description", "id", "model__name"]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
