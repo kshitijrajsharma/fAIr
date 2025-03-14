@@ -436,6 +436,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
     feedbacks_count = serializers.SerializerMethodField()
     approved_predictions_count = serializers.SerializerMethodField()
     profile_completion_percentage = serializers.SerializerMethodField()
+    unread_notifications_count = serializers.SerializerMethodField()
 
     class Meta:
         model = OsmUser
@@ -453,6 +454,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "feedbacks_count",
             "approved_predictions_count",
             "profile_completion_percentage",
+            "unread_notifications_count",
         ]
         read_only_fields = [
             "osm_id",
@@ -464,6 +466,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "feedbacks_count",
             "approved_predictions_count",
             "profile_completion_percentage",
+            "unread_notifications_count",
         ]
 
     def get_models_count(self, obj):
@@ -487,6 +490,9 @@ class UserStatsSerializer(serializers.ModelSerializer):
         if obj.email is not None and obj.email != "":
             profile_percentage += 25
         return profile_percentage
+
+    def get_unread_notifications_count(self, obj):
+        return UserNotification.objects.filter(user=obj, is_read=False).count()
 
 
 class UserNotificationSerializer(serializers.ModelSerializer):
