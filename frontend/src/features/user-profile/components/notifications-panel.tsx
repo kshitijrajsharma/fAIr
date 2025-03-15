@@ -59,6 +59,7 @@ export const NotificationPanel = ({
     };
   }, []);
 
+
   const popUpContent = () => {
     return (
       <>
@@ -119,6 +120,7 @@ export const NotificationPanel = ({
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
+                  currentFilter={unRead}
                 />
               ))}
             </div>
@@ -167,10 +169,12 @@ export const NotificationPanel = ({
 
 const NotificationItem = ({
   notification,
+  currentFilter
 }: {
   notification: TNotification;
+  currentFilter: boolean | undefined;
 }) => {
-  const { isPending, mutate } = useUpdateNotification({});
+  const { isPending, mutate } = useUpdateNotification({ currentFilter: currentFilter });
 
   return (
     <div className="flex flex-col gap-y-4 px-2 py-3 items-start transition-colors duration-200 justify-between rounded-lg w-full hover:bg-gray-border cursor-pointer group">
@@ -196,7 +200,7 @@ const NotificationItem = ({
             className="!w-fit invisible duration-50 transition-all group-hover:visible shadow-lg"
             uppercase={false}
             contentClassName="text-body-4"
-            onClick={() => mutate({ ids: [String(notification.id)] })}
+            onClick={() => mutate({ id: notification.id })}
           >
             Mark as read
           </Button>

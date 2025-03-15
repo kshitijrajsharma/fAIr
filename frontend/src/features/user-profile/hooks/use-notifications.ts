@@ -31,13 +31,15 @@ export const useNotifications = ({
 
 type useUpdateNotificationOptions = {
   mutationConfig?: MutationConfig<typeof updateNotification>;
+  currentFilter?: boolean | undefined;
 };
 
 export const useUpdateNotification = ({
   mutationConfig,
+  currentFilter
 }: useUpdateNotificationOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
-  const { refetch } = useNotifications({ is_read: undefined, enabled: true });
+  const { refetch } = useNotifications({ is_read: currentFilter, enabled: true });
   return useMutation({
     mutationFn: (args: TUpdateNotificationArgs) => updateNotification(args),
     onSuccess: (...args) => {

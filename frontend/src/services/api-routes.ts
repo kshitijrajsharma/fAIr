@@ -92,7 +92,7 @@ export const API_ENDPOINTS = {
   // Notifications
   NOTIFICATIONS: "notifications/me",
 
-  UPDATE_NOTIFICATION: "notifications/mark-as-read/",
+  UPDATE_NOTIFICATION: (id: number) => `notifications/mark-as-read/${id}/`,
 
   UPDATE_NOTIFICATIONS: "notifications/mark-all-as-read/",
 };

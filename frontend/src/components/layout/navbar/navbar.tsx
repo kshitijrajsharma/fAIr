@@ -33,7 +33,7 @@ export const NavBar = () => {
 
   const { data, isPending, isError } = useNotifications({
     enabled: isAuthenticated,
-    is_read: unRead ? false : undefined,
+    is_read: unRead,
   });
 
   const { screenWidth } = useScreenSize();
@@ -109,7 +109,6 @@ export const NavBar = () => {
           {isAuthenticated ? (
             <div className={`${styles.profileContainer} `}>
               <NotificationBell
-                notificationExists={Number(data?.results?.length) > 0}
                 setShowNotificationPanel={setShowNotificationPanel}
                 showNotificationPanel={showNotificationPanel}
                 notificationAnchor={notificationAnchor}
@@ -137,7 +136,6 @@ export const NavBar = () => {
           {
             isAuthenticated &&
             <NotificationBell
-              notificationExists={Number(data?.results?.length) > 0}
               setShowNotificationPanel={setShowNotificationPanel}
               showNotificationPanel={showNotificationPanel}
               notificationAnchor={notificationAnchor}

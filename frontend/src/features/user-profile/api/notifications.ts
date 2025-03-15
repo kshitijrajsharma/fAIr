@@ -19,16 +19,14 @@ export const getNotifications = async (
 };
 
 export type TUpdateNotificationArgs = {
-  ids?: string[];
+  id: number;
 };
 
 export const updateNotification = async ({
-  ids,
+  id,
 }: TUpdateNotificationArgs): Promise<TNotification> => {
   return await (
-    await apiClient.post(API_ENDPOINTS.UPDATE_NOTIFICATION, {
-      ids,
-    })
+    await apiClient.post(API_ENDPOINTS.UPDATE_NOTIFICATION(id))
   ).data;
 };
 

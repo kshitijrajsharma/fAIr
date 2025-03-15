@@ -34,6 +34,7 @@ export type TUser = {
   newsletter_subscription: boolean;
   notifications_delivery_methods: string[];
   account_deletion_requested: boolean;
+  unread_notifications_count: number;
 };
 
 type TOSMUser = {
@@ -192,10 +193,10 @@ export type Feature = {
   type: "Feature";
   geometry: Geometry;
   properties:
-    | {
-        mid: string;
-      }
-    | GeoJsonProperties;
+  | {
+    mid: string;
+  }
+  | GeoJsonProperties;
 };
 
 export type FeatureCollection = {
