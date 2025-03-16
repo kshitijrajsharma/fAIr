@@ -193,10 +193,10 @@ export type Feature = {
   type: "Feature";
   geometry: Geometry;
   properties:
-  | {
-    mid: string;
-  }
-  | GeoJsonProperties;
+    | {
+        mid: string;
+      }
+    | GeoJsonProperties;
 };
 
 export type FeatureCollection = {

@@ -9,7 +9,7 @@ import {
   useUpdateNotifications,
 } from "@/features/user-profile/hooks/use-notifications";
 import { NoTrainingAreaIcon } from "@/components/ui/icons";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const NotificationPanel = ({
   anchor,
@@ -21,6 +21,8 @@ export const NotificationPanel = ({
   setUnread,
   isSmallViewport,
   setShowNotificationPanel,
+  loadMore,
+  offset,
 }: {
   anchor: string;
   active: boolean;
@@ -31,6 +33,8 @@ export const NotificationPanel = ({
   setUnread: (unRead: boolean | undefined) => void;
   isSmallViewport: boolean;
   setShowNotificationPanel: (show: boolean) => void;
+  loadMore: () => void;
+  offset: number;
 }) => {
   const {
     isPending: isNotificationsUpdatePending,
@@ -41,6 +45,7 @@ export const NotificationPanel = ({
         showErrorToast(error);
       },
     },
+    offset,
   });
 
   useEffect(() => {
@@ -59,6 +64,17 @@ export const NotificationPanel = ({
     };
   }, []);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    // Trigger when you're within 100px of the bottom
+    if (scrollHeight - scrollTop <= clientHeight + 100) {
+      loadMore();
+    }
+  };
 
   const popUpContent = () => {
     return (
@@ -100,7 +116,11 @@ export const NotificationPanel = ({
             </button>
           </div>
         </div>
-        <div className="h-96 max-h-96 overflow-y-auto scrollable flex flex-col gap-y-4 py-5">
+        <div
+          className="h-96 max-h-96 overflow-y-auto scrollable flex flex-col gap-y-4 py-5"
+          ref={scrollRef}
+          onScroll={handleScroll}
+        >
           {isPending ? (
             <NotificationSkeleton />
           ) : isError ? (
@@ -120,7 +140,8 @@ export const NotificationPanel = ({
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
-                  currentFilter={unRead}
+                  isRead={unRead}
+                  offset={offset}
                 />
               ))}
             </div>
@@ -169,12 +190,14 @@ export const NotificationPanel = ({
 
 const NotificationItem = ({
   notification,
-  currentFilter
+  isRead,
+  offset,
 }: {
   notification: TNotification;
-  currentFilter: boolean | undefined;
+  isRead: boolean | undefined;
+  offset: number;
 }) => {
-  const { isPending, mutate } = useUpdateNotification({ currentFilter: currentFilter });
+  const { isPending, mutate } = useUpdateNotification({ isRead, offset });
 
   return (
     <div className="flex flex-col gap-y-4 px-2 py-3 items-start transition-colors duration-200 justify-between rounded-lg w-full hover:bg-gray-border cursor-pointer group">

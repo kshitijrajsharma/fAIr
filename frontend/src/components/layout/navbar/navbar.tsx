@@ -11,7 +11,7 @@ import { SHARED_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserProfile } from "@/components/layout";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NotificationPanel } from "@/features/user-profile/components";
 import { useNotifications } from "@/features/user-profile/hooks/use-notifications";
 import { TNotification } from "@/types";
@@ -22,7 +22,11 @@ export const NavBar = () => {
 
   const { isAuthenticated } = useAuth();
 
-  const [unRead, setUnread] = useState<boolean | undefined>(undefined);
+  const [unRead, setUnread] = useState<boolean | undefined>(false);
+
+  const [notifications, setNotifications] = useState<TNotification[]>([]);
+
+  const [offset, setOffset] = useState<number>(0);
 
   const navigate = useNavigate();
 
@@ -34,11 +38,39 @@ export const NavBar = () => {
   const { data, isPending, isError } = useNotifications({
     enabled: isAuthenticated,
     is_read: unRead,
+    offset,
   });
 
   const { screenWidth } = useScreenSize();
 
   const notificationAnchor = "notificationPanel";
+  const loadingMoreRef = useRef(false);
+
+  useEffect(() => {
+    if (data?.results) {
+      setNotifications((prev) => [...prev, ...data.results]);
+    }
+  }, [data?.results]);
+
+  const loadMore = useCallback(() => {
+    if (
+      !data?.hasNext ||
+      isPending ||
+      offset >= data?.count ||
+      loadingMoreRef.current
+    ) {
+      return;
+    }
+    loadingMoreRef.current = true;
+    setOffset((prev) => prev + 20);
+  }, [data?.hasNext, data?.count, isPending]);
+
+  // Reset after data changes
+  useEffect(() => {
+    if (!isPending) {
+      loadingMoreRef.current = false;
+    }
+  }, [isPending]);
 
   /**
    * Close the notification panel incase the user resizes their browser.
@@ -95,10 +127,12 @@ export const NavBar = () => {
             anchor={notificationAnchor}
             isPending={isPending}
             isError={isError}
-            notifications={data?.results as TNotification[]}
+            notifications={notifications as TNotification[]}
             setUnread={setUnread}
             unRead={unRead}
             isSmallViewport={screenWidth < 960}
+            loadMore={loadMore}
+            offset={offset}
           />
         )}
         <NavLogo />
@@ -133,14 +167,13 @@ export const NavBar = () => {
           )}
         </div>
         <div className="flex items-center gap-x-2 mdx:hidden">
-          {
-            isAuthenticated &&
+          {isAuthenticated && (
             <NotificationBell
               setShowNotificationPanel={setShowNotificationPanel}
               showNotificationPanel={showNotificationPanel}
               notificationAnchor={notificationAnchor}
             />
-          }
+          )}
           <button
             className={styles.hamburgerMenu}
             onClick={() => setOpen(true)}

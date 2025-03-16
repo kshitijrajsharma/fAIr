@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUserNotificationsQueryOptions } from "../api/factory";
+
 import {
   TUpdateNotificationArgs,
   updateNotification,
@@ -8,38 +9,40 @@ import {
 import { MutationConfig } from "@/services";
 
 type UseNotificationsOptions = {
-  offset?: number;
   enabled: boolean;
   is_read: boolean | undefined;
+  offset: number;
 };
 
 export const useNotifications = ({
-  offset,
   enabled,
   is_read,
+  offset,
 }: UseNotificationsOptions) => {
   return useQuery({
-    ...getUserNotificationsQueryOptions({
-      is_read,
-      offset,
-    }),
-    enabled: enabled,
-    // Refetch every 10 seconds.
+    ...getUserNotificationsQueryOptions({ is_read, offset }),
+    enabled,
     refetchInterval: 10000,
   });
 };
 
 type useUpdateNotificationOptions = {
   mutationConfig?: MutationConfig<typeof updateNotification>;
-  currentFilter?: boolean | undefined;
+  isRead: boolean | undefined;
+  offset: number;
 };
 
 export const useUpdateNotification = ({
   mutationConfig,
-  currentFilter
+  isRead,
+  offset,
 }: useUpdateNotificationOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
-  const { refetch } = useNotifications({ is_read: currentFilter, enabled: true });
+  const { refetch } = useNotifications({
+    is_read: isRead,
+    enabled: false,
+    offset,
+  });
   return useMutation({
     mutationFn: (args: TUpdateNotificationArgs) => updateNotification(args),
     onSuccess: (...args) => {
@@ -52,13 +55,19 @@ export const useUpdateNotification = ({
 
 type useUpdateNotificationsOptions = {
   mutationConfig?: MutationConfig<typeof updateNotifications>;
+  offset: number;
 };
 
 export const useUpdateNotifications = ({
   mutationConfig,
+  offset,
 }: useUpdateNotificationsOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
-  const { refetch } = useNotifications({ is_read: undefined, enabled: true });
+  const { refetch } = useNotifications({
+    is_read: undefined,
+    enabled: false,
+    offset,
+  });
   return useMutation({
     mutationFn: () => updateNotifications(),
     onSuccess: (...args) => {
