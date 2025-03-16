@@ -1,11 +1,11 @@
 import maplibregl from "maplibre-gl";
-import { HexColorStyling } from "node_modules/terra-draw/dist/common";
 import {
   TerraDraw,
-  TerraDrawMapLibreGLAdapter,
   ValidateNotSelfIntersecting,
   TerraDrawRectangleMode,
+  TerraDrawExtend
 } from "terra-draw";
+import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 import {
   TRAINING_AREAS_AOI_FILL_COLOR,
   TRAINING_AREAS_AOI_FILL_OPACITY,
@@ -50,17 +50,19 @@ export const setupTerraDraw = (map: maplibregl.Map) => {
           if (updateType === "finish" || updateType === "commit") {
             return ValidateNotSelfIntersecting(feature);
           }
-          return true;
+          return {
+            valid: true
+          };
         },
         styles: {
           // Fill colour (a string containing a 6 digit Hex color)
-          fillColor: TRAINING_AREAS_AOI_FILL_COLOR as HexColorStyling,
+          fillColor: TRAINING_AREAS_AOI_FILL_COLOR as TerraDrawExtend.HexColorStyling,
 
           // Fill opacity (0 - 1)
           fillOpacity: TRAINING_AREAS_AOI_FILL_OPACITY,
 
           // Outline colour (Hex color)
-          outlineColor: TRAINING_AREAS_AOI_OUTLINE_COLOR as HexColorStyling,
+          outlineColor: TRAINING_AREAS_AOI_OUTLINE_COLOR as TerraDrawExtend.HexColorStyling,
 
           //Outline width (Integer)
           outlineWidth: TRAINING_AREAS_AOI_OUTLINE_WIDTH,
