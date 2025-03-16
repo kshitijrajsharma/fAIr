@@ -24,6 +24,12 @@ from .serializers import FeedbackLabelSerializer, LabelSerializer
 
 
 def get_s3_client():
+    """
+    Get an S3 client using the provided AWS credentials.
+
+    Returns:
+        boto3.client: The S3 client.
+    """
     if settings.AWS_ACCESS_KEY_ID and settings.AWS_SECRET_ACCESS_KEY:
         return boto3.client(
             "s3",
@@ -39,7 +45,16 @@ s3_client = get_s3_client()
 
 
 def s3_object_exists(bucket_name, key):
-    """Check if an object exists in S3."""
+    """
+    Check if an object exists in S3.
+
+    Args:
+        bucket_name (str): The name of the S3 bucket.
+        key (str): The key of the object.
+
+    Returns:
+        bool: True if the object exists, False otherwise.
+    """
     try:
         s3_client.head_object(Bucket=bucket_name, Key=key)
         return True
@@ -50,7 +65,16 @@ def s3_object_exists(bucket_name, key):
 
 
 def download_s3_file(bucket_name, s3_key):
-    """Generate a presigned URL for downloading a file from S3."""
+    """
+    Generate a presigned URL for downloading a file from S3.
+
+    Args:
+        bucket_name (str): The name of the S3 bucket.
+        s3_key (str): The key of the object.
+
+    Returns:
+        str: The presigned URL for downloading the file.
+    """
     try:
         presigned_url = s3_client.generate_presigned_url(
             "get_object",
@@ -63,7 +87,16 @@ def download_s3_file(bucket_name, s3_key):
 
 
 def get_s3_metadata(bucket_name, key):
-    """Retrieve metadata for an S3 object."""
+    """
+    Retrieve metadata for an S3 object.
+
+    Args:
+        bucket_name (str): The name of the S3 bucket.
+        key (str): The key of the object.
+
+    Returns:
+        dict: The metadata of the S3 object.
+    """
     try:
         response = s3_client.head_object(Bucket=bucket_name, Key=key)
         return {"size": response.get("ContentLength")}
@@ -95,7 +128,16 @@ def get_s3_directory_size_and_length(bucket_name, prefix):
 
 
 def get_s3_directory(bucket_name, prefix):
-    """List objects in an S3 directory."""
+    """
+    List objects in an S3 directory.
+
+    Args:
+        bucket_name (str): The S3 bucket name.
+        prefix (str): The prefix (path) to the directory.
+
+    Returns:
+        dict: The directory contents with file and directory metadata.
+    """
     data = {"file": {}, "dir": {}}
     paginator = s3_client.get_paginator("list_objects_v2")
     for page in paginator.paginate(Bucket=bucket_name, Prefix=prefix, Delimiter="/"):
@@ -116,7 +158,15 @@ def get_s3_directory(bucket_name, prefix):
 
 
 def get_local_metadata(base_dir):
-    """Retrieve metadata for local files or directories."""
+    """
+    Retrieve metadata for local files or directories.
+
+    Args:
+        base_dir (str): The base directory path.
+
+    Returns:
+        dict: The metadata of the local files or directories.
+    """
     data = {"file": {}, "dir": {}}
     if os.path.isdir(base_dir):
         for entry in os.scandir(base_dir):
@@ -136,6 +186,15 @@ def get_local_metadata(base_dir):
 
 
 def get_dir_size(directory):
+    """
+    Get the total size of a directory.
+
+    Args:
+        directory (str): The directory path.
+
+    Returns:
+        int: The total size of the directory in bytes.
+    """
     total_size = 0
     for entry in os.scandir(directory):
         if entry.is_file():
@@ -146,20 +205,20 @@ def get_dir_size(directory):
 
 
 def bbox(coord_list):
-    """_summary_
+    """
+    Calculate the bounding box coordinates for a polygon.
 
     Args:
-        coord_list (_type_): Polygon coordinate list
+        coord_list (list): The list of polygon coordinates.
 
     Returns:
-        list: bbox coords
-
+        list: The bounding box coordinates.
     """
     box = []
     for i in (0, 1):
         res = sorted(coord_list, key=lambda x: x[i])
         box.append((res[0][i], res[-1][i]))
-    correction = 0.000001  # need crctn because coordinate comming from js
+    correction = 0.000001  # need correction because coordinate coming from js
     ret = [
         box[0][0] + correction,
         box[1][0] + correction,
@@ -170,14 +229,39 @@ def bbox(coord_list):
 
 
 def is_dir_empty(directory_path):
+    """
+    Check if a directory is empty.
+
+    Args:
+        directory_path (str): The directory path.
+
+    Returns:
+        bool: True if the directory is empty, False otherwise.
+    """
     return not any(os.scandir(directory_path))
 
 
 class RawDataAPI:
+    """
+    A class to interact with the Raw Data API.
+
+    Args:
+        BASE_API_URL (str): The base URL of the Raw Data API.
+    """
+
     def __init__(self, BASE_API_URL):
         self.BASE_API_URL = BASE_API_URL
 
     def request_snapshot(self, geometry):
+        """
+        Request a snapshot from the Raw Data API.
+
+        Args:
+            geometry (str): The geometry for the snapshot request.
+
+        Returns:
+            dict: The snapshot response.
+        """
         headers = {
             "accept": "application/json",
             "Content-Type": "application/json",
@@ -197,6 +281,15 @@ class RawDataAPI:
         return response.json()
 
     def poll_task_status(self, task_link):
+        """
+        Poll the status of a task from the Raw Data API.
+
+        Args:
+            task_link (str): The task link.
+
+        Returns:
+            dict: The task status response.
+        """
         stop_loop = False
         while not stop_loop:
             check_result = requests.get(url=f"{self.BASE_API_URL}{task_link}")
@@ -212,18 +305,18 @@ import logging
 
 
 def request_rawdata(geometry):
-    """will make call to Raw Data API & provides response as json
+    """
+    Request raw data from the Raw Data API.
 
     Args:
-        geometry (dict): geometry to request
-
-    Raises:
-        ImportError: If raw data api url is not exists
+        geometry (dict): The geometry for the request.
 
     Returns:
-        Response(json): API Response
-    """
+        str: The download URL of the raw data.
 
+    Raises:
+        RuntimeError: If the Raw Data API did not respond correctly.
+    """
     export_tool_api_url = settings.EXPORT_TOOL_API_URL
     api = RawDataAPI(export_tool_api_url)
     snapshot_data = api.request_snapshot(geometry)
@@ -240,9 +333,14 @@ def request_rawdata(geometry):
 
 
 def process_rawdata(file_download_url, aoi_id, feedback=False):
-    """This will create temp directory , Downloads file from URL provided,
-    Unzips it Finds a geojson file , Process it and finally removes
-    processed Geojson file and downloaded zip file from Directory"""
+    """
+    Process raw data by downloading, unzipping, and processing the geojson file.
+
+    Args:
+        file_download_url (str): The URL to download the raw data file.
+        aoi_id (int): The ID of the AOI.
+        feedback (bool): Whether to process feedback data.
+    """
     headers = {"Referer": "https://fair-dev.hotosm.org/"}  # TODO : Use request uri
     r = requests.get(file_download_url, headers=headers)
     # Check whether the export path exists or not
@@ -274,20 +372,25 @@ def process_rawdata(file_download_url, aoi_id, feedback=False):
 
 
 def remove_file(path: str) -> None:
-    """Used for removing temp file"""
+    """
+    Remove a file from the specified path.
+
+    Args:
+        path (str): The path to the file.
+    """
     os.unlink(path)
 
 
 def gpx_generator(geom_json):
-    """Generates GPX for give geojson geometry
+    """
+    Generate a GPX file for the given geojson geometry.
 
     Args:
-        geom_json (_type_): _description_
+        geom_json (dict): The geojson geometry.
 
     Returns:
-        xml: gpx
+        str: The GPX file content.
     """
-
     gpx = GPX()
     gpx_track = GPXTrack()
     gpx.tracks.append(gpx_track)
@@ -306,7 +409,18 @@ def gpx_generator(geom_json):
 
 
 def process_feature(feature, aoi_id, foreign_key_id, feedback=False):
-    """Multi thread process of features"""
+    """
+    Process a single feature from the geojson file.
+
+    Args:
+        feature (dict): The feature to process.
+        aoi_id (int): The ID of the AOI.
+        foreign_key_id (int): The foreign key ID.
+        feedback (bool): Whether to process feedback data.
+
+    Raises:
+        ValidationErr: If the feature data is not valid.
+    """
     properties = feature["properties"]
     osm_id = properties["osm_id"]
     tags = properties["tags"]
@@ -346,16 +460,16 @@ def process_feature(feature, aoi_id, foreign_key_id, feedback=False):
 
 
 def process_geojson(geojson_file_path, aoi_id, feedback=False):
-    """Responsible for Processing Geojson file from directory ,
-        Opens the file reads the record , Checks either record
-        present or not if not inserts into database
+    """
+    Process a geojson file by reading the features and saving them to the database.
 
     Args:
-        geojson_file_path (_type_): _description_
-        aoi_id (_type_): _description_
+        geojson_file_path (str): The path to the geojson file.
+        aoi_id (int): The ID of the AOI.
+        feedback (bool): Whether to process feedback data.
 
     Raises:
-        ValidationErr: _description_
+        ValidationErr: If the feature data is not valid.
     """
     print("Geojson Processing Started")
     if feedback:
@@ -387,6 +501,16 @@ def process_geojson(geojson_file_path, aoi_id, feedback=False):
 
 
 class S3Uploader:
+    """
+    A class to handle uploading files and directories to S3.
+
+    Args:
+        bucket_name (str): The name of the S3 bucket.
+        aws_access_key_id (str): The AWS access key ID.
+        aws_secret_access_key (str): The AWS secret access key.
+        parent (str): The parent directory in S3.
+    """
+
     def __init__(
         self,
         bucket_name=None,
@@ -412,6 +536,20 @@ class S3Uploader:
             raise
 
     def upload(self, path, bucket_name=None):
+        """
+        Upload a file or directory to S3.
+
+        Args:
+            path (str): The path to the file or directory.
+            bucket_name (str): The name of the S3 bucket.
+
+        Returns:
+            str: The S3 URL of the uploaded file or directory.
+
+        Raises:
+            FileNotFoundError: If the path does not exist.
+            ValueError: If the bucket name is not provided.
+        """
         if not os.path.exists(path):
             raise FileNotFoundError(f"Path not found: {path}")
 
@@ -431,11 +569,31 @@ class S3Uploader:
             raise
 
     def _upload_file(self, file_path, bucket_name):
+        """
+        Upload a file to S3.
+
+        Args:
+            file_path (str): The path to the file.
+            bucket_name (str): The name of the S3 bucket.
+
+        Returns:
+            str: The S3 URL of the uploaded file.
+        """
         s3_key = f"{self.parent}/{os.path.basename(file_path)}"
         self.s3_client.upload_file(file_path, bucket_name, s3_key)
         return f"s3://{bucket_name}/{s3_key}"
 
     def _upload_directory(self, directory_path, bucket_name):
+        """
+        Upload a directory to S3.
+
+        Args:
+            directory_path (str): The path to the directory.
+            bucket_name (str): The name of the S3 bucket.
+
+        Returns:
+            dict: The S3 URL and metadata of the uploaded directory.
+        """
         total_files = 0
         for root, _, files in os.walk(directory_path):
             for file in files:

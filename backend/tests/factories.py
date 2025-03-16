@@ -14,6 +14,9 @@ from login.models import OsmUser
 
 
 class OsmUserFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating OsmUser instances.
+    """
     class Meta:
         model = OsmUser
 
@@ -21,6 +24,9 @@ class OsmUserFactory(factory.django.DjangoModelFactory):
 
 
 class DatasetFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating Dataset instances.
+    """
     class Meta:
         model = Dataset
 
@@ -30,6 +36,9 @@ class DatasetFactory(factory.django.DjangoModelFactory):
 
 
 class AoiFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating AOI instances.
+    """
     class Meta:
         model = AOI
 
@@ -46,6 +55,9 @@ class AoiFactory(factory.django.DjangoModelFactory):
 
 
 class LabelFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating Label instances.
+    """
     class Meta:
         model = Label
 
@@ -62,6 +74,9 @@ class LabelFactory(factory.django.DjangoModelFactory):
 
 
 class ModelFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating Model instances.
+    """
     class Meta:
         model = Model
 
@@ -71,6 +86,9 @@ class ModelFactory(factory.django.DjangoModelFactory):
 
 
 class TrainingFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating Training instances.
+    """
     class Meta:
         model = Training
 
@@ -83,6 +101,9 @@ class TrainingFactory(factory.django.DjangoModelFactory):
 
 
 class FeedbackFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating Feedback instances.
+    """
     class Meta:
         model = Feedback
 
@@ -103,6 +124,9 @@ class FeedbackFactory(factory.django.DjangoModelFactory):
 
 
 class FeedbackAoiFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating FeedbackAOI instances.
+    """
     class Meta:
         model = FeedbackAOI
 
@@ -122,6 +146,9 @@ class FeedbackAoiFactory(factory.django.DjangoModelFactory):
 
 
 class FeedbackLabelFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating FeedbackLabel instances.
+    """
     class Meta:
         model = FeedbackLabel
 

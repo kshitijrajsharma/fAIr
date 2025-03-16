@@ -10,7 +10,6 @@ import zipfile
 from datetime import datetime
 from urllib.parse import quote
 
-# import tensorflow as tf
 from celery import current_app
 from celery.result import AsyncResult
 from django.conf import settings
@@ -85,12 +84,16 @@ if settings.ENABLE_PREDICTION_API:
 
 
 def home(request):
+    """
+    Redirects to the schema-swagger-ui.
+    """
     return redirect("schema-swagger-ui")
 
 
-class DatasetViewSet(
-    viewsets.ModelViewSet
-):  # This is datasetviewset , will be tightly coupled with the models
+class DatasetViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing datasets.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
@@ -100,7 +103,7 @@ class DatasetViewSet(
         filters.SearchFilter,
         filters.OrderingFilter,
     )
-    serializer_class = DatasetSerializer  # connecting serializer
+    serializer_class = DatasetSerializer
     filterset_fields = {
         "status": ["exact"],
         "created_at": ["exact", "gt", "gte", "lt", "lte"],
@@ -114,14 +117,18 @@ class DatasetViewSet(
 
 
 class ModelMetaSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Model metadata.
+    """
     class Meta:
         model = Model
         fields = ["id", "name", "dataset", "base_model", "status"]
 
 
-class TrainingSerializer(
-    serializers.ModelSerializer
-):  # serializers are used to translate models objects to api
+class TrainingSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Training model.
+    """
     user = UserSerializer(read_only=True)
     multimasks = serializers.BooleanField(required=False, default=False)
     input_contact_spacing = serializers.IntegerField(
@@ -133,7 +140,7 @@ class TrainingSerializer(
 
     class Meta:
         model = Training
-        fields = "__all__"  # defining all the fields to  be included in curd for now , we can restrict few if we want
+        fields = "__all__"
         read_only_fields = (
             "created_at",
             "status",
@@ -144,6 +151,15 @@ class TrainingSerializer(
         )
 
     def create(self, validated_data):
+        """
+        Create a new Training instance.
+
+        Args:
+            validated_data (dict): The validated data for creating the Training.
+
+        Returns:
+            Training: The created Training instance.
+        """
         model_id = validated_data["model"].id
         existing_trainings = Training.objects.filter(model_id=model_id).exclude(
             status__in=["FINISHED", "FAILED"]
@@ -173,7 +189,6 @@ class TrainingSerializer(
                     f"Batch size can't be greater than {settings.RAMP_BATCH_SIZE_LIMIT} on this server"
                 )
         if model.base_model in ["YOLO_V8_V1", "YOLO_V8_V2"]:
-
             if epochs > settings.YOLO_EPOCHS_LIMIT:
                 raise ValidationError(
                     f"Epochs can't be greater than {settings.YOLO_EPOCHS_LIMIT} on this server"
@@ -184,7 +199,6 @@ class TrainingSerializer(
                 )
         user = self.context["request"].user
         validated_data["user"] = user
-        # create the model instance
         multimasks = validated_data.get("multimasks", False)
         input_contact_spacing = validated_data.get("input_contact_spacing", 0.75)
         input_boundary_width = validated_data.get("input_boundary_width", 0.5)
@@ -197,7 +211,6 @@ class TrainingSerializer(
 
         instance = Training.objects.create(**validated_data)
 
-        # run your function here
         task = train_model.delay(
             dataset_id=instance.model.dataset.id,
             training_id=instance.id,
@@ -223,6 +236,15 @@ class TrainingSerializer(
         return instance
 
     def to_representation(self, instance):
+        """
+        Customize the representation of the Training instance.
+
+        Args:
+            instance (Training): The Training instance.
+
+        Returns:
+            dict: The customized representation of the Training instance.
+        """
         ret = super().to_representation(instance)
         request = self.context.get("request")
         if request and request.method.upper() == "GET":
@@ -232,9 +254,10 @@ class TrainingSerializer(
         return ret
 
 
-class TrainingViewSet(
-    viewsets.ModelViewSet
-):  # This is TrainingViewSet , will be tightly coupled with the models
+class TrainingViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing training instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
@@ -245,18 +268,29 @@ class TrainingViewSet(
         filters.SearchFilter,
         filters.OrderingFilter,
     )
-    serializer_class = TrainingSerializer  # connecting serializer
+    serializer_class = TrainingSerializer
     filterset_fields = ["model", "status", "user", "id"]
 
     ordering_fields = ["created_at", "accuracy", "id", "model", "status"]
     search_fields = ["description", "id", "model__name"]
 
     def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a training instance.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The HTTP response with the training instance data.
+        """
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         feedback_count = Feedback.objects.filter(
             training=instance.id
-        ).count()  # cal feedback count
+        ).count()
         approved_predictions_count = ApprovedPredictions.objects.filter(
             training=instance.id
         ).count()
@@ -267,6 +301,9 @@ class TrainingViewSet(
 
 
 class FeedbackViewset(viewsets.ModelViewSet):
+    """
+    ViewSet for managing feedback instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
@@ -276,7 +313,6 @@ class FeedbackViewset(viewsets.ModelViewSet):
     bbox_filter_field = "geom"
     filter_backends = (
         InBBoxFilter,
-        # TMSTileFilter,
         DjangoFilterBackend,
     )
     bbox_filter_include_overlapping = True
@@ -284,6 +320,9 @@ class FeedbackViewset(viewsets.ModelViewSet):
 
 
 class FeedbackAOIViewset(viewsets.ModelViewSet):
+    """
+    ViewSet for managing feedback AOI instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
@@ -297,6 +336,9 @@ class FeedbackAOIViewset(viewsets.ModelViewSet):
 
 
 class FeedbackLabelViewset(viewsets.ModelViewSet):
+    """
+    ViewSet for managing feedback label instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
@@ -305,22 +347,23 @@ class FeedbackLabelViewset(viewsets.ModelViewSet):
     serializer_class = FeedbackLabelSerializer
     bbox_filter_field = "geom"
     filter_backends = (
-        InBBoxFilter,  # it will take bbox like this api/v1/label/?in_bbox=-90,29,-89,35 ,
+        InBBoxFilter,
         DjangoFilterBackend,
     )
     bbox_filter_include_overlapping = True
     filterset_fields = ["feedback_aoi", "feedback_aoi__training"]
 
 
-class ModelViewSet(
-    viewsets.ModelViewSet
-):  # This is ModelViewSet , will be tightly coupled with the models
+class ModelViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing model instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
     queryset = Model.objects.all()
     filter_backends = (
-        InBBoxFilter,  # it will take bbox like this api/v1/model/?in_bbox=-90,29,-89,35 ,
+        InBBoxFilter,
         DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
@@ -339,10 +382,12 @@ class ModelViewSet(
 
 
 class ModelCentroidView(ListAPIView):
-    queryset = Model.objects.filter(status=0)  ## only deliver the published model
+    """
+    View for retrieving model centroids.
+    """
+    queryset = Model.objects.filter(status=0)
     serializer_class = ModelCentroidSerializer
     filter_backends = (
-        # InBBoxFilter,
         DjangoFilterBackend,
         filters.SearchFilter,
     )
@@ -352,6 +397,9 @@ class ModelCentroidView(ListAPIView):
 
 
 class UsersView(ListAPIView):
+    """
+    View for retrieving user statistics.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsAdminUser, IsStaffUser]
     queryset = OsmUser.objects.all()
@@ -365,35 +413,50 @@ class UsersView(ListAPIView):
 
 
 class AOIViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing AOI instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
     authenticated_user_allowed_methods = ["POST", "DELETE"]
     queryset = AOI.objects.all()
-    serializer_class = AOISerializer  # connecting serializer
+    serializer_class = AOISerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["dataset"]
 
 
 class LabelViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing label instances.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
     queryset = Label.objects.all()
-    serializer_class = LabelSerializer  # connecting serializer
+    serializer_class = LabelSerializer
     bbox_filter_field = "geom"
     pagination_class = None
     filter_backends = (
-        InBBoxFilter,  # it will take bbox like this api/v1/label/?in_bbox=-90,29,-89,35 ,
-        TMSTileFilter,  # will serve as tms tiles https://wiki.openstreetmap.org/wiki/TMS ,  use like this ?tile=8/100/200 z/x/y which is equivalent to filtering on the bbox (-39.37500,-71.07406,-37.96875,-70.61261) # Note that the tile address start in the upper left, not the lower left origin used by some implementations.
+        InBBoxFilter,
+        TMSTileFilter,
         DjangoFilterBackend,
     )
-    bbox_filter_include_overlapping = (
-        True  # Optional to include overlapping labels in the tile served
-    )
+    bbox_filter_include_overlapping = True
     filterset_fields = ["aoi", "aoi__dataset"]
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a new label instance.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The HTTP response with the created label instance data.
+        """
         aoi_id = request.data.get("aoi")
         geom = request.data.get("geom")
 
@@ -411,11 +474,26 @@ class LabelViewSet(viewsets.ModelViewSet):
 
 
 class LabelUploadView(APIView):
+    """
+    View for uploading label GeoJSON files.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, aoi_id, *args, **kwargs):
+        """
+        Handle the upload of a GeoJSON file for labels.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            aoi_id (int): The ID of the AOI.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The HTTP response indicating the status of the upload.
+        """
         geojson_file = request.FILES.get("geojson_file")
         if geojson_file:
             try:
@@ -437,6 +515,15 @@ class LabelUploadView(APIView):
         )
 
     def validate_geojson(self, geojson_data):
+        """
+        Validate the GeoJSON data.
+
+        Args:
+            geojson_data (dict): The GeoJSON data to validate.
+
+        Raises:
+            ValidationError: If the GeoJSON data is invalid.
+        """
         if geojson_data.get("type") != "FeatureCollection":
             raise ValidationError("Invalid GeoJSON type. Expected 'FeatureCollection'.")
         if "features" not in geojson_data or not isinstance(
@@ -446,7 +533,6 @@ class LabelUploadView(APIView):
         if not geojson_data["features"]:
             raise ValidationError("GeoJSON 'features' list is empty.")
 
-        # Validate the first feature
         first_feature = geojson_data["features"][0]
         if first_feature.get("type") != "Feature":
             raise ValidationError("Invalid GeoJSON feature type. Expected 'Feature'.")
@@ -455,7 +541,6 @@ class LabelUploadView(APIView):
                 "Invalid GeoJSON feature format. 'geometry' and 'properties' are required."
             )
 
-        # Validate the first feature with the serializer
         first_feature["properties"]["aoi"] = self.kwargs.get("aoi_id")
         serializer = LabelSerializer(data=first_feature)
 
@@ -464,6 +549,13 @@ class LabelUploadView(APIView):
 
 
 def process_labels_geojson(geojson_data, aoi_id):
+    """
+    Process the GeoJSON data for labels.
+
+    Args:
+        geojson_data (dict): The GeoJSON data.
+        aoi_id (int): The ID of the AOI.
+    """
     obj = get_object_or_404(AOI, id=aoi_id)
     try:
         obj.label_status = AOI.DownloadStatus.RUNNING
@@ -484,6 +576,9 @@ def process_labels_geojson(geojson_data, aoi_id):
 
 
 class ApprovedPredictionsViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing approved predictions.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     public_methods = ["GET"]
@@ -492,13 +587,23 @@ class ApprovedPredictionsViewSet(viewsets.ModelViewSet):
     bbox_filter_field = "geom"
     filter_backends = (
         InBBoxFilter,
-        # TMSTileFilter,
         DjangoFilterBackend,
     )
     bbox_filter_include_overlapping = True
     filterset_fields = ["training"]
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a new approved prediction instance.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The HTTP response with the created approved prediction instance data.
+        """
         training_id = request.data.get("training")
         geom = request.data.get("geom")
         request.data["approved_by"] = self.request.user.osm_id
@@ -512,7 +617,6 @@ class ApprovedPredictionsViewSet(viewsets.ModelViewSet):
                 existing_approved_feature, data=request.data
             )
         else:
-
             serializer = ApprovedPredictionsSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -522,18 +626,24 @@ class ApprovedPredictionsViewSet(viewsets.ModelViewSet):
 
 
 class RawdataApiFeedbackView(APIView):
+    """
+    View for handling raw data API feedback.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
     def post(self, request, feedbackaoi_id, *args, **kwargs):
-        """Downloads available osm data as labels within given feedback aoi
+        """
+        Handle the request to download OSM data as labels within a feedback AOI.
 
         Args:
-            request (_type_): _description_
-            feedbackaoi_id (_type_): _description_
+            request (HttpRequest): The HTTP request.
+            feedbackaoi_id (int): The ID of the feedback AOI.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
-            status: Success/Failed
+            Response: The HTTP response indicating the status of the download.
         """
         obj = get_object_or_404(FeedbackAOI, id=feedbackaoi_id)
         try:
@@ -548,24 +658,29 @@ class RawdataApiFeedbackView(APIView):
         except Exception as ex:
             obj.label_status = -1
             obj.save()
-            # raise ex
             logging.error(ex)
             return Response("OSM Fetch Failed", status=500)
 
 
 class RawdataApiAOIView(APIView):
+    """
+    View for handling raw data API AOI requests.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
     def post(self, request, aoi_id, *args, **kwargs):
-        """Downloads available osm data as labels within given feedback
+        """
+        Handle the request to download OSM data as labels within an AOI.
 
         Args:
-            request (_type_): _description_
-            aoi_id (_type_): _description_
+            request (HttpRequest): The HTTP request.
+            aoi_id (int): The ID of the AOI.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
-            status: Success/Failed
+            Response: The HTTP response indicating the status of the download.
         """
         obj = get_object_or_404(AOI, id=aoi_id)
         async_task("core.views.process_rawdata_task", obj.geom.geojson, aoi_id)
@@ -573,6 +688,13 @@ class RawdataApiAOIView(APIView):
 
 
 def process_rawdata_task(geom_geojson, aoi_id):
+    """
+    Process the raw data task for an AOI.
+
+    Args:
+        geom_geojson (str): The GeoJSON geometry of the AOI.
+        aoi_id (int): The ID of the AOI.
+    """
     obj = get_object_or_404(AOI, id=aoi_id)
     try:
         obj.label_status = AOI.DownloadStatus.RUNNING
@@ -590,10 +712,16 @@ def process_rawdata_task(geom_geojson, aoi_id):
 
 @api_view(["GET"])
 def download_training_data(request, dataset_id: int):
-    """Used for Delivering our training folder to user.
-    Returns zip file if it is present on our server if not returns error
     """
+    Download the training data for a dataset.
 
+    Args:
+        request (HttpRequest): The HTTP request.
+        dataset_id (int): The ID of the dataset.
+
+    Returns:
+        HttpResponse: The HTTP response with the training data zip file.
+    """
     file_path = os.path.join(
         settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}", "input"
     )
@@ -609,22 +737,27 @@ def download_training_data(request, dataset_id: int):
         if os.path.exists(zip_temp_path):
             response = HttpResponse(open(zip_temp_path, "rb"))
             response.headers["Content-Type"] = "application/x-zip-compressed"
-
             response.headers["Content-Disposition"] = (
                 f"attachment; filename=training_{dataset_id}_all_data.zip"
             )
             return response
         else:
-            # "error": "File Doesn't Exist or has been cleared up from system",
             return HttpResponse(status=204)
-
     else:
-        # "error": "Dataset haven't been downloaded or doesn't exist",
         return HttpResponse(status=204)
 
 
 @api_view(["POST"])
 def geojson2osmconverter(request):
+    """
+    Convert GeoJSON data to OSM XML format.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        HttpResponse: The HTTP response with the OSM XML data.
+    """
     try:
         geojson_data = json.loads(request.body)["geojson"]
     except json.JSONDecodeError:
@@ -637,6 +770,15 @@ def geojson2osmconverter(request):
 
 @api_view(["POST"])
 def ConflateGeojson(request):
+    """
+    Conflate GeoJSON data.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        Response: The HTTP response with the conflated GeoJSON data.
+    """
     try:
         geojson_data = json.loads(request.body)["geojson"]
     except json.JSONDecodeError:
@@ -651,11 +793,15 @@ def ConflateGeojson(request):
 
 @api_view(["GET"])
 def run_task_status(request, run_id: str):
-    """Gives the status of running task from background process
+    """
+    Get the status of a running task.
 
     Args:
-        request (_type_): _description_
-        run_id (_type_): _description_
+        request (HttpRequest): The HTTP request.
+        run_id (str): The ID of the running task.
+
+    Returns:
+        Response: The HTTP response with the task status.
     """
     task_result = AsyncResult(run_id, app=current_app)
     if task_result.failed():
@@ -670,9 +816,7 @@ def run_task_status(request, run_id: str):
     elif task_result.state == "PENDING" or task_result.state == "STARTED":
         log_file = os.path.join(settings.LOG_PATH, f"run_{run_id}.log")
         try:
-            # read the last 10 lines of the log file
             cmd = ["tail", "-n", str(settings.LOG_LINE_STREAM_TRUNCATE_VALUE), log_file]
-            # print(cmd)
             output = subprocess.check_output(cmd).decode("utf-8")
         except Exception as e:
             output = str(e)
@@ -693,15 +837,9 @@ def run_task_status(request, run_id: str):
 
 
 class FeedbackView(APIView):
-    """Applies Associated feedback to Training Published Checkpoint
-
-    Args:
-        APIView (_type_): _description_
-
-    Returns:
-        _type_: _description_
     """
-
+    View for applying feedback to training published checkpoint.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
@@ -709,6 +847,17 @@ class FeedbackView(APIView):
         request_body=FeedbackParamSerializer, responses={status.HTTP_200_OK: "ok"}
     )
     def post(self, request, *args, **kwargs):
+        """
+        Apply feedback to a training instance.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            HttpResponse: The HTTP response indicating the status of the feedback application.
+        """
         res_serializer = FeedbackParamSerializer(data=request.data)
 
         if res_serializer.is_valid():
@@ -744,7 +893,7 @@ class FeedbackView(APIView):
                 zoom_level=instance.zoom_level,
                 source_imagery=instance.source_imagery,
                 feedback=training_id,
-                freeze_layers=True,  # True by default for feedback
+                freeze_layers=True,
             )
             if not instance.source_imagery:
                 instance.source_imagery = instance.model.dataset.source_imagery
@@ -762,6 +911,9 @@ if settings.ENABLE_PREDICTION_API:
     from orthogonalizer import othogonalize_poly
 
     class PredictionView(APIView):
+        """
+        View for making predictions on a bounding box using a published model.
+        """
         authentication_classes = [OsmAuthentication]
         permission_classes = [IsOsmAuthenticated]
 
@@ -769,7 +921,17 @@ if settings.ENABLE_PREDICTION_API:
             request_body=PredictionParamSerializer, responses={status.HTTP_200_OK: "ok"}
         )
         def post(self, request, *args, **kwargs):
-            """Predicts on bbox by published model"""
+            """
+            Make predictions on a bounding box using a published model.
+
+            Args:
+                request (HttpRequest): The HTTP request.
+                *args: Variable length argument list.
+                **kwargs: Arbitrary keyword arguments.
+
+            Returns:
+                Response: The HTTP response with the prediction results.
+            """
             res_serializer = PredictionParamSerializer(data=request.data)
             if res_serializer.is_valid(raise_exception=True):
                 deserialized_data = res_serializer.data
@@ -800,7 +962,6 @@ if settings.ENABLE_PREDICTION_API:
                         f"training_{training_instance.id}",
                         "checkpoint.tflite",
                     )
-                    # give high priority to tflite model format if not avilable fall back to .h5 if not use default .tf
                     if not os.path.exists(model_path):
                         model_path = os.path.join(
                             settings.TRAINING_WORKSPACE,
@@ -851,7 +1012,6 @@ if settings.ENABLE_PREDICTION_API:
                         f"Prediction API took ({round(time.time()-start_time)} sec) in total"
                     )
 
-                    ## TODO : can send osm xml format from here as well using geojson2osm
                     return Response(geojson_data, status=status.HTTP_201_CREATED)
                 except ValueError as e:
                     if str(e) == "No Features Found":
@@ -864,7 +1024,16 @@ if settings.ENABLE_PREDICTION_API:
 @decorators.authentication_classes([OsmAuthentication])
 @decorators.permission_classes([IsOsmAuthenticated])
 def publish_training(request, training_id: int):
-    """Publishes training for model"""
+    """
+    Publish a training instance for a model.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+        training_id (int): The ID of the training instance.
+
+    Returns:
+        Response: The HTTP response indicating the status of the publication.
+    """
     training_instance = get_object_or_404(Training, id=training_id)
     model_instance = get_object_or_404(Model, id=training_instance.model.id)
 
@@ -875,13 +1044,12 @@ def publish_training(request, training_id: int):
             return Response(
                 "Can't publish the training since its accuracy is below 70%", status=403
             )
-    else:  ## Training publish limit for other model than ramp , TODO : Change this limit after testing for yolo
+    else:
         if training_instance.accuracy < 5:
             return Response(
                 "Can't publish the training since its accuracy is below 5%", status=403
             )
 
-    # Check if the current user is the owner of the model
     if model_instance.user != request.user:
         return Response("You are not allowed to publish this training", status=403)
 
@@ -893,27 +1061,64 @@ def publish_training(request, training_id: int):
 
 
 class GenerateGpxView(APIView):
+    """
+    View for generating GPX files for AOIs.
+    """
     def get(self, request, aoi_id: int):
+        """
+        Generate a GPX file for an AOI.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            aoi_id (int): The ID of the AOI.
+
+        Returns:
+            HttpResponse: The HTTP response with the GPX file.
+        """
         aoi = get_object_or_404(AOI, id=aoi_id)
         geom_json = json.loads(aoi.geom.json)
-        # Create a new GPX object
         gpx_xml = gpx_generator(geom_json)
         return HttpResponse(gpx_xml, content_type="application/xml")
 
 
 class GenerateFeedbackAOIGpxView(APIView):
+    """
+    View for generating GPX files for feedback AOIs.
+    """
     def get(self, request, feedback_aoi_id: int):
+        """
+        Generate a GPX file for a feedback AOI.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            feedback_aoi_id (int): The ID of the feedback AOI.
+
+        Returns:
+            HttpResponse: The HTTP response with the GPX file.
+        """
         aoi = get_object_or_404(FeedbackAOI, id=feedback_aoi_id)
         geom_json = json.loads(aoi.geom.json)
-        # Create a new GPX object
         gpx_xml = gpx_generator(geom_json)
         return HttpResponse(gpx_xml, content_type="application/xml")
 
 
 class TrainingWorkspaceView(APIView):
+    """
+    View for retrieving the training workspace directory.
+    """
     @method_decorator(cache_page(60 * 15))
     @method_decorator(vary_on_headers("access-token"))
     def get(self, request, lookup_dir):
+        """
+        Retrieve the training workspace directory.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            lookup_dir (str): The directory to look up.
+
+        Returns:
+            Response: The HTTP response with the directory data.
+        """
         bucket_name = settings.BUCKET_NAME
         encoded_file_path = quote(lookup_dir.strip("/"))
         s3_prefix = f"{settings.PARENT_BUCKET_FOLDER}/{encoded_file_path}/"
@@ -926,15 +1131,26 @@ class TrainingWorkspaceView(APIView):
 
 
 class TrainingWorkspaceDownloadView(APIView):
-
+    """
+    View for downloading files from the training workspace.
+    """
     def get(self, request, lookup_dir):
+        """
+        Download a file from the training workspace.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            lookup_dir (str): The directory to look up.
+
+        Returns:
+            HttpResponseRedirect: The HTTP response redirecting to the presigned URL.
+        """
         s3_key = os.path.join(settings.PARENT_BUCKET_FOLDER, lookup_dir)
         bucket_name = settings.BUCKET_NAME
 
         if not s3_object_exists(bucket_name, s3_key):
             return Response("File not found in S3", status=404)
         presigned_url = download_s3_file(bucket_name, s3_key)
-        # ?url_only=true
         url_only = request.query_params.get("url_only", "false").lower() == "true"
 
         if url_only:
@@ -944,6 +1160,9 @@ class TrainingWorkspaceDownloadView(APIView):
 
 
 class BannerViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing banner instances.
+    """
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
     authentication_classes = [OsmAuthentication]
@@ -952,16 +1171,30 @@ class BannerViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
+        """
+        Get the queryset for banner instances.
+
+        Returns:
+            QuerySet: The queryset for banner instances.
+        """
         now = timezone.now()
         return Banner.objects.filter(start_date__lte=now).filter(
             end_date__gte=now
         ) | Banner.objects.filter(end_date__isnull=True)
 
 
-@cache_page(60 * 15)  ## Cache for 15 mins
-# @vary_on_cookie
+@cache_page(60 * 15)
 @api_view(["GET"])
 def get_kpi_stats(request):
+    """
+    Get the KPI statistics.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        Response: The HTTP response with the KPI statistics.
+    """
     total_models_with_status_published = Model.objects.filter(status=0).count()
     total_registered_users = OsmUser.objects.count()
     total_approved_predictions = ApprovedPredictions.objects.count()
@@ -978,19 +1211,31 @@ def get_kpi_stats(request):
 
 
 class UserNotificationViewSet(ReadOnlyModelViewSet):
-
+    """
+    ViewSet for managing user notifications.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
     serializer_class = UserNotificationSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['is_read']  
-    ordering = ['-created_at'] 
-    ordering_fields = ['created_at', 'read_at','is_read'] 
+    filterset_fields = ['is_read']
+    ordering = ['-created_at']
+    ordering_fields = ['created_at', 'read_at','is_read']
 
     def get_queryset(self):
+        """
+        Get the queryset for user notifications.
+
+        Returns:
+            QuerySet: The queryset for user notifications.
+        """
         return UserNotification.objects.filter(user=self.request.user)
 
+
 class MarkNotificationAsRead(APIView):
+    """
+    View for marking a specific notification as read.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
@@ -998,6 +1243,17 @@ class MarkNotificationAsRead(APIView):
         operation_description="Mark a specific notification as read.",
     )
     def post(self, request, notification_id, format=None):
+        """
+        Mark a specific notification as read.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            notification_id (int): The ID of the notification.
+            format (str): The format of the request.
+
+        Returns:
+            Response: The HTTP response indicating the status of the operation.
+        """
         try:
             notification = UserNotification.objects.get(id=notification_id, user=request.user)
 
@@ -1013,7 +1269,11 @@ class MarkNotificationAsRead(APIView):
         except UserNotification.DoesNotExist:
             return Response({"detail": "Notification not found."}, status=status.HTTP_404_NOT_FOUND)
 
+
 class MarkAllNotificationsAsRead(APIView):
+    """
+    View for marking all unread notifications as read.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
@@ -1029,6 +1289,16 @@ class MarkAllNotificationsAsRead(APIView):
         },
     )
     def post(self, request, format=None):
+        """
+        Mark all unread notifications as read.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            format (str): The format of the request.
+
+        Returns:
+            Response: The HTTP response indicating the status of the operation.
+        """
         unread_notifications = UserNotification.objects.filter(user=request.user, is_read=False)
 
         if not unread_notifications.exists():
@@ -1036,14 +1306,27 @@ class MarkAllNotificationsAsRead(APIView):
 
         unread_notifications.update(is_read=True, read_at=timezone.now())
         return Response({"detail": "All unread notifications marked as read."}, status=status.HTTP_200_OK)
-    
 
 
 class TerminateTrainingView(APIView):
+    """
+    View for terminating a training task.
+    """
     authentication_classes = [OsmAuthentication]
     permission_classes = [IsOsmAuthenticated]
 
     def post(self, request, training_id, format=None):
+        """
+        Terminate a training task.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+            training_id (int): The ID of the training task.
+            format (str): The format of the request.
+
+        Returns:
+            Response: The HTTP response indicating the status of the operation.
+        """
         try:
             training_instance = Training.objects.get(id=training_id, user=request.user)
 
@@ -1051,7 +1334,7 @@ class TerminateTrainingView(APIView):
             if not task_id:
                 return Response({"detail": "No task associated with this training."}, status=status.HTTP_400_BAD_REQUEST)
 
-            task = AsyncResult(task_id,app=current_app)
+            task = AsyncResult(task_id, app=current_app)
             if task.state in ["PENDING", "STARTED", "RETRY"]:
                 current_app.control.revoke(task_id, terminate=True)
                 training_instance.status = "FAILED"

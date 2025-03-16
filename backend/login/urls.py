@@ -4,7 +4,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("login/", views.login.as_view()),
-    path("callback/", views.callback.as_view()),
-    path("me/", views.GetMyData.as_view()),
+    path("login/", views.LoginView.as_view(), name="login"),
+    path("callback/", views.CallbackView.as_view(), name="callback"),
+    path("me/", views.GetMyDataView.as_view(), name="get_my_data"),
 ]

@@ -4,6 +4,16 @@ from django.db import models
 
 
 class OsmUser(AbstractUser):
+    """
+    Represents an OSM user in the system.
+
+    Attributes:
+        osm_id (int): The OSM ID of the user.
+        img_url (str): The URL of the user's profile image.
+        notifications_delivery_methods (list): The methods for delivering notifications to the user.
+        newsletter_subscription (bool): Whether the user is subscribed to the newsletter.
+        account_deletion_requested (bool): Whether the user has requested account deletion.
+    """
 
     NOTIFICATION_METHOD_CHOICES = [
         ("email", "Email"),
