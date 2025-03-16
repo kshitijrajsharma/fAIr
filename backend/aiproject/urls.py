@@ -21,6 +21,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+# Schema view for Swagger and Redoc documentation
 schema_view = get_schema_view(
     openapi.Info(
         title="fAIr API",
@@ -34,7 +35,7 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
+# URL patterns for the Django project
 urlpatterns = [
     re_path(
         r"^api/swagger(?P<format>\.json|\.yaml)$",

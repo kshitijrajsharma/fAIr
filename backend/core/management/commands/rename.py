@@ -6,12 +6,28 @@ class Command(BaseCommand):
     help = 'Renames a Django project'
 
     def add_arguments(self, parser):
+        """
+        Add arguments to the command parser.
+
+        Args:
+            parser (argparse.ArgumentParser): The argument parser instance.
+        """
         parser.add_argument('current', type=str, nargs='+',
                             help='The current Django project folder name')
         parser.add_argument('new', type=str, nargs='+',
                             help='The new Django project name')
 
     def handle(self, *args, **kwargs):
+        """
+        Handle the command to rename a Django project.
+
+        This method renames the specified Django project folder and updates
+        the project name in the relevant files.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         current_project_name = kwargs['current'][0]
         new_project_name = kwargs['new'][0]
 

@@ -12,6 +12,11 @@ from .models import *
 
 
 class DatasetSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Dataset model.
+
+    This serializer provides fields for the Dataset model and includes a method to get the count of associated models.
+    """
     models_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -34,33 +39,54 @@ class DatasetSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        """
+        Create a new Dataset instance.
+
+        Args:
+            validated_data (dict): The validated data for creating the Dataset.
+
+        Returns:
+            Dataset: The created Dataset instance.
+        """
         user = self.context["request"].user
         validated_data["user"] = user
         return super().create(validated_data)
 
     def get_models_count(self, obj):
+        """
+        Get the count of models associated with the dataset.
+
+        Args:
+            obj (Dataset): The Dataset instance.
+
+        Returns:
+            int: The count of associated models.
+        """
         return Model.objects.filter(dataset=obj).count()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the OsmUser model.
+
+    This serializer provides fields for the OsmUser model.
+    """
     class Meta:
         model = OsmUser
         fields = [
             "osm_id",
             "username",
-            # "is_superuser",
-            # "is_active",
-            # "is_staff",
-            # "date_joined",
-            # "email",
-            # "img_url",
-            # "user_permissions",
         ]
 
     read_only_fields = ["osm_id", "username"]
 
 
 class ModelSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Model model.
+
+    This serializer provides fields for the Model model and includes methods to get the accuracy and thumbnail URL.
+    """
     user = UserSerializer(read_only=True)
     accuracy = serializers.SerializerMethodField()
     thumbnail_url = serializers.SerializerMethodField()
@@ -76,14 +102,27 @@ class ModelSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        """
+        Create a new Model instance.
+
+        Args:
+            validated_data (dict): The validated data for creating the Model.
+
+        Returns:
+            Model: The created Model instance.
+        """
         user = self.context["request"].user
         validated_data["user"] = user
         return super().create(validated_data)
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the ModelSerializer.
+
+        This method overrides the dataset field for detail views.
+        """
         super(ModelSerializer, self).__init__(*args, **kwargs)
         request = self.context.get("request")
-        # Check if there's a pk in the URL (detail view) and then override dataset field.
         if (
             request
             and request.resolver_match
@@ -92,6 +131,15 @@ class ModelSerializer(serializers.ModelSerializer):
             self.fields["dataset"] = DatasetSerializer(read_only=True)
 
     def get_thumbnail_url(self, obj):
+        """
+        Get the thumbnail URL for the model.
+
+        Args:
+            obj (Model): The Model instance.
+
+        Returns:
+            str: The thumbnail URL.
+        """
         training = Training.objects.filter(id=obj.published_training).first()
 
         if training:
@@ -100,7 +148,7 @@ class ModelSerializer(serializers.ModelSerializer):
                 if aoi and aoi.geom:
                     centroid = (
                         aoi.geom.centroid.coords
-                    )  ## Centroid can be stored in db table if required when project grows bigger
+                    )
                     try:
                         tile = mercantile.tile(centroid[0], centroid[1], zoom=18)
                         return training.source_imagery.format(x=tile.x, y=tile.y, z=18)
@@ -109,6 +157,15 @@ class ModelSerializer(serializers.ModelSerializer):
         return None
 
     def get_accuracy(self, obj):
+        """
+        Get the accuracy of the model.
+
+        Args:
+            obj (Model): The Model instance.
+
+        Returns:
+            float: The accuracy of the model.
+        """
         training = Training.objects.filter(id=obj.published_training).first()
         if training:
             return training.accuracy
@@ -116,6 +173,11 @@ class ModelSerializer(serializers.ModelSerializer):
 
 
 class ModelCentroidSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the Model model with centroid geometry.
+
+    This serializer provides fields for the Model model and includes a method to get the centroid geometry.
+    """
     geometry = serializers.SerializerMethodField()
     mid = serializers.IntegerField(source="id")
 
@@ -123,11 +185,16 @@ class ModelCentroidSerializer(GeoFeatureModelSerializer):
         model = Model
         geo_field = "geometry"
         fields = ("mid", "geometry")
-        # fields = ("mid", "name", "geometry")
 
     def get_geometry(self, obj):
         """
         Get the centroid of the AOI linked to the dataset of the given model.
+
+        Args:
+            obj (Model): The Model instance.
+
+        Returns:
+            dict: The centroid geometry.
         """
         aoi = AOI.objects.filter(dataset=obj.dataset).first()
         if aoi and aoi.geom:
@@ -138,14 +205,16 @@ class ModelCentroidSerializer(GeoFeatureModelSerializer):
         return None
 
 
-class AOISerializer(
-    GeoFeatureModelSerializer
-):  # serializers are used to translate models objects to api
+class AOISerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the AOI model.
+
+    This serializer provides fields for the AOI model.
+    """
     class Meta:
         model = AOI
-        geo_field = "geom"  # this will be used as geometry in order to create geojson api , geofeatureserializer will let you create api in geojson
-        fields = "__all__"  # defining all the fields to  be included in curd for now , we can restrict few if we want
-
+        geo_field = "geom"
+        fields = "__all__"
         read_only_fields = (
             "created_at",
             "last_modified",
@@ -155,12 +224,31 @@ class AOISerializer(
         )
 
     def create(self, validated_data):
+        """
+        Create a new AOI instance.
+
+        Args:
+            validated_data (dict): The validated data for creating the AOI.
+
+        Returns:
+            AOI: The created AOI instance.
+        """
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             validated_data["user"] = request.user
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
+        """
+        Update an existing AOI instance.
+
+        Args:
+            instance (AOI): The AOI instance to update.
+            validated_data (dict): The validated data for updating the AOI.
+
+        Returns:
+            AOI: The updated AOI instance.
+        """
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             validated_data["user"] = request.user
@@ -168,12 +256,16 @@ class AOISerializer(
 
 
 class FeedbackAOISerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the FeedbackAOI model.
+
+    This serializer provides fields for the FeedbackAOI model.
+    """
     class Meta:
         model = FeedbackAOI
         geo_field = "geom"
         fields = "__all__"
         partial = True
-
         read_only_fields = (
             "created_at",
             "last_modified",
@@ -183,12 +275,26 @@ class FeedbackAOISerializer(GeoFeatureModelSerializer):
         )
 
     def create(self, validated_data):
+        """
+        Create a new FeedbackAOI instance.
+
+        Args:
+            validated_data (dict): The validated data for creating the FeedbackAOI.
+
+        Returns:
+            FeedbackAOI: The created FeedbackAOI instance.
+        """
         user = self.context["request"].user
         validated_data["user"] = user
         return super().create(validated_data)
 
 
 class FeedbackSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the Feedback model.
+
+    This serializer provides fields for the Feedback model.
+    """
     class Meta:
         model = Feedback
         geo_field = "geom"
@@ -197,27 +303,52 @@ class FeedbackSerializer(GeoFeatureModelSerializer):
         partial = True
 
     def create(self, validated_data):
+        """
+        Create a new Feedback instance.
+
+        Args:
+            validated_data (dict): The validated data for creating the Feedback.
+
+        Returns:
+            Feedback: The created Feedback instance.
+        """
         user = self.context["request"].user
         validated_data["user"] = user
         return super().create(validated_data)
 
     def to_representation(self, instance):
+        """
+        Customize the representation of the Feedback instance.
+
+        Args:
+            instance (Feedback): The Feedback instance.
+
+        Returns:
+            dict: The customized representation of the Feedback instance.
+        """
         ret = super().to_representation(instance)
         ret["properties"]["id"] = instance.id
         return ret
 
 
 class LabelSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the Label model.
+
+    This serializer provides fields for the Label model.
+    """
     class Meta:
         model = Label
         geo_field = "geom"
-        # auto_bbox = True
         fields = "__all__"
-
-        # read_only_fields = ("created_at", "osm_id")
 
 
 class ApprovedPredictionsSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the ApprovedPredictions model.
+
+    This serializer provides fields for the ApprovedPredictions model.
+    """
     class Meta:
         model = ApprovedPredictions
         geo_field = "geom"
@@ -225,30 +356,47 @@ class ApprovedPredictionsSerializer(GeoFeatureModelSerializer):
 
 
 class FeedbackLabelSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the FeedbackLabel model.
+
+    This serializer provides fields for the FeedbackLabel model.
+    """
     class Meta:
         model = FeedbackLabel
         geo_field = "geom"
         fields = "__all__"
-        # read_only_fields = ("created_at", "osm_id")
 
 
 class LabelFileSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the Label model for file operations.
+
+    This serializer provides fields for the Label model for file operations.
+    """
     class Meta:
         model = Label
         geo_field = "geom"
-        # auto_bbox = True
         fields = ("osm_id", "tags")
 
 
 class FeedbackLabelFileSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the FeedbackLabel model for file operations.
+
+    This serializer provides fields for the FeedbackLabel model for file operations.
+    """
     class Meta:
         model = FeedbackLabel
         geo_field = "geom"
-        # auto_bbox = True
         fields = ("osm_id", "tags")
 
 
 class FeedbackFileSerializer(GeoFeatureModelSerializer):
+    """
+    Serializer for the Feedback model for file operations.
+
+    This serializer provides fields for the Feedback model for file operations.
+    """
     class Meta:
         fields = ("training",)
         model = Feedback
@@ -256,6 +404,11 @@ class FeedbackFileSerializer(GeoFeatureModelSerializer):
 
 
 class ImageDownloadSerializer(serializers.Serializer):
+    """
+    Serializer for image download parameters.
+
+    This serializer provides fields for image download parameters.
+    """
     dataset_id = serializers.IntegerField(required=True)
     zoom_level = serializers.ListField(required=True)
 
@@ -264,7 +417,16 @@ class ImageDownloadSerializer(serializers.Serializer):
 
     def validate(self, data):
         """
-        Check supplied data
+        Validate the supplied data.
+
+        Args:
+            data (dict): The data to validate.
+
+        Returns:
+            dict: The validated data.
+
+        Raises:
+            serializers.ValidationError: If the zoom level is not supported.
         """
         for i in data["zoom_level"]:
             if int(i) < 19 or int(i) > 21:
@@ -273,12 +435,29 @@ class ImageDownloadSerializer(serializers.Serializer):
 
 
 class FeedbackParamSerializer(serializers.Serializer):
+    """
+    Serializer for feedback parameters.
+
+    This serializer provides fields for feedback parameters.
+    """
     training_id = serializers.IntegerField(required=True)
     epochs = serializers.IntegerField(required=False)
     batch_size = serializers.IntegerField(required=False)
     zoom_level = serializers.ListField(child=serializers.IntegerField(), required=False)
 
     def validate_training_id(self, value):
+        """
+        Validate the training ID.
+
+        Args:
+            value (int): The training ID to validate.
+
+        Returns:
+            int: The validated training ID.
+
+        Raises:
+            serializers.ValidationError: If the training doesn't exist.
+        """
         try:
             Training.objects.get(id=value)
         except Training.DoesNotExist:
@@ -287,6 +466,18 @@ class FeedbackParamSerializer(serializers.Serializer):
         return value
 
     def validate(self, data):
+        """
+        Validate the supplied data.
+
+        Args:
+            data (dict): The data to validate.
+
+        Returns:
+            dict: The validated data.
+
+        Raises:
+            serializers.ValidationError: If the data is not valid.
+        """
         training_id = data.get("training_id")
 
         try:
@@ -328,22 +519,36 @@ class FeedbackParamSerializer(serializers.Serializer):
 
 
 class PredictionParamSerializer(serializers.Serializer):
+    """
+    Serializer for prediction parameters.
+
+    This serializer provides fields for prediction parameters.
+    """
     bbox = serializers.ListField(child=serializers.FloatField(), required=True)
     model_id = serializers.IntegerField(required=True)
     zoom_level = serializers.IntegerField(required=True)
     use_josm_q = serializers.BooleanField(required=False)
     source = serializers.URLField(required=False)
-    # configs
     confidence = serializers.IntegerField(required=False)
-    # for josm q
     max_angle_change = serializers.IntegerField(required=False)
     skew_tolerance = serializers.IntegerField(required=False)
-    # for vectorization
     tolerance = serializers.FloatField(required=False)
     area_threshold = serializers.FloatField(required=False)
     tile_overlap_distance = serializers.FloatField(required=False)
 
     def validate_max_angle_change(self, value):
+        """
+        Validate the max angle change.
+
+        Args:
+            value (int): The max angle change to validate.
+
+        Returns:
+            int: The validated max angle change.
+
+        Raises:
+            serializers.ValidationError: If the max angle change is not valid.
+        """
         if value is not None:
             if value < 0 or value > 45:
                 raise serializers.ValidationError(
@@ -352,6 +557,18 @@ class PredictionParamSerializer(serializers.Serializer):
         return value
 
     def validate_skew_tolerance(self, value):
+        """
+        Validate the skew tolerance.
+
+        Args:
+            value (int): The skew tolerance to validate.
+
+        Returns:
+            int: The validated skew tolerance.
+
+        Raises:
+            serializers.ValidationError: If the skew tolerance is not valid.
+        """
         if value is not None:
             if value < 0 or value > 45:
                 raise serializers.ValidationError(
@@ -360,6 +577,18 @@ class PredictionParamSerializer(serializers.Serializer):
         return value
 
     def validate_tolerance(self, value):
+        """
+        Validate the tolerance.
+
+        Args:
+            value (float): The tolerance to validate.
+
+        Returns:
+            float: The validated tolerance.
+
+        Raises:
+            serializers.ValidationError: If the tolerance is not valid.
+        """
         if value is not None:
             if value < 0 or value > 10:
                 raise serializers.ValidationError(
@@ -368,6 +597,18 @@ class PredictionParamSerializer(serializers.Serializer):
         return value
 
     def validate_tile_overlap_distance(self, value):
+        """
+        Validate the tile overlap distance.
+
+        Args:
+            value (float): The tile overlap distance to validate.
+
+        Returns:
+            float: The validated tile overlap distance.
+
+        Raises:
+            serializers.ValidationError: If the tile overlap distance is not valid.
+        """
         if value is not None:
             if value < 0 or value > 1:
                 raise serializers.ValidationError(
@@ -376,6 +617,18 @@ class PredictionParamSerializer(serializers.Serializer):
         return value
 
     def validate_area_threshold(self, value):
+        """
+        Validate the area threshold.
+
+        Args:
+            value (float): The area threshold to validate.
+
+        Returns:
+            float: The validated area threshold.
+
+        Raises:
+            serializers.ValidationError: If the area threshold is not valid.
+        """
         if value is not None:
             if value < 0 or value > 20:
                 raise serializers.ValidationError(
@@ -385,7 +638,16 @@ class PredictionParamSerializer(serializers.Serializer):
 
     def validate(self, data):
         """
-        Check supplied data
+        Validate the supplied data.
+
+        Args:
+            data (dict): The data to validate.
+
+        Returns:
+            dict: The validated data.
+
+        Raises:
+            serializers.ValidationError: If the data is not valid.
         """
         if "confidence" in data:
             if data["confidence"] < 0 or data["confidence"] > 100:
@@ -420,6 +682,11 @@ class PredictionParamSerializer(serializers.Serializer):
 
 
 class BannerSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Banner model.
+
+    This serializer provides fields for the Banner model.
+    """
     class Meta:
         model = Banner
         fields = [
@@ -431,6 +698,11 @@ class BannerSerializer(serializers.ModelSerializer):
 
 
 class UserStatsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user statistics.
+
+    This serializer provides fields for user statistics and includes methods to get various counts and profile completion percentage.
+    """
     models_count = serializers.SerializerMethodField()
     datasets_count = serializers.SerializerMethodField()
     feedbacks_count = serializers.SerializerMethodField()
@@ -470,18 +742,63 @@ class UserStatsSerializer(serializers.ModelSerializer):
         ]
 
     def get_models_count(self, obj):
+        """
+        Get the count of models associated with the user.
+
+        Args:
+            obj (OsmUser): The OsmUser instance.
+
+        Returns:
+            int: The count of associated models.
+        """
         return Model.objects.filter(user=obj).count()
 
     def get_datasets_count(self, obj):
+        """
+        Get the count of datasets associated with the user.
+
+        Args:
+            obj (OsmUser): The OsmUser instance.
+
+        Returns:
+            int: The count of associated datasets.
+        """
         return Dataset.objects.filter(user=obj).count()
 
     def get_feedbacks_count(self, obj):
+        """
+        Get the count of feedbacks associated with the user.
+
+        Args:
+            obj (OsmUser): The OsmUser instance.
+
+        Returns:
+            int: The count of associated feedbacks.
+        """
         return Feedback.objects.filter(user=obj).count()
 
     def get_approved_predictions_count(self, obj):
+        """
+        Get the count of approved predictions associated with the user.
+
+        Args:
+            obj (OsmUser): The OsmUser instance.
+
+        Returns:
+            int: The count of associated approved predictions.
+        """
         return ApprovedPredictions.objects.filter(user=obj).count()
 
     def get_profile_completion_percentage(self, obj):
+        """
+        Get the profile completion percentage for the user.
+
+        Args:
+            obj (OsmUser): The OsmUser instance.
+
+        Returns:
+            int: The profile completion percentage.
+        """
         profile_percentage = 25
         if obj.username is not None and obj.username != "":
             profile_percentage += 25
@@ -492,10 +809,24 @@ class UserStatsSerializer(serializers.ModelSerializer):
         return profile_percentage
 
     def get_unread_notifications_count(self, obj):
+        """
+        Get the count of unread notifications for the user.
+
+        Args:
+            obj (OsmUser): The OsmUser instance.
+
+        Returns:
+            int: The count of unread notifications.
+        """
         return UserNotification.objects.filter(user=obj, is_read=False).count()
 
 
 class UserNotificationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the UserNotification model.
+
+    This serializer provides fields for the UserNotification model.
+    """
     class Meta:
         model = UserNotification
         fields = ("id", "is_read", "created_at", "read_at", "message")

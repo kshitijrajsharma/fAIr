@@ -45,9 +45,6 @@ logger = logging.getLogger(__name__)
 logger.propagate = False
 
 
-# from core.serializers import LabelFileSerializer
-
-
 DEFAULT_TILE_SIZE = 256
 
 
@@ -58,6 +55,19 @@ def upload_to_s3(
     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
 ):
+    """
+    Uploads a file or directory to S3.
+
+    Args:
+        path (str): The path to the file or directory to upload.
+        parent (str): The parent directory in S3.
+        bucket_name (str): The name of the S3 bucket.
+        aws_access_key_id (str): The AWS access key ID.
+        aws_secret_access_key (str): The AWS secret access key.
+
+    Returns:
+        str: The S3 URL of the uploaded file or directory.
+    """
     uploader = S3Uploader(
         bucket_name=bucket_name,
         aws_access_key_id=aws_access_key_id,
@@ -68,6 +78,13 @@ def upload_to_s3(
 
 
 class print_time:
+    """
+    Context manager for measuring the execution time of a block of code.
+
+    Args:
+        name (str): The name of the block of code being measured.
+    """
+
     def __init__(self, name):
         self.name = name
 
@@ -100,6 +117,15 @@ def xz_folder(folder_path, output_filename, remove_original=False):
 
 
 def get_file_count(path):
+    """
+    Get the number of files in a directory.
+
+    Args:
+        path (str): The path to the directory.
+
+    Returns:
+        int: The number of files in the directory.
+    """
     try:
         return len(
             [
@@ -114,6 +140,19 @@ def get_file_count(path):
 
 
 def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_imagery):
+    """
+    Prepare the data for training.
+
+    Args:
+        training_instance (Training): The training instance.
+        dataset_id (int): The ID of the dataset.
+        feedback (bool): Whether to use feedback data.
+        zoom_level (list): The zoom levels to use for training.
+        source_imagery (str): The URL of the source imagery.
+
+    Returns:
+        tuple: The training input image source, AOI serializer, and label serializer.
+    """
     from predictor import (  # # TODO: migrate this back to hotfaiutilities
         download_imagery,
         get_start_end_download_coords,
@@ -189,6 +228,25 @@ def ramp_model_training(
     input_contact_spacing,
     input_boundary_width,
 ):
+    """
+    Train a RAMP model.
+
+    Args:
+        training_instance (Training): The training instance.
+        dataset_id (int): The ID of the dataset.
+        training_input_image_source (str): The path to the training input image source.
+        serialized_field (Serializer): The label serializer.
+        aoi_serializer (Serializer): The AOI serializer.
+        epochs (int): The number of epochs for training.
+        batch_size (int): The batch size for training.
+        freeze_layers (bool): Whether to freeze layers during training.
+        multimasks (bool): Whether to use multimasks.
+        input_contact_spacing (int): The input contact spacing.
+        input_boundary_width (int): The input boundary width.
+
+    Returns:
+        dict: The training response containing accuracy, tiles path, model path, and graph path.
+    """
     import hot_fair_utilities
     import ramp.utils
     import tensorflow as tf
@@ -327,6 +385,23 @@ def yolo_model_training(
     multimasks,
     model="YOLO_V8_V1",
 ):
+    """
+    Train a YOLO model.
+
+    Args:
+        training_instance (Training): The training instance.
+        dataset_id (int): The ID of the dataset.
+        training_input_image_source (str): The path to the training input image source.
+        serialized_field (Serializer): The label serializer.
+        aoi_serializer (Serializer): The AOI serializer.
+        epochs (int): The number of epochs for training.
+        batch_size (int): The batch size for training.
+        multimasks (bool): Whether to use multimasks.
+        model (str): The model type (default: "YOLO_V8_V1").
+
+    Returns:
+        dict: The training response containing accuracy, tiles path, model path, and graph path.
+    """
     from hot_fair_utilities import preprocess
     from hot_fair_utilities.preprocessing.yolo_v8_v1.yolo_format import (
         yolo_format as yolo_format_v1,
@@ -513,7 +588,25 @@ def train_model(
     input_contact_spacing=8,
     input_boundary_width=3,
 ):
+    """
+    Train a model.
 
+    Args:
+        dataset_id (int): The ID of the dataset.
+        training_id (int): The ID of the training instance.
+        epochs (int): The number of epochs for training.
+        batch_size (int): The batch size for training.
+        zoom_level (list): The zoom levels to use for training.
+        source_imagery (str): The URL of the source imagery.
+        feedback (int, optional): The ID of the feedback training instance. Defaults to None.
+        freeze_layers (bool, optional): Whether to freeze layers during training. Defaults to False.
+        multimasks (bool, optional): Whether to use multimasks. Defaults to False.
+        input_contact_spacing (int, optional): The input contact spacing. Defaults to 8.
+        input_boundary_width (int, optional): The input boundary width. Defaults to 3.
+
+    Returns:
+        dict: The training response containing accuracy, tiles path, model path, and graph path.
+    """
     training_instance = get_object_or_404(Training, id=training_id)
     model_instance = get_object_or_404(Model, id=training_instance.model.id)
     
@@ -581,7 +674,16 @@ def train_model(
         raise ex
 
 def get_email_message(training_instance,status):
-    
+    """
+    Get the email message for a training notification.
+
+    Args:
+        training_instance (Training): The training instance.
+        status (str): The status of the training.
+
+    Returns:
+        tuple: The email message and subject.
+    """
     hostname = settings.FRONTEND_URL  
     training_model_url = f"{hostname}/ai-models/{training_instance.model.id}"
 
@@ -610,6 +712,13 @@ def get_email_message(training_instance,status):
 
 
 def send_notification(training_instance,status):
+    """
+    Send a notification for a training instance.
+
+    Args:
+        training_instance (Training): The training instance.
+        status (str): The status of the training.
+    """
     if any(method in training_instance.user.notifications_delivery_methods for method in ["web", "email"]):
         UserNotification.objects.create(user=training_instance.user, message=f"Training {training_instance.id} has {status}.")
     if "email" in training_instance.user.notifications_delivery_methods:
