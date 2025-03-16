@@ -191,3 +191,138 @@ python manage.py test
 docker-compose up -d --build
 ```
 - Once the image is build, Open the API container terminal and run the migrations
+
+## Setting up environment variables
+
+1. Create a `.env` file in the root directory of the backend project.
+2. Add the following environment variables to the `.env` file:
+
+```
+DEBUG=True
+SECRET_KEY=your_secret_key
+DATABASE_URL=postgis://postgres:postgres@localhost:5432/ai
+EXPORT_TOOL_API_URL=https://raw api url.hotosm.org/v1
+CORS_ALLOWED_ORIGINS=http://127.0.0.1:3000
+OSM_CLIENT_ID=your_osm_client_id
+OSM_CLIENT_SECRET=your_osm_client_secret
+OSM_URL=https://www.openstreetmap.org
+OSM_SCOPE=read_prefs
+OSM_LOGIN_REDIRECT_URI=http://127.0.0.1:3000/authenticate/
+OSM_SECRET_KEY=your_osm_secret_key
+CELERY_BROKER_URL="redis://redis:6379/0"
+CELERY_RESULT_BACKEND="redis://redis:6379/0"
+RAMP_HOME="/RAMP_HOME"
+TRAINING_WORKSPACE="/TRAINING_WORKSPACE"
+TESTING_TOKEN=your_testing_token
+GDAL_LIBRARY_PATH=''
+MAXAR_CONNECT_ID=your_maxar_connect_id
+FRONTEND_URL=https://fair.hotosm.org
+BUCKET_NAME=fair-dev
+PARENT_BUCKET_FOLDER=dev
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+PRESIGNED_URL_EXPIRY=3600
+EPOCHS_LIMIT=20
+BATCH_SIZE_LIMIT=8
+YOLO_EPOCHS_LIMIT=200
+YOLO_BATCH_SIZE_LIMIT=8
+RAMP_EPOCHS_LIMIT=40
+RAMP_BATCH_SIZE_LIMIT=8
+TRAINING_WORKSPACE_DOWNLOAD_LIMIT=200
+DEFAULT_PAGINATION_SIZE=50
+CORS_ORIGIN_ALLOW_ALL=False
+ENABLE_PREDICTION_API=False
+LOG_LINE_STREAM_TRUNCATE_VALUE=10
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+EMAIL_HOST_USER=example-email@example.com
+EMAIL_HOST_PASSWORD=example-email-password
+DEFAULT_FROM_EMAIL=no-reply@example.com
+```
+
+## Running the project with Docker
+
+1. Ensure you have Docker installed on your machine. If not, follow the instructions [here](https://docs.docker.com/get-docker/) to install Docker.
+2. Create a `docker-compose.yml` file in the root directory of the backend project with the following content:
+
+```yaml
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DEBUG: ${DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      EXPORT_TOOL_API_URL: ${EXPORT_TOOL_API_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      OSM_CLIENT_ID: ${OSM_CLIENT_ID}
+      OSM_CLIENT_SECRET: ${OSM_CLIENT_SECRET}
+      OSM_URL: ${OSM_URL}
+      OSM_SCOPE: ${OSM_SCOPE}
+      OSM_LOGIN_REDIRECT_URI: ${OSM_LOGIN_REDIRECT_URI}
+      OSM_SECRET_KEY: ${OSM_SECRET_KEY}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+      RAMP_HOME: ${RAMP_HOME}
+      TRAINING_WORKSPACE: ${TRAINING_WORKSPACE}
+      TESTING_TOKEN: ${TESTING_TOKEN}
+      GDAL_LIBRARY_PATH: ${GDAL_LIBRARY_PATH}
+      MAXAR_CONNECT_ID: ${MAXAR_CONNECT_ID}
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  pgsql:
+    image: "postgis/postgis"
+    environment:
+      POSTGRES_DB: ai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+```
+
+3. Run the following command to build and start the Docker containers:
+
+```bash
+docker-compose up -d --build
+```
+
+4. Once the containers are up and running, open the API container terminal and run the migrations:
+
+```bash
+docker-compose exec backend python manage.py makemigrations login core
+docker-compose exec backend python manage.py migrate
+```
+
+5. Create a superuser to access the admin panel:
+
+```bash
+docker-compose exec backend python manage.py createsuperuser
+```
+
+6. Access the application by navigating to `http://localhost:8000` in your web browser.
+
+7. Access the admin panel by navigating to `http://localhost:8000/admin` and log in with the superuser credentials you created.
+
+8. To stop the Docker containers, run the following command:
+
+```bash
+docker-compose down
+```

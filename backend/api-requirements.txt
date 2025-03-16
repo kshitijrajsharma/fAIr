@@ -1,14 +1,13 @@
 django==4.1.4
-# gdal==3.6.2
 psycopg2
 djangorestframework==3.14.0
 djangorestframework-gis==1.0
 dj-database-url==1.2.0
 django-leaflet==0.28.3
 drf-yasg==1.21.4
-django-environ==0.9.0 # used for environment
+django-environ==0.9.0
 django-filter==22.1
-django-cors-headers==3.13.0 # used for enabling cors when frontend is hosted on different server / origin
+django-cors-headers==3.13.0
 osm-login-python==0.0.2
 celery==5.2.7
 redis>=3.5.3
@@ -24,5 +23,4 @@ numpy<2.0.0
 mercantile==1.2.1 
 tqdm==4.67.0
 boto3==1.35.76
-
 django-q==1.3.9

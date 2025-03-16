@@ -93,7 +93,20 @@ class ModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Model
-        fields = "__all__"
+        fields = [
+            "id",
+            "dataset",
+            "name",
+            "created_at",
+            "last_modified",
+            "description",
+            "user",
+            "published_training",
+            "status",
+            "base_model",
+            "accuracy",
+            "thumbnail_url",
+        ]
         read_only_fields = (
             "created_at",
             "last_modified",
@@ -214,7 +227,16 @@ class AOISerializer(GeoFeatureModelSerializer):
     class Meta:
         model = AOI
         geo_field = "geom"
-        fields = "__all__"
+        fields = [
+            "id",
+            "dataset",
+            "geom",
+            "label_status",
+            "label_fetched",
+            "created_at",
+            "last_modified",
+            "user",
+        ]
         read_only_fields = (
             "created_at",
             "last_modified",
@@ -264,7 +286,17 @@ class FeedbackAOISerializer(GeoFeatureModelSerializer):
     class Meta:
         model = FeedbackAOI
         geo_field = "geom"
-        fields = "__all__"
+        fields = [
+            "id",
+            "training",
+            "geom",
+            "label_status",
+            "label_fetched",
+            "created_at",
+            "last_modified",
+            "source_imagery",
+            "user",
+        ]
         partial = True
         read_only_fields = (
             "created_at",
@@ -298,7 +330,17 @@ class FeedbackSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Feedback
         geo_field = "geom"
-        fields = "__all__"
+        fields = [
+            "id",
+            "geom",
+            "training",
+            "created_at",
+            "zoom_level",
+            "feedback_type",
+            "comments",
+            "user",
+            "source_imagery",
+        ]
         read_only_fields = ("created_at", "last_modified", "user")
         partial = True
 
@@ -340,7 +382,14 @@ class LabelSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Label
         geo_field = "geom"
-        fields = "__all__"
+        fields = [
+            "id",
+            "aoi",
+            "geom",
+            "osm_id",
+            "tags",
+            "created_at",
+        ]
 
 
 class ApprovedPredictionsSerializer(GeoFeatureModelSerializer):
@@ -352,7 +401,14 @@ class ApprovedPredictionsSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = ApprovedPredictions
         geo_field = "geom"
-        fields = "__all__"
+        fields = [
+            "id",
+            "training",
+            "config",
+            "geom",
+            "approved_at",
+            "user",
+        ]
 
 
 class FeedbackLabelSerializer(GeoFeatureModelSerializer):
@@ -364,7 +420,14 @@ class FeedbackLabelSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = FeedbackLabel
         geo_field = "geom"
-        fields = "__all__"
+        fields = [
+            "id",
+            "osm_id",
+            "feedback_aoi",
+            "tags",
+            "geom",
+            "created_at",
+        ]
 
 
 class LabelFileSerializer(GeoFeatureModelSerializer):

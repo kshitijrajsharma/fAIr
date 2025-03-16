@@ -273,9 +273,6 @@ ENABLE_PREDICTION_API = env("ENABLE_PREDICTION_API", default=False)
 LOG_LINE_STREAM_TRUNCATE_VALUE = env("LOG_LINE_STREAM_TRUNCATE_VALUE", default=10)
 
 
-TEST_RUNNER = "tests.test_runners.NoDestroyTestRunner"
-
-
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
