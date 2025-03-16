@@ -17,6 +17,7 @@ from core.models import (
     Label,
     Model,
     Training,
+    UserNotification,
 )
 from core.serializers import (
     AOISerializer,
@@ -29,6 +30,7 @@ from core.utils import bbox, is_dir_empty
 from django.conf import settings
 from django.contrib.gis.db.models.aggregates import Extent
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -514,14 +516,15 @@ def train_model(
 
     training_instance = get_object_or_404(Training, id=training_id)
     model_instance = get_object_or_404(Model, id=training_instance.model.id)
+    
+    send_notification(training_instance,"Started")
 
     training_instance.status = "RUNNING"
     training_instance.started_at = timezone.now()
+    training_instance.task_id = train_model.request.id
+
     training_instance.save()
     os.makedirs(settings.LOG_PATH, exist_ok=True)
-    if training_instance.task_id is None or training_instance.task_id.strip() == "":
-        training_instance.task_id = train_model.request.id
-        training_instance.save()
     log_file = os.path.join(settings.LOG_PATH, f"run_{train_model.request.id}.log")
 
     if model_instance.base_model == "YOLO_V8_V1" and settings.YOLO_HOME is None:
@@ -567,10 +570,55 @@ def train_model(
                 )
 
             logging.info(f"Training task {training_id} completed successfully")
+            send_notification(training_instance, "Completed")
             return response
 
     except Exception as ex:
         training_instance.status = "FAILED"
         training_instance.finished_at = timezone.now()
         training_instance.save()
+        send_notification(training_instance, "Failed")
         raise ex
+
+def get_email_message(training_instance,status):
+    
+    hostname = settings.FRONTEND_URL  
+    training_model_url = f"{hostname}/ai-models/{training_instance.model.id}"
+
+    message_template = (
+        "Hi {username},\n\n"
+        "Your training task (ID: {training_id}) of model {model_name} has {status}. You can view the details here:\n"
+        "{training_model_url}\n\n"
+        "Thank you for using fAIr - AI Assisted Mapping Tool.\n\n"
+        "Best regards,\n"
+        "The fAIr Dev Team\n\n"
+        "Get Involved : https://www.hotosm.org/get-involved/\n"
+        "https://github.com/hotosm/fAIr/"
+    )
+
+    message = message_template.format(
+        username=training_instance.user.username,
+        training_id=training_instance.id,
+        model_name=training_instance.model.name,
+        status=status.lower(),
+        training_model_url=training_model_url,
+        hostname=hostname,
+
+    )
+    subject = f"fAIr : Training {training_instance.id} {status.capitalize()}"
+    return message, subject
+
+
+def send_notification(training_instance,status):
+    if any(method in training_instance.user.notifications_delivery_methods for method in ["web", "email"]):
+        UserNotification.objects.create(user=training_instance.user, message=f"Training {training_instance.id} has {status}.")
+    if "email" in training_instance.user.notifications_delivery_methods:
+        if training_instance.user.email and training_instance.user.email != '':
+            message,subject=get_email_message(training_instance,status)
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[training_instance.user.email],
+                fail_silently=False,
+            )

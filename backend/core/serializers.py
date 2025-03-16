@@ -91,13 +91,6 @@ class ModelSerializer(serializers.ModelSerializer):
         ):
             self.fields["dataset"] = DatasetSerializer(read_only=True)
 
-    # def get_training(self, obj):
-    #     if not hasattr(self, "_cached_training"):
-    #         self._cached_training = Training.objects.filter(
-    #             id=obj.published_training
-    #         ).first()
-    #     return self._cached_training
-
     def get_thumbnail_url(self, obj):
         training = Training.objects.filter(id=obj.published_training).first()
 
@@ -143,14 +136,6 @@ class ModelCentroidSerializer(GeoFeatureModelSerializer):
                 "coordinates": aoi.geom.centroid.coords,
             }
         return None
-
-    # def to_representation(self, instance):
-    #     """
-    #     Override to_representation to customize GeoJSON structure.
-    #     """
-    #     representation = super().to_representation(instance)
-    #     representation["properties"]["id"] = representation.pop("id")
-    #     return representation
 
 
 class AOISerializer(
@@ -451,6 +436,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
     feedbacks_count = serializers.SerializerMethodField()
     approved_predictions_count = serializers.SerializerMethodField()
     profile_completion_percentage = serializers.SerializerMethodField()
+    unread_notifications_count = serializers.SerializerMethodField()
 
     class Meta:
         model = OsmUser
@@ -460,13 +446,28 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "email",
             "date_joined",
             "img_url",
+            "notifications_delivery_methods",
+            "newsletter_subscription",
+            "account_deletion_requested",
             "models_count",
             "datasets_count",
             "feedbacks_count",
             "approved_predictions_count",
             "profile_completion_percentage",
+            "unread_notifications_count",
         ]
-        read_only_fields = ["osm_id", "username", "date_joined", "img_url"]
+        read_only_fields = [
+            "osm_id",
+            "username",
+            "date_joined",
+            "img_url",
+            "models_count",
+            "datasets_count",
+            "feedbacks_count",
+            "approved_predictions_count",
+            "profile_completion_percentage",
+            "unread_notifications_count",
+        ]
 
     def get_models_count(self, obj):
         return Model.objects.filter(user=obj).count()
@@ -489,3 +490,18 @@ class UserStatsSerializer(serializers.ModelSerializer):
         if obj.email is not None and obj.email != "":
             profile_percentage += 25
         return profile_percentage
+
+    def get_unread_notifications_count(self, obj):
+        return UserNotification.objects.filter(user=obj, is_read=False).count()
+
+
+class UserNotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserNotification
+        fields = ("id", "is_read", "created_at", "read_at", "message")
+        read_only_fields = (
+            "id",
+            "created_at",
+            "read_at",
+            "message",
+        )
