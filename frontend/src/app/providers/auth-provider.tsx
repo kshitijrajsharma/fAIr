@@ -135,6 +135,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Poll the backend for the user profile information every 10 seconds. 
+   * This is majorly to keep the user profile information up to date, especially when the user is logged in.
+   */
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (token) {
+        authService.getUser().then(setUser).catch(showErrorToast);
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [token]);
+
   return (
     <AuthContext.Provider
       value={{

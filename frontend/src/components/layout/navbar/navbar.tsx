@@ -17,6 +17,7 @@ import { useNotifications } from "@/features/user-profile/hooks/use-notification
 import { TNotification } from "@/types";
 import useScreenSize from "@/hooks/use-screen-size";
 
+
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
 
@@ -41,6 +42,17 @@ export const NavBar = () => {
     offset,
   });
 
+  useEffect(() => {
+    setNotifications([]);
+    setOffset(0);
+  }, [unRead]);
+
+  useEffect(() => {
+    if (unRead !== undefined) {
+      setNotifications([]);
+    }
+  }, [unRead]);
+
   const { screenWidth } = useScreenSize();
 
   const notificationAnchor = "notificationPanel";
@@ -49,6 +61,7 @@ export const NavBar = () => {
   useEffect(() => {
     if (data?.results) {
       setNotifications((prev) => [...prev, ...data.results]);
+      loadingMoreRef.current = false; // Reset after new data
     }
   }, [data?.results]);
 
@@ -56,7 +69,6 @@ export const NavBar = () => {
     if (
       !data?.hasNext ||
       isPending ||
-      offset >= data?.count ||
       loadingMoreRef.current
     ) {
       return;
@@ -64,13 +76,6 @@ export const NavBar = () => {
     loadingMoreRef.current = true;
     setOffset((prev) => prev + 20);
   }, [data?.hasNext, data?.count, isPending]);
-
-  // Reset after data changes
-  useEffect(() => {
-    if (!isPending) {
-      loadingMoreRef.current = false;
-    }
-  }, [isPending]);
 
   /**
    * Close the notification panel incase the user resizes their browser.
