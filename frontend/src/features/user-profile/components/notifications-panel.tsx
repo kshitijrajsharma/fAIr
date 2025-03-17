@@ -12,6 +12,7 @@ import { NoTrainingAreaIcon } from "@/components/ui/icons";
 import { useCallback, useEffect, useRef } from "react";
 import { NotificationType } from "@/features/user-profile/components/user-notifications";
 import { useClickOutside } from "@/hooks/use-click-outside";
+import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 
 
 export const NotificationPanel = ({
@@ -96,7 +97,7 @@ export const NotificationPanel = ({
       <>
         <div className="px-2 space-y-2">
           <p className="font-semibold text-body-3 md:text-body-2">
-            Notification
+            {USER_PROFILE_PAGE_CONTENT.notifications.panelTitle}
           </p>
           <Divider />
           <div className="flex justify-between">
@@ -113,7 +114,7 @@ export const NotificationPanel = ({
                 contentClassName="text-body-4"
                 onClick={() => setNotificationType(NotificationType.ALL)}
               >
-                All
+                {USER_PROFILE_PAGE_CONTENT.notifications.all}
               </Button>
               <Button
                 variant={
@@ -127,7 +128,7 @@ export const NotificationPanel = ({
                 contentClassName="text-body-4"
                 onClick={() => setNotificationType(NotificationType.UNREAD)}
               >
-                Unread ({unreadCount})
+                {USER_PROFILE_PAGE_CONTENT.notifications.unread} ({unreadCount})
               </Button>
             </div>
             {unreadCount > 0 && (
@@ -136,7 +137,7 @@ export const NotificationPanel = ({
                 className="text-gray text-body-4"
                 onClick={() => updateNotifications(undefined)}
               >
-                Mark all as read
+                {USER_PROFILE_PAGE_CONTENT.notifications.markAllAsRead}
               </button>
             )}
           </div>
@@ -151,13 +152,13 @@ export const NotificationPanel = ({
           ) : isError ? (
             <div className="flex flex-col items-center gap-y-4">
               <p className="text-center text-primary text-body-3">
-                Error loading notifications
+                {USER_PROFILE_PAGE_CONTENT.notifications.errorState}
               </p>
             </div>
           ) : !notificationsToRender || notificationsToRender.length === 0 ? (
             <div className="flex items-center justify-center gap-y-4 w-full h-full flex-col">
               <NoTrainingAreaIcon className="w-10 h-10" />
-              <p className="text-gray text-body-3"> No new notifications.</p>
+              <p className="text-gray text-body-3"> {USER_PROFILE_PAGE_CONTENT.notifications.emptyState}</p>
             </div>
           ) : (
             <div className="flex gap-y-4 flex-col">
@@ -248,7 +249,7 @@ const NotificationItem = ({
             contentClassName="text-body-4"
             onClick={() => mutate({ id: notification.id })}
           >
-            Mark as read
+            {USER_PROFILE_PAGE_CONTENT.notifications.markAsRead}
           </Button>
         )}
       </div>

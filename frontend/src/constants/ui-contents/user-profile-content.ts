@@ -1,5 +1,6 @@
 import { TUserProfilePageContent } from "@/types";
 
+
 export const USER_PROFILE_PAGE_CONTENT: TUserProfilePageContent = {
   overview: {
     pageTitle: "My Profile 🎉",
@@ -74,4 +75,13 @@ export const USER_PROFILE_PAGE_CONTENT: TUserProfilePageContent = {
       },
     },
   },
+  notifications: {
+    panelTitle: "Notifications",
+    all: "All",
+    unread: "Unread",
+    markAllAsRead: "Mark all as read",
+    markAsRead: "Mark as read",
+    emptyState: "No new notifications.",
+    errorState: "Failed to fetch notifications."
+  }
 };

@@ -786,6 +786,15 @@ export type TUserProfilePageContent = {
       };
     };
   };
+  notifications: {
+    panelTitle: string;
+    all: string;
+    unread: string;
+    markAsRead: string
+    markAllAsRead: string;
+    emptyState: string;
+    errorState: string;
+  }
 };
 
 // User profile types ends.

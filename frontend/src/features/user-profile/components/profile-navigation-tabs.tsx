@@ -23,7 +23,7 @@ export const ProfileNavigationTabs = () => {
   }, [pathname]);
 
   return (
-    <section className="border-b border-gray-border px-4 md:px-8  overflow-x-scroll hide-scrollbar">
+    <section className="border-b border-gray-border px-4 md:px-8 overflow-x-auto hide-scrollbar">
       <ul className="flex gap-x-20 transition-all duration-300 px-4">
         {PROFILE_NAVIGATION_TABS.filter((route) => route.active).map(
           (route) => (

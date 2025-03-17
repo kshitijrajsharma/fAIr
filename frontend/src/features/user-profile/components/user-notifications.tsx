@@ -59,27 +59,25 @@ export const UserNotifications = () => {
         handleClick={handleClick}
       />
 
-      {showNotificationPanel && (
-        <NotificationPanel
-          showNotificationPanel={showNotificationPanel}
-          setShowNotificationPanel={setShowNotificationPanel}
-          unReadNotifications={data?.pages
-            .map((page) => page.results)
-            .flat()
-            .filter((notification) => !notification.is_read)}
-          allNotifications={data?.pages.map((page) => page.results).flat()}
-          isPending={isPending}
-          isError={isError}
-          loadMore={fetchNextPage}
-          anchor={notificationAnchor}
-          notificationType={notificationType}
-          setNotificationType={setNotificationType}
-          isSmallViewport={screenWidth < SMALL_VIEWPORT}
-          unreadCount={user?.unread_notifications_count}
-          hasNextPage={hasNextPage}
-          isFetching={isFetching}
-        />
-      )}
+      <NotificationPanel
+        showNotificationPanel={showNotificationPanel}
+        setShowNotificationPanel={setShowNotificationPanel}
+        unReadNotifications={data?.pages
+          .map((page) => page.results)
+          .flat()
+          .filter((notification) => !notification.is_read)}
+        allNotifications={data?.pages.map((page) => page.results).flat()}
+        isPending={isPending}
+        isError={isError}
+        loadMore={fetchNextPage}
+        anchor={notificationAnchor}
+        notificationType={notificationType}
+        setNotificationType={setNotificationType}
+        isSmallViewport={screenWidth < SMALL_VIEWPORT}
+        unreadCount={user?.unread_notifications_count}
+        hasNextPage={hasNextPage}
+        isFetching={isFetching}
+      />
     </>
   );
 };

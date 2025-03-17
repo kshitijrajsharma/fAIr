@@ -73,10 +73,12 @@ export const useUpdateNotifications = ({
     is_read: undefined,
     enabled: false,
   });
-
+  const { setUser } = useAuth();
   return useMutation({
     mutationFn: () => updateNotifications(),
-    onSuccess: (...args) => {
+    onSuccess: async (...args) => {
+      // Update user to reflect the new notification status
+      setUser(await authService.getUser());
       refetch();
       onSuccess?.(...args);
     },
