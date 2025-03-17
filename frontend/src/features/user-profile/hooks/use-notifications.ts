@@ -24,7 +24,6 @@ export const useNotifications = ({
     queryFn: ({ pageParam: offset = 0 }) =>
       getNotifications(is_read, offset as number),
     enabled,
-    refetchInterval: 10000,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.hasNext) {
@@ -45,14 +44,14 @@ export const useUpdateNotification = ({
 }: useUpdateNotificationOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
   const { setUser } = useAuth();
+  const { refetch } = useNotifications({
+    is_read: undefined,
+    enabled: false,
+  });
 
   return useMutation({
     mutationFn: (args: TUpdateNotificationArgs) => updateNotification(args),
     onSuccess: async (...args) => {
-      const { refetch } = useNotifications({
-        is_read: undefined,
-        enabled: true,
-      });
       refetch();
       // Update user to reflect the new notification status
       setUser(await authService.getUser());
@@ -70,14 +69,14 @@ export const useUpdateNotifications = ({
   mutationConfig,
 }: useUpdateNotificationsOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
+  const { refetch } = useNotifications({
+    is_read: undefined,
+    enabled: false,
+  });
 
   return useMutation({
     mutationFn: () => updateNotifications(),
     onSuccess: (...args) => {
-      const { refetch } = useNotifications({
-        is_read: undefined,
-        enabled: true,
-      });
       refetch();
       onSuccess?.(...args);
     },

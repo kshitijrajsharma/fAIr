@@ -1,18 +1,16 @@
 import { NotificationBellIcon } from "@/components/ui/icons";
 
-
 export const NotificationBell = ({
   showNotificationPanel,
   notificationAnchor,
   unreadCount,
-  handleClick
+  handleClick,
 }: {
   showNotificationPanel: boolean;
   notificationAnchor: string;
   unreadCount: number;
   handleClick: () => void;
 }) => {
-
   return (
     <button
       id={notificationAnchor}

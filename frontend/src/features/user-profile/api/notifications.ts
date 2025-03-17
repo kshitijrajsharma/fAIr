@@ -9,7 +9,7 @@ export const getNotifications = async (
     params: {
       offset,
       is_read,
-      limit: 20,
+      limit: 10,
     },
   });
   return {

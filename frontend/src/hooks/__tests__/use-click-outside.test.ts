@@ -1,68 +1,65 @@
-import { renderHook, fireEvent, render } from '@testing-library/react';
-import { useClickOutside } from '../use-click-outside';
-import { vi, describe, expect, it } from 'vitest';
-import { createElement } from 'react';
+import { renderHook, fireEvent, render } from "@testing-library/react";
+import { useClickOutside } from "../use-click-outside";
+import { vi, describe, expect, it } from "vitest";
+import { createElement } from "react";
 
+describe("useClickOutside", () => {
+  it("should call handler when clicking outside the element", () => {
+    const handler = vi.fn();
 
+    const TestComponent = () => {
+      const ref = useClickOutside(handler);
 
-describe('useClickOutside', () => {
-    it("should call handler when clicking outside the element", () => {
-        const handler = vi.fn();
+      return createElement(
+        "div",
+        null,
+        createElement("div", { ref, "data-testid": "inside" }, "Inside"),
+        createElement("div", { "data-testid": "outside" }, "Outside"),
+      );
+    };
 
-        const TestComponent = () => {
-            const ref = useClickOutside(handler);
+    const { getByTestId } = render(createElement(TestComponent));
 
-            return createElement(
-                "div",
-                null,
-                createElement("div", { ref, "data-testid": "inside" }, "Inside"),
-                createElement("div", { "data-testid": "outside" }, "Outside")
-            );
-        };
+    // Simulate click inside (should NOT trigger handler)
+    fireEvent.mouseDown(getByTestId("inside"));
+    expect(handler).not.toHaveBeenCalled();
 
-        const { getByTestId } = render(createElement(TestComponent));
+    // Simulate click outside (should trigger handler)
+    fireEvent.mouseDown(getByTestId("outside"));
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
 
-        // Simulate click inside (should NOT trigger handler)
-        fireEvent.mouseDown(getByTestId("inside"));
-        expect(handler).not.toHaveBeenCalled();
+  it("should not call handler when clicking inside the element", () => {
+    const handler = vi.fn();
+    const { result } = renderHook(() => useClickOutside(handler));
+    const element = document.createElement("div");
+    result.current = { current: element };
 
-        // Simulate click outside (should trigger handler)
-        fireEvent.mouseDown(getByTestId("outside"));
-        expect(handler).toHaveBeenCalledTimes(1);
-    });
+    document.body.appendChild(element);
 
+    // Simulate click inside
+    element.click();
 
-    it('should not call handler when clicking inside the element', () => {
-        const handler = vi.fn();
-        const { result } = renderHook(() => useClickOutside(handler));
-        const element = document.createElement('div');
-        result.current = { current: element };
+    expect(handler).not.toHaveBeenCalled();
 
-        document.body.appendChild(element);
+    document.body.removeChild(element);
+  });
 
-        // Simulate click inside
-        element.click();
+  it("should clean up event listeners on unmount", () => {
+    const handler = vi.fn();
+    const { result, unmount } = renderHook(() => useClickOutside(handler));
+    const element = document.createElement("div");
+    result.current = { current: element };
 
-        expect(handler).not.toHaveBeenCalled();
+    document.body.appendChild(element);
 
-        document.body.removeChild(element);
-    });
+    unmount();
 
-    it('should clean up event listeners on unmount', () => {
-        const handler = vi.fn();
-        const { result, unmount } = renderHook(() => useClickOutside(handler));
-        const element = document.createElement('div');
-        result.current = { current: element };
+    // Simulate click outside after unmount
+    document.body.click();
 
-        document.body.appendChild(element);
+    expect(handler).not.toHaveBeenCalled();
 
-        unmount();
-
-        // Simulate click outside after unmount
-        document.body.click();
-
-        expect(handler).not.toHaveBeenCalled();
-
-        document.body.removeChild(element);
-    });
+    document.body.removeChild(element);
+  });
 });

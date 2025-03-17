@@ -12,6 +12,7 @@ import { NoTrainingAreaIcon } from "@/components/ui/icons";
 import { useCallback, useEffect, useRef } from "react";
 import { NotificationType } from "@/features/user-profile/components/user-notifications";
 import { useClickOutside } from "@/hooks/use-click-outside";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 export const NotificationPanel = ({
   anchor,
@@ -55,7 +56,6 @@ export const NotificationPanel = ({
     },
   });
 
-
   const scrollRef = useRef<HTMLDivElement>(null);
   const isFetchingRef = useRef<boolean>(false);
 
@@ -82,7 +82,6 @@ export const NotificationPanel = ({
       ? unReadNotifications
       : allNotifications;
 
-
   const clickOutsideRef = useClickOutside<HTMLDivElement>((event) => {
     /**
      * Disable this when the user clicks on the notification bell anchor.
@@ -91,7 +90,6 @@ export const NotificationPanel = ({
     if ((event.target as HTMLElement).closest(`#${anchor}`)) return;
     setShowNotificationPanel(false);
   });
-
 
   const popUpContent = () => {
     return (

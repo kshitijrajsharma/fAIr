@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNotifications } from "@/features/user-profile/hooks/use-notifications";
 import { useAuth } from "@/app/providers/auth-provider";
 import useScreenSize from "@/hooks/use-screen-size";
@@ -27,7 +27,7 @@ export const UserNotifications = () => {
     NotificationType.UNREAD,
   );
 
-  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetching } =
+  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetching, refetch } =
     useNotifications({
       enabled: true,
       is_read: undefined,
@@ -37,6 +37,19 @@ export const UserNotifications = () => {
     setShowNotificationPanel((prev) => !prev);
   };
 
+  /**
+   * Refetch notifications every 10 seconds if there are unread notifications.
+   * This is to prevent unnecessary polling when there are no unread notifications.
+   */
+  useEffect(() => {
+    if (user.unread_notifications_count === 0) return;
+    const interval = setInterval(() => {
+      refetch();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [refetch, user.unread_notifications_count]);
+
   return (
     <>
       <NotificationBell
@@ -44,28 +57,29 @@ export const UserNotifications = () => {
         notificationAnchor={notificationAnchor}
         unreadCount={user?.unread_notifications_count}
         handleClick={handleClick}
-
       />
 
-      <NotificationPanel
-        showNotificationPanel={showNotificationPanel}
-        setShowNotificationPanel={setShowNotificationPanel}
-        unReadNotifications={data?.pages
-          .map((page) => page.results)
-          .flat()
-          .filter((notification) => !notification.is_read)}
-        allNotifications={data?.pages.map((page) => page.results).flat()}
-        isPending={isPending}
-        isError={isError}
-        loadMore={fetchNextPage}
-        anchor={notificationAnchor}
-        notificationType={notificationType}
-        setNotificationType={setNotificationType}
-        isSmallViewport={screenWidth < SMALL_VIEWPORT}
-        unreadCount={user?.unread_notifications_count}
-        hasNextPage={hasNextPage}
-        isFetching={isFetching}
-      />
+      {showNotificationPanel && (
+        <NotificationPanel
+          showNotificationPanel={showNotificationPanel}
+          setShowNotificationPanel={setShowNotificationPanel}
+          unReadNotifications={data?.pages
+            .map((page) => page.results)
+            .flat()
+            .filter((notification) => !notification.is_read)}
+          allNotifications={data?.pages.map((page) => page.results).flat()}
+          isPending={isPending}
+          isError={isError}
+          loadMore={fetchNextPage}
+          anchor={notificationAnchor}
+          notificationType={notificationType}
+          setNotificationType={setNotificationType}
+          isSmallViewport={screenWidth < SMALL_VIEWPORT}
+          unreadCount={user?.unread_notifications_count}
+          hasNextPage={hasNextPage}
+          isFetching={isFetching}
+        />
+      )}
     </>
   );
 };
