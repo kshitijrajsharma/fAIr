@@ -5,6 +5,7 @@ import useScreenSize from "@/hooks/use-screen-size";
 import { NotificationBell } from "@/components/layout";
 import { NotificationPanel } from "./notifications-panel";
 
+
 const SMALL_VIEWPORT = 960;
 
 export enum NotificationType {
@@ -32,14 +33,8 @@ export const UserNotifications = () => {
       is_read: undefined,
     });
 
-  const handleBellClick = () => {
-    if (showNotificationPanel) {
-      // If panel is already showing, hide it immediately
-      setShowNotificationPanel(false);
-    } else {
-      // Otherwise, show it
-      setShowNotificationPanel(true);
-    }
+  const handleClick = () => {
+    setShowNotificationPanel((prev) => !prev);
   };
 
   return (
@@ -48,7 +43,8 @@ export const UserNotifications = () => {
         showNotificationPanel={showNotificationPanel}
         notificationAnchor={notificationAnchor}
         unreadCount={user?.unread_notifications_count}
-        handleBellClick={handleBellClick}
+        handleClick={handleClick}
+
       />
 
       <NotificationPanel

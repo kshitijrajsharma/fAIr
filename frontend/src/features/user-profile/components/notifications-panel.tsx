@@ -82,9 +82,15 @@ export const NotificationPanel = ({
       ? unReadNotifications
       : allNotifications;
 
-  // console.log(showNotificationPanel)
 
-  const clickOutsideRef = useClickOutside<HTMLDivElement>(() => setShowNotificationPanel(!showNotificationPanel));
+  const clickOutsideRef = useClickOutside<HTMLDivElement>((event) => {
+    /**
+     * Disable this when the user clicks on the notification bell anchor.
+     * This is to prevent the flicker when the user clicks on the notification bell.
+     */
+    if ((event.target as HTMLElement).closest(`#${anchor}`)) return;
+    setShowNotificationPanel(false);
+  });
 
 
   const popUpContent = () => {

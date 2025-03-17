@@ -5,20 +5,19 @@ export const NotificationBell = ({
   showNotificationPanel,
   notificationAnchor,
   unreadCount,
-  handleBellClick
-
+  handleClick
 }: {
   showNotificationPanel: boolean;
   notificationAnchor: string;
   unreadCount: number;
-  handleBellClick: () => void;
+  handleClick: () => void;
 }) => {
 
   return (
     <button
       id={notificationAnchor}
       className={`p-1  hover:bg-hover-accent rounded-md cursor-pointer ${showNotificationPanel ? "bg-hover-accent" : ""}`}
-      onClick={handleBellClick}
+      onClick={handleClick}
     >
       <div className="relative">
         <NotificationBellIcon className="w-5 h-5" />
