@@ -235,6 +235,13 @@ sl-alert.success::part(base) {
   visibility: visible;
 }
 
+
+.hide-scrollbar::-webkit-scrollbar-track,
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  visibility: hidden;
+}
+
+
 /* General scrollbar ends */
 
 /* Popup customization starts */
