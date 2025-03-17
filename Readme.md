@@ -1,9 +1,31 @@
-![example workflow](https://github.com/omranlm/TDB/actions/workflows/backend_build.yml/badge.svg)
-![example workflow](https://github.com/omranlm/TDB/actions/workflows/frontend_build.yml/badge.svg)
+<!-- markdownlint-disable -->
+<p align="center">
+    <!-- github-banner-start -->
+    <img src="https://raw.githubusercontent.com/hotosm/fmtm/main/docs/images/hot_logo.png" alt="HOTOSM Logo" width="25%" height="auto" />
+    <!-- github-banner-end -->
+</p>
 
-Navigate to Backend or Frontend to get Installation Instructions.
+<div align="center">
+    <h1>fAIr: AI-assisted Mapping</h1>
+    <p>Open AI-assisted mapping service for Humanitarian</p>
+    <a href="https://github.com/hotosm/fair/releases">
+        <img src="https://img.shields.io/github/v/release/hotosm/fair?logo=github" alt="Release Version" />
+    </a>
+</div>
 
-# fAIr: AI-assisted Mapping
+</br>
+
+<!-- prettier-ignore-start -->
+<div align="center">
+
+| **CI/CD** | | [![Backend Build](https://github.com/hotosm/fair/actions/workflows/backend_build.yml/badge.svg?branch=master)](https://github.com/hotosm/fair/actions/workflows/backend_build.yml) [![Frontend Build](https://github.com/hotosm/fair/actions/workflows/frontend_build.yml/badge.svg?branch=master)](https://github.com/hotosm/fair/actions/workflows/frontend_build.yml) |
+| :--- | :--- | :--- |
+| **Tech Stack** | | ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django) ![React](https://img.shields.io/badge/React-20232A.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) |
+| **Code Style** | | [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) |
+| **Community** | | [![Slack](https://img.shields.io/badge/Slack-Join%20the%20community!-d63f3f?style=for-the-badge&logo=slack&logoColor=white)](https://slack.hotosm.org) [![All Contributors](https://img.shields.io/github/all-contributors/hotosm/fair?color=ee8449&style=flat-square)](#contributors-) |
+| **Other Info** | | [![Roadmap](https://img.shields.io/badge/Roadmap-View%20Plan-blue.svg)](https://github.com/orgs/hotosm/projects/40) [![License](https://img.shields.io/github/license/hotosm/fair.svg)](https://github.com/hotosm/fair/blob/main/LICENSE.md) |
+
+</div>
 
 fAIr is an open AI-assisted mapping service developed by the [Humanitarian OpenStreetMap Team (HOT)](https://www.hotosm.org/) that aims to improve the efficiency and accuracy of mapping efforts for humanitarian purposes. The service uses AI models, specifically computer vision techniques, to detect objects such as buildings, roads, waterways, and trees from satellite and UAV imagery.
 
