@@ -9,32 +9,40 @@ import {
   useUpdateNotifications,
 } from "@/features/user-profile/hooks/use-notifications";
 import { NoTrainingAreaIcon } from "@/components/ui/icons";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { NotificationType } from "@/features/user-profile/components/user-notifications";
+import { useClickOutside } from "@/hooks/use-click-outside";
 
 export const NotificationPanel = ({
   anchor,
-  active,
+  showNotificationPanel,
   isError,
   isPending,
-  notifications,
-  unRead,
-  setUnread,
+  setNotificationType,
   isSmallViewport,
   setShowNotificationPanel,
   loadMore,
-  offset,
+  unreadCount,
+  unReadNotifications,
+  allNotifications,
+  notificationType,
+  hasNextPage,
+  isFetching,
 }: {
   anchor: string;
-  active: boolean;
+  showNotificationPanel: boolean;
   isError: boolean;
   isPending: boolean;
-  notifications: TNotification[];
-  unRead: boolean | undefined;
-  setUnread: (unRead: boolean | undefined) => void;
+  unReadNotifications: TNotification[] | undefined;
+  allNotifications: TNotification[] | undefined;
+  notificationType: NotificationType;
+  setNotificationType: (type: NotificationType) => void;
   isSmallViewport: boolean;
   setShowNotificationPanel: (show: boolean) => void;
   loadMore: () => void;
-  offset: number;
+  unreadCount: number;
+  hasNextPage: boolean;
+  isFetching: boolean;
 }) => {
   const {
     isPending: isNotificationsUpdatePending,
@@ -45,36 +53,39 @@ export const NotificationPanel = ({
         showErrorToast(error);
       },
     },
-    offset,
   });
 
-  useEffect(() => {
-    // Only enable this on web because there is a close button already on mobile.
-    if (isSmallViewport) return;
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest("#popup-content")) {
-        setShowNotificationPanel(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isFetchingRef = useRef<boolean>(false);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el || isFetching || isFetchingRef.current || !hasNextPage) return;
+
     const { scrollTop, scrollHeight, clientHeight } = el;
-    // Trigger when you're within 100px of the bottom
+    // Check if within 100px of bottom
     if (scrollHeight - scrollTop <= clientHeight + 100) {
+      isFetchingRef.current = true;
       loadMore();
     }
-  };
+  }, [isFetching, hasNextPage, loadMore]);
+
+  useEffect(() => {
+    if (!isFetching) {
+      isFetchingRef.current = false;
+    }
+  }, [isFetching]);
+
+  const notificationsToRender =
+    notificationType === NotificationType.UNREAD
+      ? unReadNotifications
+      : allNotifications;
+
+  // console.log(showNotificationPanel)
+
+  const clickOutsideRef = useClickOutside<HTMLDivElement>(() => setShowNotificationPanel(!showNotificationPanel));
+
 
   const popUpContent = () => {
     return (
@@ -87,33 +98,43 @@ export const NotificationPanel = ({
           <div className="flex justify-between">
             <div className="flex gap-x-2">
               <Button
-                variant={unRead !== undefined ? "default" : "tertiary"}
+                variant={
+                  notificationType === NotificationType.UNREAD
+                    ? "default"
+                    : "tertiary"
+                }
                 size="small"
-                className={`!w-fit ${unRead === undefined ? "font-bold" : ""}`}
+                className={`!w-fit ${notificationType === NotificationType.ALL ? "font-bold" : ""}`}
                 uppercase={false}
                 contentClassName="text-body-4"
-                onClick={() => setUnread(undefined)}
+                onClick={() => setNotificationType(NotificationType.ALL)}
               >
                 All
               </Button>
               <Button
-                variant={unRead !== false ? "default" : "tertiary"}
+                variant={
+                  notificationType === NotificationType.ALL
+                    ? "default"
+                    : "tertiary"
+                }
                 size="small"
-                className={`!w-fit ${unRead === false ? "font-bold" : ""}`}
+                className={`!w-fit ${notificationType === NotificationType.UNREAD ? "font-bold" : ""}`}
                 uppercase={false}
                 contentClassName="text-body-4"
-                onClick={() => setUnread(false)}
+                onClick={() => setNotificationType(NotificationType.UNREAD)}
               >
-                Unread
+                Unread ({unreadCount})
               </Button>
             </div>
-            <button
-              disabled={isNotificationsUpdatePending}
-              className="text-gray text-body-4"
-              onClick={() => updateNotifications(undefined)}
-            >
-              Mark all as read
-            </button>
+            {unreadCount > 0 && (
+              <button
+                disabled={isNotificationsUpdatePending}
+                className="text-gray text-body-4"
+                onClick={() => updateNotifications(undefined)}
+              >
+                Mark all as read
+              </button>
+            )}
           </div>
         </div>
         <div
@@ -129,19 +150,17 @@ export const NotificationPanel = ({
                 Error loading notifications
               </p>
             </div>
-          ) : notifications.length === 0 ? (
+          ) : !notificationsToRender || notificationsToRender.length === 0 ? (
             <div className="flex items-center justify-center gap-y-4 w-full h-full flex-col">
               <NoTrainingAreaIcon className="w-10 h-10" />
               <p className="text-gray text-body-3"> No new notifications.</p>
             </div>
           ) : (
             <div className="flex gap-y-4 flex-col">
-              {notifications.map((notification) => (
+              {notificationsToRender.map((notification) => (
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
-                  isRead={unRead}
-                  offset={offset}
                 />
               ))}
             </div>
@@ -158,13 +177,16 @@ export const NotificationPanel = ({
   if (isSmallViewport) {
     return (
       <MobileDrawer
-        open={active}
+        open={showNotificationPanel}
         dialogTitle=""
         snapPoints={[0.6, 0.8]}
         canClose
         closeDrawer={closeDrawer}
       >
-        <div className={` w-full p-3 py-4 flex flex-col gap-y-4`}>
+        <div
+          className={` w-full p-3 py-4 flex flex-col gap-y-4`}
+          onScroll={handleScroll}
+        >
           {popUpContent()}
         </div>
       </MobileDrawer>
@@ -172,7 +194,7 @@ export const NotificationPanel = ({
   }
   return (
     <Popup
-      active={active}
+      active={showNotificationPanel}
       anchor={anchor}
       placement="bottom-end"
       distance={20}
@@ -180,7 +202,8 @@ export const NotificationPanel = ({
     >
       <div
         className={`border w-96 p-3 py-4 flex flex-col gap-y-4 border-gray-border shadow-2xl rounded-2xl bg-white`}
-        id="popup-content"
+        onScroll={handleScroll}
+        ref={clickOutsideRef}
       >
         {popUpContent()}
       </div>
@@ -190,14 +213,10 @@ export const NotificationPanel = ({
 
 const NotificationItem = ({
   notification,
-  isRead,
-  offset,
 }: {
   notification: TNotification;
-  isRead: boolean | undefined;
-  offset: number;
 }) => {
-  const { isPending, mutate } = useUpdateNotification({ isRead, offset });
+  const { isPending, mutate } = useUpdateNotification({});
 
   return (
     <div className="flex flex-col gap-y-4 px-2 py-3 items-start transition-colors duration-200 justify-between rounded-lg w-full hover:bg-gray-border cursor-pointer group">
@@ -235,13 +254,13 @@ const NotificationItem = ({
 
 const NotificationSkeleton = () => {
   return (
-    <>
+    <div className="flex flex-col">
       {Array.from({ length: 10 }).map((_, index) => (
         <div
           key={index}
-          className="animate-pulse flex space-x-4 mb-4 w-full h-8 bg-light-gray"
+          className="animate-pulse flex space-x-4 mb-4 w-full h-10 bg-light-gray"
         ></div>
       ))}
-    </>
+    </div>
   );
 };

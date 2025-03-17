@@ -1,52 +1,61 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getUserNotificationsQueryOptions } from "../api/factory";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 
 import {
+  getNotifications,
   TUpdateNotificationArgs,
   updateNotification,
   updateNotifications,
-} from "../api/notifications";
-import { MutationConfig } from "@/services";
+} from "@/features/user-profile/api/notifications";
+import { authService, MutationConfig } from "@/services";
+import { useAuth } from "@/app/providers/auth-provider";
+import { PaginatedNotifications } from "@/types";
 
 type UseNotificationsOptions = {
   enabled: boolean;
   is_read: boolean | undefined;
-  offset: number;
 };
 
 export const useNotifications = ({
   enabled,
   is_read,
-  offset,
 }: UseNotificationsOptions) => {
-  return useQuery({
-    ...getUserNotificationsQueryOptions({ is_read, offset }),
+  return useInfiniteQuery<PaginatedNotifications, PaginatedNotifications>({
+    queryKey: ["user-notifications"],
+    queryFn: ({ pageParam: offset = 0 }) =>
+      getNotifications(is_read, offset as number),
     enabled,
     refetchInterval: 10000,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.hasNext) {
+        const currentOffset = allPages.length * 20;
+        return currentOffset;
+      }
+      return undefined;
+    },
   });
 };
 
 type useUpdateNotificationOptions = {
   mutationConfig?: MutationConfig<typeof updateNotification>;
-  isRead: boolean | undefined;
-  offset: number;
 };
 
 export const useUpdateNotification = ({
   mutationConfig,
-  isRead,
-  offset,
 }: useUpdateNotificationOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
-  const { refetch } = useNotifications({
-    is_read: isRead,
-    enabled: false,
-    offset,
-  });
+  const { setUser } = useAuth();
+
   return useMutation({
     mutationFn: (args: TUpdateNotificationArgs) => updateNotification(args),
-    onSuccess: (...args) => {
+    onSuccess: async (...args) => {
+      const { refetch } = useNotifications({
+        is_read: undefined,
+        enabled: true,
+      });
       refetch();
+      // Update user to reflect the new notification status
+      setUser(await authService.getUser());
       onSuccess?.(...args);
     },
     ...restConfig,
@@ -55,22 +64,20 @@ export const useUpdateNotification = ({
 
 type useUpdateNotificationsOptions = {
   mutationConfig?: MutationConfig<typeof updateNotifications>;
-  offset: number;
 };
 
 export const useUpdateNotifications = ({
   mutationConfig,
-  offset,
 }: useUpdateNotificationsOptions) => {
   const { onSuccess, ...restConfig } = mutationConfig || {};
-  const { refetch } = useNotifications({
-    is_read: undefined,
-    enabled: false,
-    offset,
-  });
+
   return useMutation({
     mutationFn: () => updateNotifications(),
     onSuccess: (...args) => {
+      const { refetch } = useNotifications({
+        is_read: undefined,
+        enabled: true,
+      });
       refetch();
       onSuccess?.(...args);
     },

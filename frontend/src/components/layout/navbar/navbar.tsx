@@ -6,85 +6,22 @@ import { HamburgerIcon } from "@/assets/svgs";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
 import { navLinks } from "@/constants/general";
-import { NavLogo, NotificationBell } from "@/components/layout";
+import { NavLogo } from "@/components/layout";
 import { SHARED_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserProfile } from "@/components/layout";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { NotificationPanel } from "@/features/user-profile/components";
-import { useNotifications } from "@/features/user-profile/hooks/use-notifications";
-import { TNotification } from "@/types";
-import useScreenSize from "@/hooks/use-screen-size";
-
+import { useState } from "react";
+import { UserNotifications } from "@/features/user-profile/components/user-notifications";
 
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
 
   const { isAuthenticated } = useAuth();
 
-  const [unRead, setUnread] = useState<boolean | undefined>(false);
-
-  const [notifications, setNotifications] = useState<TNotification[]>([]);
-
-  const [offset, setOffset] = useState<number>(0);
-
   const navigate = useNavigate();
 
   const location = useLocation();
-
-  const [showNotificationPanel, setShowNotificationPanel] =
-    useState<boolean>(false);
-
-  const { data, isPending, isError } = useNotifications({
-    enabled: isAuthenticated,
-    is_read: unRead,
-    offset,
-  });
-
-  useEffect(() => {
-    setNotifications([]);
-    setOffset(0);
-  }, [unRead]);
-
-  useEffect(() => {
-    if (unRead !== undefined) {
-      setNotifications([]);
-    }
-  }, [unRead]);
-
-  const { screenWidth } = useScreenSize();
-
-  const notificationAnchor = "notificationPanel";
-  const loadingMoreRef = useRef(false);
-
-  useEffect(() => {
-    if (data?.results) {
-      setNotifications((prev) => [...prev, ...data.results]);
-      loadingMoreRef.current = false; // Reset after new data
-    }
-  }, [data?.results]);
-
-  const loadMore = useCallback(() => {
-    if (
-      !data?.hasNext ||
-      isPending ||
-      loadingMoreRef.current
-    ) {
-      return;
-    }
-    loadingMoreRef.current = true;
-    setOffset((prev) => prev + 20);
-  }, [data?.hasNext, data?.count, isPending]);
-
-  /**
-   * Close the notification panel incase the user resizes their browser.
-   * 960px is the point where the hamburger shows.
-   */
-  useEffect(() => {
-    if (screenWidth > 960) return;
-    setShowNotificationPanel(false);
-  }, [screenWidth]);
 
   return (
     <>
@@ -125,21 +62,6 @@ export const NavBar = () => {
       </Drawer>
 
       <nav className={`${styles.nav} app-padding z-20`}>
-        {showNotificationPanel && (
-          <NotificationPanel
-            active={showNotificationPanel}
-            setShowNotificationPanel={setShowNotificationPanel}
-            anchor={notificationAnchor}
-            isPending={isPending}
-            isError={isError}
-            notifications={notifications as TNotification[]}
-            setUnread={setUnread}
-            unRead={unRead}
-            isSmallViewport={screenWidth < 960}
-            loadMore={loadMore}
-            offset={offset}
-          />
-        )}
         <NavLogo />
         <div>
           <NavBarLinks className={styles.webNavLinks} />
@@ -147,11 +69,8 @@ export const NavBar = () => {
         <div>
           {isAuthenticated ? (
             <div className={`${styles.profileContainer} `}>
-              <NotificationBell
-                setShowNotificationPanel={setShowNotificationPanel}
-                showNotificationPanel={showNotificationPanel}
-                notificationAnchor={notificationAnchor}
-              />
+              {/* Notification on the web */}
+              {isAuthenticated && <UserNotifications />}
               <UserProfile />
             </div>
           ) : (
@@ -172,13 +91,8 @@ export const NavBar = () => {
           )}
         </div>
         <div className="flex items-center gap-x-2 mdx:hidden">
-          {isAuthenticated && (
-            <NotificationBell
-              setShowNotificationPanel={setShowNotificationPanel}
-              showNotificationPanel={showNotificationPanel}
-              notificationAnchor={notificationAnchor}
-            />
-          )}
+          {/* Notification bell on the small screens */}
+          {isAuthenticated && <UserNotifications />}
           <button
             className={styles.hamburgerMenu}
             onClick={() => setOpen(true)}
