@@ -50,21 +50,17 @@ To eliminate model biases, fAIr is built to work with the local communities and 
 ## Product Roadmap (Users' Roadmap)
 
 <!-- prettier-ignore-start -->
-| Status | Feature |
-|:--:| :-- |
-|✅| training of local AI models using local datasets |
-|✅| prediction of map features using locally trained models |
-|✅| iterative re-training of models via user feedback |
-|✅| mapping predictions into OSM using JOSM |
-|✅| improvements to the prediction algorithm: adopting YOLOv8 model |
-|✅| UI/UX redesign to enhance the user experience |
-|✅| fAIr evaluation research with Masaryk University & Missing Maps Czechia and Slovakia, welcome to join the efforts, [here is the final report](https://drive.google.com/file/d/10axeli5RozCE0gL2XeTIugAUHJPUDgvu/view?usp=sharing) 
-|🔄| Handling User Profile
-|🔄| Notifications features
-|📅| Replicable Models
-|📅| Offline AI Prediction
-|📅| Post Processing
-|📅| fAIrSwipe, integration with MapSwipe, [more details](https://docs.google.com/document/d/1dWQlBl6HM7Nky-deahw0DfKlOOEbBhuWRPnLquyf7jU/edit?usp=sharing)
+| Status | Feature | Detailed Description | Release | 
+|:--:| :-- | :-- | :-- |
+|✅| Adopting YOLOv8 model | Improvements to the prediction algorithm | v2.0.1+
+|✅| New UI/UX | redesign to enhance the user experience | v2.0.10+
+|✅| fAIr evaluation | detailed research with Masaryk University & Missing Maps Czechia and Slovakia, welcome to join the efforts, [here is the final report](https://drive.google.com/file/d/10axeli5RozCE0gL2XeTIugAUHJPUDgvu/view?usp=sharing) 
+|🔄| Handling User Profile | Enable users to log in easily and have insights in their user  activity, their own models/datasets and submitted trainings
+|🔄| Notifications features | Training status change would trigger a notification on the web/email to let user know training is finished successfully or with a failure 
+|📅| Replicable Models | Enable users to run a pre-trained model on new imagery/on a different area of their choice and using different satellite imagery | 
+|📅| Offline AI Prediction | Enable users to submit requests for prediction using any pre-trained model and any imagery and process it in the background and provide the results back to user.
+|📅| Post Processing Enhancement | Users would get enhanced geometry features (points/polygons) based on the need of the mapping process
+|📅| fAIrSwipe | Enable users to validate fAIR generated features and push them into OSM by integrating fAIr  with MapSwipe, [more details](https://docs.google.com/document/d/1dWQlBl6HM7Nky-deahw0DfKlOOEbBhuWRPnLquyf7jU/edit?usp=sharing)
 
 |👀| You can follow [here](https://docs.google.com/document/d/1A8kRG-Tw922bV8CTz4HXjCpp7cZmHSpehLOQQF1EXao/edit?usp=sharing) the details and scope of each of the above features. and you can see and follow the [Figma design progress](https://www.figma.com/design/1WXme5jfWV4tCaY9Rcaekk/fAIr-Project---UIUX-Team?node-id=2772-7466&p=f) for current in development 🔄 features
 
