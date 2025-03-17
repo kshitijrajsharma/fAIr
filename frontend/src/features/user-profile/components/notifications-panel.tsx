@@ -12,7 +12,7 @@ import { NoTrainingAreaIcon } from "@/components/ui/icons";
 import { useCallback, useEffect, useRef } from "react";
 import { NotificationType } from "@/features/user-profile/components/user-notifications";
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+
 
 export const NotificationPanel = ({
   anchor,
