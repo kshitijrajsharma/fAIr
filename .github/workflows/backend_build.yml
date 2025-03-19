@@ -94,7 +94,7 @@ jobs:
 
       - name: Run celery worker
         working-directory: ./backend
-        run: celery -A aiproject worker --loglevel=debug &
+        run: celery -A aiproject worker --loglevel=debug -Q ramp_training,yolo_training &
 
       - name: Run flower dashboard
         working-directory: ./backend

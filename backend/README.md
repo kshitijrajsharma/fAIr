@@ -160,7 +160,7 @@ fAIr uses oauth2.0 Authentication using [osm-login-python](https://github.com/ks
 -  Start celery workers
 
 ```
-celery -A aiproject worker --loglevel=debug -n my_worker
+celery -A aiproject worker --loglevel=debug -n my_worker -Q ramp_training,yolo_training
 ```
 
 - Monitor using flower
