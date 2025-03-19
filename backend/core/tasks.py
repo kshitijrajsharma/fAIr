@@ -30,11 +30,10 @@ from core.utils import bbox, is_dir_empty
 from django.conf import settings
 from django.contrib.gis.db.models.aggregates import Extent
 from django.contrib.gis.geos import GEOSGeometry
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from .utils import S3Uploader
+from .utils import S3Uploader, send_notification
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -516,8 +515,8 @@ def train_model(
 
     training_instance = get_object_or_404(Training, id=training_id)
     model_instance = get_object_or_404(Model, id=training_instance.model.id)
-    
-    send_notification(training_instance,"Started")
+
+    send_notification(training_instance, "Started")
 
     training_instance.status = "RUNNING"
     training_instance.started_at = timezone.now()
@@ -579,46 +578,3 @@ def train_model(
         training_instance.save()
         send_notification(training_instance, "Failed")
         raise ex
-
-def get_email_message(training_instance,status):
-    
-    hostname = settings.FRONTEND_URL  
-    training_model_url = f"{hostname}/ai-models/{training_instance.model.id}"
-
-    message_template = (
-        "Hi {username},\n\n"
-        "Your training task (ID: {training_id}) of model {model_name} has {status}. You can view the details here:\n"
-        "{training_model_url}\n\n"
-        "Thank you for using fAIr - AI Assisted Mapping Tool.\n\n"
-        "Best regards,\n"
-        "The fAIr Dev Team\n\n"
-        "Get Involved : https://www.hotosm.org/get-involved/\n"
-        "https://github.com/hotosm/fAIr/"
-    )
-
-    message = message_template.format(
-        username=training_instance.user.username,
-        training_id=training_instance.id,
-        model_name=training_instance.model.name,
-        status=status.lower(),
-        training_model_url=training_model_url,
-        hostname=hostname,
-
-    )
-    subject = f"fAIr : Training {training_instance.id} {status.capitalize()}"
-    return message, subject
-
-
-def send_notification(training_instance,status):
-    if any(method in training_instance.user.notifications_delivery_methods for method in ["web", "email"]):
-        UserNotification.objects.create(user=training_instance.user, message=f"Training {training_instance.id} has {status}.")
-    if "email" in training_instance.user.notifications_delivery_methods:
-        if training_instance.user.email and training_instance.user.email != '':
-            message,subject=get_email_message(training_instance,status)
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[training_instance.user.email],
-                fail_silently=False,
-            )

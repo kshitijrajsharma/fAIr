@@ -78,6 +78,7 @@ from .utils import (
     process_rawdata,
     request_rawdata,
     s3_object_exists,
+    send_notification,
 )
 
 if settings.ENABLE_PREDICTION_API:
@@ -983,12 +984,13 @@ class UserNotificationViewSet(ReadOnlyModelViewSet):
     permission_classes = [IsOsmAuthenticated]
     serializer_class = UserNotificationSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['is_read']  
-    ordering = ['-created_at'] 
-    ordering_fields = ['created_at', 'read_at','is_read'] 
+    filterset_fields = ["is_read"]
+    ordering = ["-created_at"]
+    ordering_fields = ["created_at", "read_at", "is_read"]
 
     def get_queryset(self):
         return UserNotification.objects.filter(user=self.request.user)
+
 
 class MarkNotificationAsRead(APIView):
     authentication_classes = [OsmAuthentication]
@@ -999,19 +1001,29 @@ class MarkNotificationAsRead(APIView):
     )
     def post(self, request, notification_id, format=None):
         try:
-            notification = UserNotification.objects.get(id=notification_id, user=request.user)
+            notification = UserNotification.objects.get(
+                id=notification_id, user=request.user
+            )
 
             if notification.is_read:
-                return Response({"detail": "Notification is already marked as read."}, status=status.HTTP_200_OK)
+                return Response(
+                    {"detail": "Notification is already marked as read."},
+                    status=status.HTTP_200_OK,
+                )
 
             notification.is_read = True
             notification.read_at = timezone.now()
             notification.save()
 
-            return Response({"detail": "Notification marked as read."}, status=status.HTTP_200_OK)
+            return Response(
+                {"detail": "Notification marked as read."}, status=status.HTTP_200_OK
+            )
 
         except UserNotification.DoesNotExist:
-            return Response({"detail": "Notification not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Notification not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class MarkAllNotificationsAsRead(APIView):
     authentication_classes = [OsmAuthentication]
@@ -1023,20 +1035,29 @@ class MarkAllNotificationsAsRead(APIView):
             200: openapi.Response(
                 description="All unread notifications marked as read.",
                 examples={
-                    "application/json": {"detail": "All unread notifications marked as read."}
+                    "application/json": {
+                        "detail": "All unread notifications marked as read."
+                    }
                 },
             ),
         },
     )
     def post(self, request, format=None):
-        unread_notifications = UserNotification.objects.filter(user=request.user, is_read=False)
+        unread_notifications = UserNotification.objects.filter(
+            user=request.user, is_read=False
+        )
 
         if not unread_notifications.exists():
-            return Response({"detail": "No unread notifications found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "No unread notifications found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         unread_notifications.update(is_read=True, read_at=timezone.now())
-        return Response({"detail": "All unread notifications marked as read."}, status=status.HTTP_200_OK)
-    
+        return Response(
+            {"detail": "All unread notifications marked as read."},
+            status=status.HTTP_200_OK,
+        )
 
 
 class TerminateTrainingView(APIView):
@@ -1049,17 +1070,32 @@ class TerminateTrainingView(APIView):
 
             task_id = training_instance.task_id
             if not task_id:
-                return Response({"detail": "No task associated with this training."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"detail": "No task associated with this training."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-            task = AsyncResult(task_id,app=current_app)
+            task = AsyncResult(task_id, app=current_app)
             if task.state in ["PENDING", "STARTED", "RETRY"]:
                 current_app.control.revoke(task_id, terminate=True)
                 training_instance.status = "FAILED"
                 training_instance.finished_at = now()
                 training_instance.save()
-                return Response({"detail": "Training task cancelled successfully."}, status=status.HTTP_200_OK)
+                send_notification(training_instance, "Cancelled")
+                return Response(
+                    {"detail": "Training task cancelled successfully."},
+                    status=status.HTTP_200_OK,
+                )
             else:
-                return Response({"detail": f"Task cannot be cancelled. Current state: {task.state}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {
+                        "detail": f"Task cannot be cancelled. Current state: {task.state}"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         except Training.DoesNotExist:
-            return Response({"detail": "Training not found or do not belong to you"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Training not found or do not belong to you"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
