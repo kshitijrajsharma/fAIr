@@ -121,7 +121,7 @@ You *must* verify that imagery provider's license is compatible with fAIr’s in
 
 ### Imagery License Compliance
 - When submitting imagery to fAIr, **ensure you are not violating the license** of the TMS or imagery provider.
-- If you are grabbing imagery from **OpenAerialMap**, review their [legal page](https://openaerialmap.org/legal/) for applicable terms.
+- If you are grabbing imagery from **OpenAerialMap**, review [legal page](https://openaerialmap.org/legal/) for applicable terms.
 
 ### Extended Use
 - If you plan to use the API or imagery services beyond the scope of the listed license, **reach out to** [info@hotosm.org](mailto:info@hotosm.org) for further guidance.
