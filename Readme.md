@@ -101,7 +101,30 @@ Checkout Docker Installation [docs](./docs/Docker-installation.md)
 
 ## Imagery License 
 
-When you create a model by submitting imagery to fAIr, you agree to place your imagery for fAIr to be able to download the tiles for your area of interest, use them for runniing training , inference & redestribute the downloaded tiles to everyone. The original copyright remains with the original source or holder of the imagery but you grant fAIr to license the downloaded tiles as CC-BY 4.0.
+### Imagery Submission
+By submitting imagery link to fAIr for model creation, you:
+1. **Grant fAIr permission to download tiles** covering your specified area of interest.  
+2. **Authorize fAIr to use these tiles** for training and inference.  
+3. **Allow fAIr to redistribute the downloaded tiles** to anyone who wishes to view or reproduce the dataset used for model training.
+
+### Copyright
+- The original copyright remains with the imagery’s source or rights holder.
+
+### License Grant
+- You grant fAIr the right to license the downloaded tiles under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en).
+
+### Commercial TMS Notice
+- If you are using a **commercial TMS** (Tile Map Service) with your own token, please be aware that **fAIr will download , store and derive information from** the tiles for your specified area.
+- These tiles may be **published as part of the training process** and made available to others.
+
+You must ensure that your usage does not violate the TMS or imagery provider's license. Verify that your TMS/imagery license is compatible with fAIr’s intended use.
+
+### Imagery License Compliance
+- When submitting imagery to fAIr, **ensure you are not violating the license** of the TMS or imagery provider.
+- If you are grabbing imagery from **OpenAerialMap**, review their [legal page](https://openaerialmap.org/legal/) for applicable terms.
+
+### Extended Use
+- If you plan to use the API or imagery services beyond the scope of the listed license, **reach out to** [info@hotosm.org](mailto:info@hotosm.org) for further guidance.
 
 ![image](https://github.com/user-attachments/assets/9cbdc3a6-0a47-4c6e-8880-7ce5dbb1491e)
 
