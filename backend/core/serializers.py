@@ -500,7 +500,14 @@ class UserNotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserNotification
-        fields = ("id", "is_read", "created_at", "read_at", "message")
+        fields = (
+            "id",
+            "is_read",
+            "created_at",
+            "read_at",
+            "message",
+            "training_model",
+        )
         read_only_fields = (
             "id",
             "created_at",
