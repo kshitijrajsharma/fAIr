@@ -1076,7 +1076,10 @@ class TerminateTrainingView(APIView):
                 )
 
             task = AsyncResult(task_id, app=current_app)
-            if task.state in ["PENDING", "STARTED", "RETRY"]:
+            if (
+                task.state in ["PENDING", "STARTED", "RETRY", "FAILURE"]
+                and training_instance.status != "FAILED"
+            ):
                 current_app.control.revoke(task_id, terminate=True)
                 training_instance.status = "FAILED"
                 training_instance.finished_at = now()

@@ -489,7 +489,7 @@ def send_notification(training_instance, status):
         UserNotification.objects.create(
             user=training_instance.user,
             message=f"Training {training_instance.id} has {status}.",
-            training=training_instance.id,
+            training=training_instance,
         )
     if "email" in training_instance.user.notifications_delivery_methods:
         if training_instance.user.email and training_instance.user.email != "":
