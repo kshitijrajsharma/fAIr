@@ -117,7 +117,7 @@ By submitting imagery link to fAIr for model creation, you:
 - If you are using a **commercial TMS** (Tile Map Service) with your own token, please be aware that **fAIr will download , store and derive information from** the tiles for your specified area.
 - These tiles may be **published as part of the training process** and made available to others.
 
-You must ensure that your usage does not violate the TMS or imagery provider's license. Verify that your TMS/imagery license is compatible with fAIr’s intended use.
+You *must* ensure and verify that imagery provider's license is compatible with fAIr’s intended use.
 
 ### Imagery License Compliance
 - When submitting imagery to fAIr, **ensure you are not violating the license** of the TMS or imagery provider.
