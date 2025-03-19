@@ -13,6 +13,7 @@ https://docs.aiproject.com/en/3.1/ref/settings/
 import logging
 import os
 from socket import gethostbyname, gethostname
+from urllib.parse import urlparse
 
 import dj_database_url
 import environ
@@ -42,9 +43,6 @@ EXPORT_TOOL_API_URL = env(
     default="https://api-prod.raw-data.hotosm.org/v1",
 )
 
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "access-token",
-]
 if env("GDAL_LIBRARY_PATH", default=False):
     GDAL_LIBRARY_PATH = env("GDAL_LIBRARY_PATH")
 
@@ -120,21 +118,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", default="http://127.0.0.1:8000").split(
-    ","
-)
 
-CORS_ORIGIN_WHITELIST = ALLOWED_ORIGINS
-
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    HOSTNAME,
-    gethostbyname(gethostname()),
-] + ALLOWED_ORIGINS
-
-
-CORS_ORIGIN_ALLOW_ALL = env("CORS_ORIGIN_ALLOW_ALL", default=False)
 DEFAULT_PAGINATION_SIZE = env("DEFAULT_PAGINATION_SIZE", default=50)
 
 REST_FRAMEWORK = {
@@ -284,3 +268,34 @@ EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "example-email@example.com")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "example-email-password")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@example.com")
+
+
+# CORS settings
+
+
+def extract_domain(url):
+    return urlparse(url).hostname
+
+
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
+else:
+    CORS_ORIGIN_ALLOW_ALL = env("CORS_ORIGIN_ALLOW_ALL", default=False)
+
+CORS_ALLOWED_ORIGINS = env(
+    "CORS_ALLOWED_ORIGINS", default="http://127.0.0.1:8000"
+).split(",")
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "access-token",
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    env("HOSTNAME", default="127.0.0.1"),
+    gethostname(),
+    gethostbyname(gethostname()),
+] + [extract_domain(url) for url in CORS_ALLOWED_ORIGINS if url]
