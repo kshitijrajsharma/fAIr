@@ -295,6 +295,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    FRONTEND_URL,
     env("HOSTNAME", default="127.0.0.1"),
     gethostname(),
     gethostbyname(gethostname()),
