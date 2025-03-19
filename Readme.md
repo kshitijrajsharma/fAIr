@@ -98,3 +98,11 @@ Checkout Docker Installation [docs](./docs/Docker-installation.md)
 
 - Start by reading our [Code of conduct](https://github.com/hotosm/fAIr/blob/master/docs/Code-of-Conduct.md)
 - Get familiar with our [contributor guidelines](CONTRIBUTING.md) explaining the different ways in which you can support this project! We need your help!
+
+## Imagery License 
+
+When you create a model by submitting imagery to fAIr, you agree to place your imagery for fAIr to be able to download the tiles for your area of interest, use them for runniing training , inference & redestribute the downloaded tiles to everyone. The original copyright remains with the original source or holder of the imagery but you grant fAIr to license the downloaded tiles as CC-BY 4.0.
+
+![image](https://github.com/user-attachments/assets/9cbdc3a6-0a47-4c6e-8880-7ce5dbb1491e)
+
+
