@@ -1,5 +1,5 @@
-## docker build -t fair-frontend:latest .
-## docker run --rm --name fair-frontend-temp fair-frontend:latest
+## docker build -t fair-frontend:latest -f Dockerfile.frontend . && container_id=$(docker create fair-frontend:latest) && docker cp $container_id:/app/dist ./dist && docker rm $container_id
+
 
 # Build stage
 FROM node:22 AS builder

@@ -4,33 +4,26 @@ import json
 import logging
 import os
 import pathlib
-import shutil
 import subprocess
-import sys
 import time
 import zipfile
 from datetime import datetime
-from tempfile import NamedTemporaryFile
 from urllib.parse import quote
 
 # import tensorflow as tf
 from celery import current_app
 from celery.result import AsyncResult
 from django.conf import settings
-from django.http import (
-    FileResponse,
-    HttpResponse,
-    HttpResponseBadRequest,
-    HttpResponseRedirect,
-    StreamingHttpResponse,
-)
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 from django_filters.rest_framework import DjangoFilterBackend
 from django_q.tasks import async_task
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from geojson2osm import geojson2osm
 from login.authentication import OsmAuthentication
@@ -43,6 +36,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_gis.filters import InBBoxFilter, TMSTileFilter
 
 from .models import (
@@ -57,6 +51,7 @@ from .models import (
     Model,
     OsmUser,
     Training,
+    UserNotification,
 )
 from .serializers import (
     AOISerializer,
@@ -64,7 +59,6 @@ from .serializers import (
     BannerSerializer,
     DatasetSerializer,
     FeedbackAOISerializer,
-    FeedbackFileSerializer,
     FeedbackLabelSerializer,
     FeedbackParamSerializer,
     FeedbackSerializer,
@@ -72,13 +66,13 @@ from .serializers import (
     ModelCentroidSerializer,
     ModelSerializer,
     PredictionParamSerializer,
+    UserNotificationSerializer,
     UserSerializer,
+    UserStatsSerializer,
 )
 from .tasks import train_model
 from .utils import (
     download_s3_file,
-    get_dir_size,
-    get_local_metadata,
     get_s3_directory,
     gpx_generator,
     process_rawdata,
@@ -117,6 +111,12 @@ class DatasetViewSet(
     }
     ordering_fields = ["created_at", "last_modified", "id", "status"]
     search_fields = ["name", "id"]
+
+
+class ModelMetaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = ["id", "name", "dataset", "base_model", "status"]
 
 
 class TrainingSerializer(
@@ -222,6 +222,15 @@ class TrainingSerializer(
         print(f"Saved train model request to queue with id {task.id}")
         return instance
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and request.method.upper() == "GET":
+            ret["model"] = ModelMetaSerializer(
+                instance.model, context=self.context
+            ).data
+        return ret
+
 
 class TrainingViewSet(
     viewsets.ModelViewSet
@@ -237,9 +246,10 @@ class TrainingViewSet(
         filters.OrderingFilter,
     )
     serializer_class = TrainingSerializer  # connecting serializer
-    filterset_fields = ["model", "status"]
-    ordering_fields = ["finished_at", "accuracy", "id", "model", "status"]
-    search_fields = ["description", "id"]
+    filterset_fields = ["model", "status", "user", "id"]
+
+    ordering_fields = ["created_at", "accuracy", "id", "model", "status"]
+    search_fields = ["description", "id", "model__name"]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -247,8 +257,12 @@ class TrainingViewSet(
         feedback_count = Feedback.objects.filter(
             training=instance.id
         ).count()  # cal feedback count
+        approved_predictions_count = ApprovedPredictions.objects.filter(
+            training=instance.id
+        ).count()
         data = serializer.data
         data["feedback_count"] = feedback_count
+        data["approved_predictions_count"] = approved_predictions_count
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -258,7 +272,14 @@ class FeedbackViewset(viewsets.ModelViewSet):
     public_methods = ["GET"]
     queryset = Feedback.objects.all()
     http_method_names = ["get", "post", "patch", "delete"]
-    serializer_class = FeedbackSerializer  # connecting serializer
+    serializer_class = FeedbackSerializer
+    bbox_filter_field = "geom"
+    filter_backends = (
+        InBBoxFilter,
+        # TMSTileFilter,
+        DjangoFilterBackend,
+    )
+    bbox_filter_include_overlapping = True
     filterset_fields = ["training", "user", "feedback_type"]
 
 
@@ -332,16 +353,15 @@ class ModelCentroidView(ListAPIView):
 
 class UsersView(ListAPIView):
     authentication_classes = [OsmAuthentication]
-    permission_classes = [IsOsmAuthenticated]
+    permission_classes = [IsAdminUser, IsStaffUser]
     queryset = OsmUser.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserStatsSerializer
     filter_backends = (
-        # InBBoxFilter,
         DjangoFilterBackend,
         filters.SearchFilter,
     )
-    filterset_fields = ["id"]
-    search_fields = ["username", "id"]
+    filterset_fields = ["osm_id"]
+    search_fields = ["username", "osm_id"]
 
 
 class AOIViewSet(viewsets.ModelViewSet):
@@ -872,22 +892,9 @@ def publish_training(request, training_id: int):
     return Response("Training Published", status=status.HTTP_201_CREATED)
 
 
-# class APIStatus(APIView):
-#     def get(self, request):
-#         res = {
-#             "tensorflow_version": tf.__version__,
-#             "No of GPU Available": len(
-#                 tf.config.experimental.list_physical_devices("GPU")
-#             ),
-#             "API Status": "Healthy",  # static for now should be dynamic TODO
-#         }
-#         return Response(res, status=status.HTTP_200_OK)
-
-
 class GenerateGpxView(APIView):
     def get(self, request, aoi_id: int):
         aoi = get_object_or_404(AOI, id=aoi_id)
-        # Convert the polygon field to GPX format
         geom_json = json.loads(aoi.geom.json)
         # Create a new GPX object
         gpx_xml = gpx_generator(geom_json)
@@ -897,7 +904,6 @@ class GenerateGpxView(APIView):
 class GenerateFeedbackAOIGpxView(APIView):
     def get(self, request, feedback_aoi_id: int):
         aoi = get_object_or_404(FeedbackAOI, id=feedback_aoi_id)
-        # Convert the polygon field to GPX format
         geom_json = json.loads(aoi.geom.json)
         # Create a new GPX object
         gpx_xml = gpx_generator(geom_json)
@@ -920,17 +926,6 @@ class TrainingWorkspaceView(APIView):
 
 
 class TrainingWorkspaceDownloadView(APIView):
-    # authentication_classes = [OsmAuthentication]
-    # permission_classes = [IsOsmAuthenticated]
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     lookup_dir = kwargs.get("lookup_dir")
-    #     if lookup_dir.endswith("training_accuracy.png"):
-    #         # bypass
-    #         self.authentication_classes = []
-    #         self.permission_classes = []
-
-    #     return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, lookup_dir):
         s3_key = os.path.join(settings.PARENT_BUCKET_FOLDER, lookup_dir)
@@ -980,3 +975,91 @@ def get_kpi_stats(request):
     }
 
     return Response(data)
+
+
+class UserNotificationViewSet(ReadOnlyModelViewSet):
+
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+    serializer_class = UserNotificationSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['is_read']  
+    ordering = ['-created_at'] 
+    ordering_fields = ['created_at', 'read_at','is_read'] 
+
+    def get_queryset(self):
+        return UserNotification.objects.filter(user=self.request.user)
+
+class MarkNotificationAsRead(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Mark a specific notification as read.",
+    )
+    def post(self, request, notification_id, format=None):
+        try:
+            notification = UserNotification.objects.get(id=notification_id, user=request.user)
+
+            if notification.is_read:
+                return Response({"detail": "Notification is already marked as read."}, status=status.HTTP_200_OK)
+
+            notification.is_read = True
+            notification.read_at = timezone.now()
+            notification.save()
+
+            return Response({"detail": "Notification marked as read."}, status=status.HTTP_200_OK)
+
+        except UserNotification.DoesNotExist:
+            return Response({"detail": "Notification not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class MarkAllNotificationsAsRead(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Mark all unread notifications as read.",
+        responses={
+            200: openapi.Response(
+                description="All unread notifications marked as read.",
+                examples={
+                    "application/json": {"detail": "All unread notifications marked as read."}
+                },
+            ),
+        },
+    )
+    def post(self, request, format=None):
+        unread_notifications = UserNotification.objects.filter(user=request.user, is_read=False)
+
+        if not unread_notifications.exists():
+            return Response({"detail": "No unread notifications found."}, status=status.HTTP_404_NOT_FOUND)
+
+        unread_notifications.update(is_read=True, read_at=timezone.now())
+        return Response({"detail": "All unread notifications marked as read."}, status=status.HTTP_200_OK)
+    
+
+
+class TerminateTrainingView(APIView):
+    authentication_classes = [OsmAuthentication]
+    permission_classes = [IsOsmAuthenticated]
+
+    def post(self, request, training_id, format=None):
+        try:
+            training_instance = Training.objects.get(id=training_id, user=request.user)
+
+            task_id = training_instance.task_id
+            if not task_id:
+                return Response({"detail": "No task associated with this training."}, status=status.HTTP_400_BAD_REQUEST)
+
+            task = AsyncResult(task_id,app=current_app)
+            if task.state in ["PENDING", "STARTED", "RETRY"]:
+                current_app.control.revoke(task_id, terminate=True)
+                training_instance.status = "FAILED"
+                training_instance.finished_at = now()
+                training_instance.save()
+                return Response({"detail": "Training task cancelled successfully."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": f"Task cannot be cancelled. Current state: {task.state}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Training.DoesNotExist:
+            return Response({"detail": "Training not found or do not belong to you"}, status=status.HTTP_404_NOT_FOUND)

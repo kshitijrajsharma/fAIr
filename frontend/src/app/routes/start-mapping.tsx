@@ -330,8 +330,8 @@ export const StartMappingPage = () => {
         />
         <div className="sticky top-0 bg-white z-10 px-4 xl:px-large py-1 hidden md:block">
           {/* Model Details Popup */}
-          {showModelDetailsPopup && (
-            <ModelDetailsPopUp
+          {showModelDetailsPopup
+            && <ModelDetailsPopUp
               showPopup={showModelDetailsPopup}
               handlePopup={handleModelDetailsPopup}
               closeMobileDrawer={() => setShowModelDetailsPopup(false)}

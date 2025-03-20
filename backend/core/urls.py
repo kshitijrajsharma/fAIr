@@ -3,8 +3,7 @@ from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
 
-# now import the views.py file into this code
-from .views import (  # APIStatus,
+from .views import (
     AOIViewSet,
     ApprovedPredictionsViewSet,
     BannerViewSet,
@@ -18,13 +17,17 @@ from .views import (  # APIStatus,
     GenerateGpxView,
     LabelUploadView,
     LabelViewSet,
+    MarkAllNotificationsAsRead,
+    MarkNotificationAsRead,
     ModelCentroidView,
     ModelViewSet,
     RawdataApiAOIView,
     RawdataApiFeedbackView,
+    TerminateTrainingView,
     TrainingViewSet,
     TrainingWorkspaceDownloadView,
     TrainingWorkspaceView,
+    UserNotificationViewSet,
     UsersView,
     download_training_data,
     geojson2osmconverter,
@@ -48,7 +51,7 @@ router.register(r"feedback", FeedbackViewset)
 router.register(r"feedback-aoi", FeedbackAOIViewset)
 router.register(r"feedback-label", FeedbackLabelViewset)
 router.register(r"banner", BannerViewSet)
-
+router.register(r'notifications/me', UserNotificationViewSet, basename='notifications')
 
 urlpatterns = [
     path("", include(router.urls)),
@@ -63,6 +66,7 @@ urlpatterns = [
     # path("download/<int:dataset_id>/", download_training_data),
     path("training/status/<str:run_id>/", run_task_status),
     path("training/publish/<int:training_id>/", publish_training),
+    path("training/terminate/<int:training_id>/", TerminateTrainingView.as_view(), name="cancel_training"),
     path("feedback/training/submit/", FeedbackView.as_view()),
     # path("status/", APIStatus.as_view()),
     path("geojson2osm/", geojson2osmconverter, name="geojson2osmconverter"),
@@ -71,12 +75,14 @@ urlpatterns = [
     path(
         "feedback-aoi/gpx/<int:feedback_aoi_id>/", GenerateFeedbackAOIGpxView.as_view()
     ),
-    # path("workspace/", TrainingWorkspaceView.as_view()),
     path(
         "workspace/download/<path:lookup_dir>/", TrainingWorkspaceDownloadView.as_view()
     ),
     path("workspace/<path:lookup_dir>/", TrainingWorkspaceView.as_view()),
     path("kpi/stats/", get_kpi_stats, name="get_kpi_stats"),
+    path("notifications/mark-as-read/<int:notification_id>/", MarkNotificationAsRead.as_view(), name="mark_notification_as_read"),
+    path("notifications/mark-all-as-read/", MarkAllNotificationsAsRead.as_view(), name="mark_all_notifications_as_read"),
+
 ]
 if settings.ENABLE_PREDICTION_API:
     urlpatterns.append(path("prediction/", PredictionView.as_view()))
