@@ -83,6 +83,7 @@ export type TNotification = {
   created_at: string;
   message: string;
   is_read: boolean;
+  training_model: number;
 };
 
 export type PaginatedNotifications = {

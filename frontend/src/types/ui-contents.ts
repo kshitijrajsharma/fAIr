@@ -744,45 +744,38 @@ export type TUserProfilePageContent = {
   settings: {
     pageTitle: string;
     form: {
-      email: {
-        sectionHeading: string;
-        tooltip: string;
-        placeholder: string;
-        title: string;
-      };
+      sectionHeading: string;
+      placeholder: string;
+      formLabel: string;
+      editEmail: string;
+      submitButton: string;
+      submissionInProgress: string;
     };
     notifications: {
       sectionTitle: string;
-      sectionOne: {
-        title: string;
-        subSectionOne: {
-          title: string;
-          description: string;
-        };
-        subSectionTwo: {
-          title: string;
-          description: string;
-        };
+      notificationKeys: {
+        monthlyNewsletter: string;
+        emailTrainingNotification: string;
+        webTrainingNotification: string;
       };
-      sectionTwo: {
-        title: string;
-        options: string[];
-      };
+      notificationTypes: {
+        label: string;
+        key: string;
+        description: string;
+      }[];
     };
     account: {
       sectionTitle: string;
-      sectionOne: {
+      title: string;
+      description: string;
+      deleteRequestPending: string;
+      deleteButtonText: string;
+      deleteModal: {
         title: string;
-        description: string;
-      };
-      deleteButton: {
-        text: string;
-        modal: {
-          title: string;
-          description: string;
-          deleteButtonText: string;
-          cancelButtonText: string;
-        };
+        messageSuffix: string;
+        deletionSuccessTitle: string;
+        deletionSuccessDescription: string;
+        buttonText: string;
       };
     };
   };
@@ -790,11 +783,12 @@ export type TUserProfilePageContent = {
     panelTitle: string;
     all: string;
     unread: string;
-    markAsRead: string
+    markAsRead: string;
     markAllAsRead: string;
     emptyState: string;
     errorState: string;
-  }
+    toolTip: string;
+  };
 };
 
 // User profile types ends.

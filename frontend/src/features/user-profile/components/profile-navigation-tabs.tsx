@@ -3,8 +3,6 @@ import { PROFILE_NAVIGATION_TABS } from "@/constants";
 import { useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
-
-
 export const ProfileNavigationTabs = () => {
   const { pathname } = useLocation();
   const activeTabRef = useRef<HTMLDivElement>(null);

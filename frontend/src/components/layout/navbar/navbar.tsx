@@ -12,7 +12,7 @@ import { useAuth } from "@/app/providers/auth-provider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserProfile } from "@/components/layout";
 import { useState } from "react";
-import { UserNotifications } from "@/features/user-profile/components/user-notifications";
+import { UserNotifications } from "@/features/user-profile/components/notifications/user-notifications";
 
 export const NavBar = () => {
   const [open, setOpen] = useState(false);

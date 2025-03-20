@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { useNotifications } from "@/features/user-profile/hooks/use-notifications";
 import { useAuth } from "@/app/providers/auth-provider";
 import useScreenSize from "@/hooks/use-screen-size";
-import { NotificationBell } from "@/components/layout";
-import { NotificationPanel } from "./notifications-panel";
+import { NotificationBell } from "./notification-bell";
+import { NotificationsPanel } from "./notifications-panel";
+import { NOTIFICATIONS_POLLING_INTERVAL_MS } from "@/config";
+import { NotificationType } from "@/enums/user-profile";
 
-
+// Viewport width below which the notification panel is displayed as a bottom modal.
+// This is to prevent the notification panel from covering the entire screen on small devices.
 const SMALL_VIEWPORT = 960;
-
-export enum NotificationType {
-  ALL = "all",
-  UNREAD = "unread",
-}
 
 export const UserNotifications = () => {
   const [showNotificationPanel, setShowNotificationPanel] =
@@ -27,11 +25,18 @@ export const UserNotifications = () => {
     NotificationType.UNREAD,
   );
 
-  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetching, refetch } =
-    useNotifications({
-      enabled: true,
-      is_read: undefined,
-    });
+  const {
+    data,
+    isPending,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    refetch,
+  } = useNotifications({
+    enabled: true,
+    is_read: undefined,
+  });
 
   const handleClick = () => {
     setShowNotificationPanel((prev) => !prev);
@@ -45,7 +50,7 @@ export const UserNotifications = () => {
     if (user.unread_notifications_count === 0) return;
     const interval = setInterval(() => {
       refetch();
-    }, 10000);
+    }, NOTIFICATIONS_POLLING_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [refetch, user.unread_notifications_count]);
@@ -59,7 +64,7 @@ export const UserNotifications = () => {
         handleClick={handleClick}
       />
 
-      <NotificationPanel
+      <NotificationsPanel
         showNotificationPanel={showNotificationPanel}
         setShowNotificationPanel={setShowNotificationPanel}
         unReadNotifications={data?.pages

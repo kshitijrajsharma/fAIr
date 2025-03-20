@@ -1,46 +1,19 @@
 import { useAuth } from "@/app/providers/auth-provider";
 import { ModelFormConfirmation } from "@/assets/images";
+import { Head } from "@/components/seo";
 import { DeleteModal } from "@/components/shared/modals";
 import { Button, ButtonWithIcon } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input, Switch } from "@/components/ui/form";
 import { DeleteIcon } from "@/components/ui/icons";
 import { Image } from "@/components/ui/image";
+import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { INPUT_TYPES } from "@/enums";
+import { NotificationDeliveryMethod } from "@/enums/user-profile";
 import { useUpdateUserProfile } from "@/features/user-profile/hooks/use-user-profile";
 import { useDialog } from "@/hooks/use-dialog";
 import { showErrorToast, showSuccessToast, truncateString } from "@/utils";
 import { useState } from "react";
-
-const notificationKeys = {
-  monthlyNewsletter: "monthlyNewsletter",
-  emailTrainingNotification: "emailTrainingNotification",
-  webTrainingNotification: "webTrainingNotification",
-};
-
-type NotificationType = {
-  label: string;
-  key: keyof typeof notificationKeys;
-  description: string;
-};
-
-const notificationTypes: NotificationType[] = [
-  {
-    label: "Monthly Newsletter",
-    key: "monthlyNewsletter",
-    description: "Subscribe to our monthly newsletter.",
-  },
-  {
-    label: "Email Training Notification",
-    key: "emailTrainingNotification",
-    description: "Receive model training notifications via email.",
-  },
-  {
-    label: "Web Training Notification",
-    key: "webTrainingNotification",
-    description: "Receive model training notifications via fAIr web.",
-  },
-];
 
 export const UserProfileSettingsPage = () => {
   const { user, setUser } = useAuth();
@@ -62,10 +35,12 @@ export const UserProfileSettingsPage = () => {
     webTrainingNotification: boolean;
   }>({
     monthlyNewsletter: user?.newsletter_subscription,
-    emailTrainingNotification:
-      user.notifications_delivery_methods.includes("email"),
-    webTrainingNotification:
-      user.notifications_delivery_methods.includes("web"),
+    emailTrainingNotification: user.notifications_delivery_methods.includes(
+      NotificationDeliveryMethod.MAIL,
+    ),
+    webTrainingNotification: user.notifications_delivery_methods.includes(
+      NotificationDeliveryMethod.WEB,
+    ),
   });
 
   const [isNotificationPending, setIsNotificationPending] =
@@ -142,10 +117,17 @@ export const UserProfileSettingsPage = () => {
             src={ModelFormConfirmation}
             alt="Model Creation Success Icon"
           />
-          <h1 className="text-title-3 font-semibold">Delete Request Sent</h1>
+          <h1 className="text-title-3 font-semibold">
+            {
+              USER_PROFILE_PAGE_CONTENT.settings.account.deleteModal
+                .deletionSuccessTitle
+            }
+          </h1>
           <p className="text-body-3 text-center">
-            We have received the request to delete your account, a member of our
-            team would be in touch with you.
+            {
+              USER_PROFILE_PAGE_CONTENT.settings.account.deleteModal
+                .deletionSuccessDescription
+            }
           </p>
           <div className="flex  w-full items-center justify-center">
             <Button
@@ -153,17 +135,22 @@ export const UserProfileSettingsPage = () => {
               className="md:!w-fit !px-4 py-2"
               contentClassName="md:!px-8"
             >
-              Done
+              {
+                USER_PROFILE_PAGE_CONTENT.settings.account.deleteModal
+                  .buttonText
+              }
             </Button>
           </div>
         </div>
       </Dialog>
-
+      <Head title={USER_PROFILE_PAGE_CONTENT.settings.pageTitle} />
       <DeleteModal
         isOpen={isOpened}
         onClose={closeDialog}
-        title="Delete Account"
-        messageSuffix="your account"
+        title={USER_PROFILE_PAGE_CONTENT.settings.account.deleteModal.title}
+        messageSuffix={
+          USER_PROFILE_PAGE_CONTENT.settings.account.deleteModal.messageSuffix
+        }
         onDelete={handleDeleteAccount}
         isDeleting={accountDeletionRequestIsPending}
       />
@@ -183,19 +170,25 @@ export const UserProfileSettingsPage = () => {
                 contentClassName="md:!p-0.5 text-body-4"
                 size="small"
               >
-                Change email
+                {USER_PROFILE_PAGE_CONTENT.settings.form.editEmail}
               </Button>
             </div>
           )}
           {showForm && (
             <div className="flex flex-col gap-y-6">
-              <SectionHeader sectionTitle="Email email address" />
+              <SectionHeader
+                sectionTitle={
+                  USER_PROFILE_PAGE_CONTENT.settings.form.sectionHeading
+                }
+              />
               <div className="mt-2 flex flex-col space-y-6">
                 <Input
-                  label="Email"
+                  label={USER_PROFILE_PAGE_CONTENT.settings.form.formLabel}
                   showBorder
                   type={INPUT_TYPES.EMAIL}
-                  placeholder="Enter your email address"
+                  placeholder={
+                    USER_PROFILE_PAGE_CONTENT.settings.form.placeholder
+                  }
                   value={email}
                   handleInput={(e) => setEmail(e.target.value)}
                   validationStateUpdateCallback={(e) => setValidity(e)}
@@ -214,81 +207,103 @@ export const UserProfileSettingsPage = () => {
                   contentClassName="!px-4 py-2"
                   size="small"
                 >
-                  {isEmailPending ? "Submitting" : "Submit"}
+                  {isEmailPending
+                    ? USER_PROFILE_PAGE_CONTENT.settings.form
+                        .submissionInProgress
+                    : USER_PROFILE_PAGE_CONTENT.settings.form.submitButton}
                 </Button>
               </div>
             </div>
           )}
           <div className="flex flex-col gap-y-6">
-            <SectionHeader sectionTitle="Notifications" />
+            <SectionHeader
+              sectionTitle={
+                USER_PROFILE_PAGE_CONTENT.settings.notifications.sectionTitle
+              }
+            />
             <div className="mt-2 space-y-4">
-              {notificationTypes.map((notification, index) => (
-                <div key={index} className="flex flex-col space-y-2">
-                  <div
-                    className={`flex justify-between items-center transition-opacity duration-200 ${user.email.length === 0 && notification.key !== notificationKeys.webTrainingNotification ? "opacity-50" : ""}`}
-                  >
-                    <div className="flex flex-col gap-y-1">
-                      <h3 className="text-body-3 md:text-body-2">
-                        {notification.label}
-                      </h3>
-                      <p className="text-body-4 md:text-body-3 text-gray">
-                        {notification.description}
-                      </p>
+              {USER_PROFILE_PAGE_CONTENT.settings.notifications.notificationTypes.map(
+                (notification, index) => (
+                  <div key={index} className="flex flex-col space-y-2">
+                    <div
+                      className={`flex justify-between items-center transition-opacity duration-200 ${user.email.length === 0 && notification.key !== USER_PROFILE_PAGE_CONTENT.settings.notifications.notificationKeys.webTrainingNotification ? "opacity-50" : ""}`}
+                    >
+                      <div className="flex flex-col gap-y-1">
+                        <h3 className="text-body-3 md:text-body-2">
+                          {notification.label}
+                        </h3>
+                        <p className="text-body-4 md:text-body-3 text-gray">
+                          {notification.description}
+                        </p>
+                      </div>
+                      <Switch
+                        disabled={isNotificationPending}
+                        checked={
+                          notifications[
+                            notification.key as keyof typeof notifications
+                          ]
+                        }
+                        handleSwitchChange={(e) => {
+                          const updatedNotifications = {
+                            ...notifications,
+                            [notification.key]: e.target.checked,
+                          };
+                          setIsNotificationPending(true);
+                          updateNotifications(
+                            {
+                              newsletter_subscription:
+                                updatedNotifications.monthlyNewsletter,
+                              notifications_delivery_methods: [
+                                ...(updatedNotifications.emailTrainingNotification
+                                  ? [NotificationDeliveryMethod.MAIL]
+                                  : []),
+                                ...(updatedNotifications.webTrainingNotification
+                                  ? [NotificationDeliveryMethod.WEB]
+                                  : []),
+                              ],
+                            },
+                            {
+                              onSuccess: () => {
+                                setNotifications(updatedNotifications);
+                              },
+                              onError: (error) => {
+                                showErrorToast(
+                                  error,
+                                  "Error updating notifications",
+                                );
+                              },
+                            },
+                          );
+                        }}
+                      />
                     </div>
-                    <Switch
-                      disabled={isNotificationPending}
-                      checked={notifications[notification.key]}
-                      handleSwitchChange={(e) => {
-                        const updatedNotifications = {
-                          ...notifications,
-                          [notification.key]: e.target.checked,
-                        };
-                        setIsNotificationPending(true);
-                        updateNotifications(
-                          {
-                            newsletter_subscription:
-                              updatedNotifications.monthlyNewsletter,
-                            notifications_delivery_methods: [
-                              ...(updatedNotifications.emailTrainingNotification
-                                ? ["email"]
-                                : []),
-                              ...(updatedNotifications.webTrainingNotification
-                                ? ["web"]
-                                : []),
-                            ],
-                          },
-                          {
-                            onSuccess: () => {
-                              setNotifications(updatedNotifications);
-                            },
-                            onError: (error) => {
-                              showErrorToast(
-                                error,
-                                "Error updating notifications",
-                              );
-                            },
-                          },
-                        );
-                      }}
-                    />
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-y-6">
-            <SectionHeader sectionTitle="Account" />
+            <SectionHeader
+              sectionTitle={
+                USER_PROFILE_PAGE_CONTENT.settings.account.sectionTitle
+              }
+            />
             <div className="flex flex-col gap-y-6">
               <div className="flex flex-col gap-y-1">
-                <p className="text-body-3 md:text-body-2">Delete Account</p>
+                <p className="text-body-3 md:text-body-2">
+                  {USER_PROFILE_PAGE_CONTENT.settings.account.title}
+                </p>
                 <p className="text-gray text-body-3">
                   {!user.account_deletion_requested
-                    ? "If you no longer want to use fAIr, request to delete your account."
-                    : "⚠️ Your request to delete your account is pending."}
+                    ? USER_PROFILE_PAGE_CONTENT.settings.account.description
+                    : USER_PROFILE_PAGE_CONTENT.settings.account
+                        .deleteRequestPending}
                 </p>
               </div>
               <ButtonWithIcon
-                label="Delete My Account"
+                label={
+                  USER_PROFILE_PAGE_CONTENT.settings.account.deleteButtonText
+                }
                 variant="primary"
                 prefixIcon={DeleteIcon}
                 uppercase={false}
