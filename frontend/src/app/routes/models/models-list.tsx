@@ -4,7 +4,7 @@ import { Head } from "@/components/seo";
 import { LayoutView } from "@/enums";
 import { MobileModelFiltersDialog } from "@/features/models/components/dialogs";
 import { MODELS_CONTENT } from "@/constants";
-import { PAGE_LIMIT, Pagination } from "@/components/shared";
+import { OrderingFilter, Pagination, SearchFilter } from "@/components/shared";
 import { PageHeader } from "@/features/models/components/";
 import { useDialog } from "@/hooks/use-dialog";
 import { useEffect } from "react";
@@ -26,8 +26,6 @@ import {
   ClearFilters,
   DateRangeFilter,
   MobileFilter,
-  OrderingFilter,
-  SearchFilter,
 } from "@/features/models/components/filters";
 
 import {
@@ -145,7 +143,14 @@ export const ModelsPage = () => {
           <div className="flex flex-col gap-y-1">
             <div className=" flex items-center justify-between w-full ">
               <div className="flex items-center justify-between w-full md:gap-x-4 gap-y-2 md:gap-y-0  md:w-auto">
-                <SearchFilter updateQuery={updateQuery} query={query} />
+                <SearchFilter
+                  updateQuery={updateQuery}
+                  query={query}
+                  placeholder={
+                    MODELS_CONTENT.models.modelsList.filtersSection
+                      .searchPlaceHolder
+                  }
+                />
                 <CategoryFilter disabled={isPending} />
                 {/* Mobile filters */}
                 <div className="flex md:hidden items-center gap-x-4">
@@ -215,7 +220,6 @@ export const ModelsPage = () => {
                     hasPrevPage={data?.hasPrev}
                     disableNextPage={!data?.hasNext || isPlaceholderData}
                     disablePrevPage={!data?.hasPrev}
-                    pageLimit={PAGE_LIMIT}
                     query={query}
                     updateQuery={updateQuery}
                     isPlaceholderData={isPlaceholderData}
@@ -236,7 +240,6 @@ export const ModelsPage = () => {
             hasPrevPage={data?.hasPrev}
             disableNextPage={!data?.hasNext || isPlaceholderData}
             disablePrevPage={!data?.hasPrev}
-            pageLimit={PAGE_LIMIT}
             query={query}
             updateQuery={updateQuery}
             isPlaceholderData={isPlaceholderData}

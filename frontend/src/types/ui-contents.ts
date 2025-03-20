@@ -267,6 +267,7 @@ export type TModelsContent = {
         epochAndBatchSize: string;
         startedAt: string;
         sumittedBy: string;
+        model: string;
         duration: string;
         dsSize: string;
         accuracy: string;
@@ -326,6 +327,8 @@ export type TSharedContent = {
       learn: string;
     };
     userProfile: {
+      profile: string;
+      datasets: string;
       models: string;
       settings: string;
       logout: string;
@@ -711,3 +714,81 @@ export type TMapContent = {
 };
 
 // Map content types end.
+
+// User profile types starts.
+
+export type TUserProfilePageContent = {
+  overview: {
+    pageTitle: string;
+    dateJoinedPrefix: string;
+    profileCompletionSuffix: string;
+    profileCompletionSuccess: string;
+    profileCompletionCTA: string;
+    trainingsSectionTitle: string;
+    statistics: {
+      modelsCreated: string;
+      acceptedFeaturesTitle: string;
+      datasets: string;
+      feedbacks: string;
+    };
+  };
+  models: {
+    pageTitle: string;
+    sectionTitle: string;
+    createNewButtonText: string;
+  };
+  datasets: {
+    pageTitle: string;
+    sectionTitle: string;
+  };
+  settings: {
+    pageTitle: string;
+    form: {
+      sectionHeading: string;
+      placeholder: string;
+      formLabel: string;
+      editEmail: string;
+      submitButton: string;
+      submissionInProgress: string;
+    };
+    notifications: {
+      sectionTitle: string;
+      notificationKeys: {
+        monthlyNewsletter: string;
+        emailTrainingNotification: string;
+        webTrainingNotification: string;
+      };
+      notificationTypes: {
+        label: string;
+        key: string;
+        description: string;
+      }[];
+    };
+    account: {
+      sectionTitle: string;
+      title: string;
+      description: string;
+      deleteRequestPending: string;
+      deleteButtonText: string;
+      deleteModal: {
+        title: string;
+        messageSuffix: string;
+        deletionSuccessTitle: string;
+        deletionSuccessDescription: string;
+        buttonText: string;
+      };
+    };
+  };
+  notifications: {
+    panelTitle: string;
+    all: string;
+    unread: string;
+    markAsRead: string;
+    markAllAsRead: string;
+    emptyState: string;
+    errorState: string;
+    toolTip: string;
+  };
+};
+
+// User profile types ends.

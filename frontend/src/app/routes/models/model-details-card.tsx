@@ -19,8 +19,6 @@ import {
 } from "@/features/models/components";
 import { useModelsContext } from "@/app/providers/models-provider";
 
-
-
 export const ModelDetailsPage = () => {
   const {
     isOpened: isModelFilesDialogOpened,
@@ -89,8 +87,6 @@ export const ModelDetailsPage = () => {
           ) : (
             <ModelDetailsProperties
               trainingId={data?.published_training as number}
-              datasetId={data?.dataset?.id}
-              baseModel={data.base_model}
             />
           )}
         </ModelDetailsSection>
@@ -122,11 +118,8 @@ export const ModelDetailsPage = () => {
           </div>
           <TrainingHistoryTable
             modelId={data?.id as string}
-            trainingId={data?.published_training as number}
+            publishedTrainingId={data?.published_training as number}
             modelOwner={data?.user.username as string}
-            datasetId={data?.dataset.id as number}
-            baseModel={data?.base_model as string}
-            tmsUrl={data?.dataset?.source_imagery}
           />
         </ModelDetailsSection>
       </div>

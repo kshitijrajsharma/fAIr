@@ -2,7 +2,6 @@ import useDebounce from "@/hooks/use-debounce";
 import { buildDateFilterQueryString } from "@/utils";
 import { dateFilters } from "@/features/models/components/filters/date-range-filter";
 import { LayoutView } from "@/enums";
-import { ORDERING_FIELDS } from "@/features/models/components/filters/ordering-filter";
 import { PAGE_LIMIT } from "@/components/shared";
 import { SEARCH_PARAMS } from "@/app/routes/models/models-list";
 import { TQueryParams } from "@/types";
@@ -14,16 +13,18 @@ import {
   getModelDetailsQueryOptions,
   getModelsMapDataQueryOptions,
 } from "@/features/models/api/factory";
+import { ORDERING_FIELDS } from "@/components/shared/filters/ordering-filter";
 
 type UseModelsOptions = {
-  limit: number;
-  offset: number;
-  orderBy: string;
-  searchQuery: string;
-  dateFilters: Record<string, string>;
-  status: number;
-  id: number;
+  limit?: number;
+  offset?: number;
+  orderBy?: string;
+  searchQuery?: string;
+  dateFilters?: Record<string, string>;
+  status?: number;
+  id?: number;
   userId?: number;
+  dataset?: number;
 };
 
 export const useModels = ({
@@ -35,6 +36,7 @@ export const useModels = ({
   dateFilters,
   id,
   userId,
+  dataset,
 }: UseModelsOptions) => {
   return useQuery({
     ...getModelsQueryOptions({
@@ -46,6 +48,7 @@ export const useModels = ({
       dateFilters,
       id,
       userId,
+      dataset,
     }),
   });
 };

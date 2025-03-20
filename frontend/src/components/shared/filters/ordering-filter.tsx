@@ -30,13 +30,15 @@ type OrderingFilterProps = {
   query: TQueryParams;
   disabled?: boolean;
   isMobileFilterModal?: boolean;
+  className?: string;
 };
 
-const OrderingFilter: React.FC<OrderingFilterProps> = ({
+export const OrderingFilter: React.FC<OrderingFilterProps> = ({
   disabled = false,
   query,
   updateQuery,
   isMobileFilterModal = false,
+  className = "hidden md:block",
 }) => {
   const onSortSelect = (selectedItem: string) => {
     updateQuery({
@@ -51,7 +53,7 @@ const OrderingFilter: React.FC<OrderingFilterProps> = ({
 
   if (!isMobileFilterModal) {
     return (
-      <div className="hidden md:block">
+      <div className={className}>
         <DropDown
           menuItems={ORDERING_FIELDS}
           dropdownIsOpened={dropdownIsOpened}
@@ -66,7 +68,7 @@ const OrderingFilter: React.FC<OrderingFilterProps> = ({
             )?.value
           }
           triggerComponent={
-            <p className="text-sm text-dark text-nowrap">
+            <p className="text-xs md:text-sm text-dark text-nowrap">
               {
                 MODELS_CONTENT.models.modelsList.sortingAndPaginationSection
                   .sortingTitle
@@ -92,5 +94,3 @@ const OrderingFilter: React.FC<OrderingFilterProps> = ({
     ></CheckboxGroup>
   );
 };
-
-export default OrderingFilter;

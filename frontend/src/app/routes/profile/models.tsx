@@ -1,10 +1,10 @@
 import ModelNotFound from "@/features/models/components/model-not-found";
 import { Head } from "@/components/seo";
-import { LayoutToggle, PageHeader } from "@/features/models/components";
+import { LayoutToggle } from "@/features/models/components";
 import { LayoutView } from "@/enums";
 import { MobileModelFiltersDialog } from "@/features/models/components/dialogs";
-import { MODELS_CONTENT } from "@/constants";
-import { PAGE_LIMIT } from "@/components/shared";
+import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
+import { OrderingFilter, PAGE_LIMIT, SearchFilter } from "@/components/shared";
 import { Pagination } from "@/components/shared";
 import { SEARCH_PARAMS } from "@/app/routes/models/models-list";
 import { useAuth } from "@/app/providers/auth-provider";
@@ -15,14 +15,15 @@ import {
   ClearFilters,
   DateRangeFilter,
   MobileFilter,
-  OrderingFilter,
-  SearchFilter,
   StatusFilter,
 } from "@/features/models/components/filters";
+
 import {
   ModelListGridLayout,
   ModelListTableLayout,
 } from "@/features/models/layouts";
+import { ProfileSectionHeader } from "@/features/user-profile/components";
+import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 
 export const UserModelsPage = () => {
   const { isOpened, openDialog, closeDialog } = useDialog();
@@ -72,18 +73,26 @@ export const UserModelsPage = () => {
         updateQuery={updateQuery}
         disabled={isPending}
       />
-      <Head title={MODELS_CONTENT.myModels.pageTitle} />
-      <section className="my-10 min-h-screen">
-        <PageHeader
-          title={MODELS_CONTENT.myModels.pageHeader}
-          description={MODELS_CONTENT.myModels.pageDescription}
+      <Head title={USER_PROFILE_PAGE_CONTENT.models.pageTitle} />
+      <section className="min-h-screen gap-y-2 flex flex-col">
+        <ProfileSectionHeader
+          title={USER_PROFILE_PAGE_CONTENT.models.sectionTitle}
+          createButtonAlt={USER_PROFILE_PAGE_CONTENT.models.createNewButtonText}
+          createRoute={APPLICATION_ROUTES.CREATE_NEW_MODEL}
         />
         {/* Filters */}
-        <div className="sticky top-0 bg-white z-10 py-2">
-          <div className="flex flex-col gap-y-4">
+        <div className="sticky top-0 bg-white z-10 py-1">
+          <div className="flex flex-col gap-y-1">
             <div className=" flex items-center justify-between w-full ">
               <div className="flex items-center justify-between w-full md:gap-x-4 gap-y-2 md:gap-y-0  md:w-auto">
-                <SearchFilter updateQuery={updateQuery} query={query} />
+                <SearchFilter
+                  updateQuery={updateQuery}
+                  query={query}
+                  placeholder={
+                    MODELS_CONTENT.models.modelsList.filtersSection
+                      .searchPlaceHolder
+                  }
+                />
                 <CategoryFilter disabled={isPending} />
                 <StatusFilter
                   disabled={isPending}
@@ -124,7 +133,7 @@ export const UserModelsPage = () => {
           {isPending ? (
             <div className="w-full h-10 mt-10 bg-light-gray animate-pulse text-dark"></div>
           ) : (
-            <div className="flex items-center justify-between w-full my-10 top-16">
+            <div className="flex items-center justify-between w-full my-4 top-16">
               <div className="w-full flex items-center justify-between">
                 <p className="font-semibold text-body-3">
                   {data?.count}{" "}
