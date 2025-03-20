@@ -340,7 +340,7 @@ export const StartMappingPage = () => {
               modelInfoRequestIsPending={modelInfoRequestIspending}
               modelInfoRequestIsError={isError}
             />
-          )}
+          }
           {/* Web Header */}
           <StartMappingHeader
             modelInfo={modelInfo}
