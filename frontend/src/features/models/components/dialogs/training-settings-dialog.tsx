@@ -48,10 +48,10 @@ const ModelTrainingSettingsDialog: React.FC<ModelEnhancementDialogProps> = ({
 
   const disableButton = formData.zoomLevels.length === 0;
   const { refetch: refetchTrainingHistory } = useTrainingHistory(
-    modelId as string,
     0,
     PAGE_LIMIT,
     "-id",
+    modelId,
   );
 
   const handleClick = () => {

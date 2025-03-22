@@ -4,11 +4,11 @@ import { MODELS_CONTENT } from "@/constants";
 import { showErrorToast } from "@/utils";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useCallback, useEffect } from "react";
-import { useGetTrainingDataset } from "@/features/models/hooks/use-dataset";
 import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
 } from "@/app/providers/models-provider";
+import { useGetTrainingDataset } from "@/features/datasets/hooks/use-datasets";
 import { TileJSON } from "@/types";
 
 const OpenAerialMap = ({

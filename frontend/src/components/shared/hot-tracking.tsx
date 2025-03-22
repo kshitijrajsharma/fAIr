@@ -101,9 +101,11 @@ export const HotTracking = ({ showTracking }: { showTracking: boolean }) => {
 
   return (
     <div
-      className={`fixed bottom-0 left-1/2 transform transition-all duration-[650ms] -translate-x-1/2  ${showTracking ? "translate-y-0" : "translate-y-full"
-        } ${showConsent ? "opacity-100 visible" : "opacity-0 invisible"
-        } mx-auto w-full lg:w-[70%] z-[100000000000] px-3`}
+      className={`fixed bottom-0 left-1/2 transform transition-all duration-[650ms] -translate-x-1/2  ${
+        showTracking ? "translate-y-0" : "translate-y-full"
+      } ${
+        showConsent ? "opacity-100 visible" : "opacity-0 invisible"
+      } mx-auto w-full lg:w-[70%] z-[100000000000] px-3`}
     >
       <div className="bg-[#2C3038] rounded-t-2xl border-t border-r border-l p-4 text-white flex flex-col sm:flex-row gap-10 items-center">
         <div className="flex gap-y-4 flex-col">

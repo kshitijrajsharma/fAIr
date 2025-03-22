@@ -11,7 +11,7 @@ export const PageNotFound = () => {
   );
 
   const trainingDatasetNotFound = location.state?.from.includes(
-    APPLICATION_ROUTES.TRAINING_DATASETS,
+    APPLICATION_ROUTES.DATASETS,
   );
 
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ export const PageNotFound = () => {
               modelNotFound
                 ? APPLICATION_ROUTES.MODELS
                 : trainingDatasetNotFound
-                  ? APPLICATION_ROUTES.TRAINING_DATASETS
+                  ? APPLICATION_ROUTES.DATASETS
                   : APPLICATION_ROUTES.HOMEPAGE,
             );
           }}

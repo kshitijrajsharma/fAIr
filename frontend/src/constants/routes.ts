@@ -2,6 +2,8 @@
  * The navigation routes for the application. This object controls the name of the path. i.e  /<pathname>
  */
 
+import { TProfileNavigationTabs } from "@/types";
+
 export const MODELS_BASE = "/ai-models";
 
 export const MODELS_ROUTES = {
@@ -40,7 +42,8 @@ export const APPLICATION_ROUTES = {
 
   // Model routes end
 
-  TRAINING_DATASETS: "/training-datasets",
+  DATASETS: "/datasets",
+  DATASET_DETAILS: "/datasets/:id",
   START_MAPPING_BASE: "/start-mapping/",
   START_MAPPING: "/start-mapping/:modelId",
   NOTFOUND: "/404",
@@ -49,8 +52,35 @@ export const APPLICATION_ROUTES = {
   LEARN: "/learn",
   ABOUT: "/about",
   RESOURCES: "/resources",
-  ACCOUNT_SETTINGS: "/account/settings",
-  ACCOUNT_MODELS: "/account/models",
+  PROFILE_BASE: "/profile",
+  PROFILE_SETTINGS: "/profile/settings",
+  PROFILE_MODELS: "/profile/models",
+  PROFILE_DATASETS: "/profile/datasets",
 };
 
 export const HOT_PRIVACY_POLICY_URL: string = "https://www.hotosm.org/privacy";
+/**
+ * The navigation tabs used in the profile layout.
+ */
+export const PROFILE_NAVIGATION_TABS: TProfileNavigationTabs = [
+  {
+    title: "Overview",
+    href: APPLICATION_ROUTES.PROFILE_BASE,
+    active: true,
+  },
+  {
+    title: "My Models",
+    href: APPLICATION_ROUTES.PROFILE_MODELS,
+    active: true,
+  },
+  {
+    title: "My Datasets",
+    href: APPLICATION_ROUTES.PROFILE_DATASETS,
+    active: true,
+  },
+  {
+    title: "Settings",
+    href: APPLICATION_ROUTES.PROFILE_SETTINGS,
+    active: true,
+  },
+];

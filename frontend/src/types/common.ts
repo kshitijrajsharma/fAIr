@@ -75,3 +75,9 @@ export type TFooterLinks = {
   active: boolean;
   isExternalLink?: boolean;
 }[];
+
+export type TProfileNavigationTabs = {
+  title: string;
+  href: string;
+  active: boolean;
+}[];

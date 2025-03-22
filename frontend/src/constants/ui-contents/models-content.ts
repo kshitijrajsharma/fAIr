@@ -318,6 +318,7 @@ export const MODELS_CONTENT: TModelsContent = {
         info: "Info",
         action: "Action",
         inUse: "In Use",
+        model: "Model",
       },
       modelFilesDialog: {
         rootDirectory: "Root Directory",

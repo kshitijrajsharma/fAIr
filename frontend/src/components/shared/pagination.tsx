@@ -28,7 +28,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   disableNextPage,
   totalLength = 0,
   disablePrevPage,
-  pageLimit = 20,
+  pageLimit = PAGE_LIMIT,
   query,
   updateQuery,
   isPlaceholderData,

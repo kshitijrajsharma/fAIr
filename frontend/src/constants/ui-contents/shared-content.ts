@@ -13,6 +13,8 @@ export const SHARED_CONTENT: TSharedContent = {
       learn: "Learn",
     },
     userProfile: {
+      profile: "My Profile",
+      datasets: "My Datasets",
       models: "My Models",
       settings: "Settings",
       logout: "Log Out",

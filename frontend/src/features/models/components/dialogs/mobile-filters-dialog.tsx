@@ -7,10 +7,10 @@ import { useLocation } from "react-router-dom";
 import {
   CategoryFilter,
   DateRangeFilter,
-  OrderingFilter,
   StatusFilter,
 } from "@/features/models/components/filters";
 import { ButtonVariant } from "@/enums";
+import { OrderingFilter } from "@/components/shared";
 
 type TrainingAreaDrawerProps = DialogProps & {
   updateQuery: (updatedParams: TQueryParams) => void;
@@ -42,7 +42,7 @@ const MobileModelFiltersDialog: React.FC<TrainingAreaDrawerProps> = ({
 }) => {
   const currentRoute = useLocation();
   const userIsInAccountModelsPage = currentRoute.pathname.includes(
-    APPLICATION_ROUTES.ACCOUNT_MODELS,
+    APPLICATION_ROUTES.PROFILE_MODELS,
   );
 
   return (

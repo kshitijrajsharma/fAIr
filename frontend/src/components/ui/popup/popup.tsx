@@ -2,7 +2,7 @@ import React from "react";
 import SlPopup from "@shoelace-style/shoelace/dist/react/popup/index.js";
 
 type PopupProps = {
-  placement?: "top" | "bottom" | "bottom-start";
+  placement?: "top" | "bottom" | "bottom-start" | "bottom-end";
   distance?: number;
   active: boolean;
   arrow?: boolean;

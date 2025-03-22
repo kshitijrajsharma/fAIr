@@ -25,6 +25,7 @@ body {
   --hot-fair-color-hover-accent: #f5f5f5;
   --hot-fair-color-green-secondary: #ecfce5;
   --hot-fair-color-green-primary: #198155;
+  --hot-fair-color-frosted-blue: #f7f9fb;
 
   /* Font sizes in rem */
   --hot-fair-font-size-extra-large: 4.25rem;
@@ -223,6 +224,11 @@ sl-alert.success::part(base) {
 .scrollable:hover::-webkit-scrollbar-track,
 .scrollable:hover::-webkit-scrollbar-thumb {
   visibility: visible;
+}
+
+.hide-scrollbar::-webkit-scrollbar-track,
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  visibility: hidden;
 }
 
 /* General scrollbar ends */

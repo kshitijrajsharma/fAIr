@@ -16,6 +16,8 @@ type ButtonProps = {
   disabled?: boolean;
   slot?: string;
   uppercase?: boolean;
+  type?: "button" | "submit";
+  contentClassName?: string;
 };
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -27,6 +29,8 @@ const Button: React.FC<ButtonProps> = ({
   uppercase = true,
   size,
   slot,
+  type = "button",
+  contentClassName,
 }) => {
   const spinnerColor = variant === "primary" ? "white" : "red";
   const trackColor = variant === "primary" ? "red" : "white";
@@ -42,10 +46,11 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       slot={slot}
+      type={type}
     >
       <div
         className={cn(
-          `flex items-center gap-x-2  ${uppercase && "uppercase"} `,
+          `flex items-center gap-x-2  ${uppercase && "uppercase"} ${contentClassName} `,
         )}
       >
         {children}

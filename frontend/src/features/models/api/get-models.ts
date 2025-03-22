@@ -2,14 +2,15 @@ import { API_ENDPOINTS, apiClient } from "@/services";
 import { FeatureCollection, PaginatedModels, TModelDetails } from "@/types/api";
 
 export const getModels = async (
-  limit: number,
-  offset: number,
-  orderBy: string,
-  status: number,
-  searchQuery: string,
-  dateFilters: Record<string, string>,
-  id: number,
+  limit?: number,
+  offset?: number,
+  orderBy?: string,
+  status?: number,
+  searchQuery?: string,
+  dateFilters?: Record<string, string>,
+  id?: number,
   userId?: number,
+  dataset?: number,
 ): Promise<PaginatedModels> => {
   const res = await apiClient.get(API_ENDPOINTS.GET_MODELS, {
     params: {
@@ -20,6 +21,7 @@ export const getModels = async (
       ordering: orderBy,
       id: id,
       user: userId,
+      dataset: dataset,
       ...dateFilters,
     },
   });

@@ -1,15 +1,14 @@
-import SlAvatar from "@shoelace-style/shoelace/dist/react/avatar/index.js";
 import styles from "@/components/layouts/navbar/navbar.module.css";
 import useScreenSize from "@/hooks/use-screen-size";
 import { DropDown } from "@/components/ui/dropdown";
 import { DropdownPlacement } from "@/enums";
 import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
-import { TCSSWithVars } from "@/types";
 import { truncateString } from "@/utils";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { APPLICATION_ROUTES, SHARED_CONTENT } from "@/constants";
+import { Avatar } from "@/components/ui/avatar/avatar";
 
 export const UserProfile = ({
   hideFullName,
@@ -24,7 +23,9 @@ export const UserProfile = ({
     useDropdownMenu();
   const navigate = useNavigate();
   const { isMobile, isTablet } = useScreenSize();
+
   const size = smallerSize ? "35px" : isTablet || isMobile ? "28px" : "40px";
+
   return (
     <DropDown
       onDropdownShow={onDropdownShow}
@@ -32,16 +33,30 @@ export const UserProfile = ({
       dropdownIsOpened={dropdownIsOpened}
       menuItems={[
         {
+          value: SHARED_CONTENT.navbar.userProfile.profile,
+          onClick: () => {
+            navigate(APPLICATION_ROUTES.PROFILE_BASE);
+            onDropdownHide();
+          },
+        },
+        {
+          value: SHARED_CONTENT.navbar.userProfile.datasets,
+          onClick: () => {
+            navigate(APPLICATION_ROUTES.PROFILE_DATASETS);
+            onDropdownHide();
+          },
+        },
+        {
           value: SHARED_CONTENT.navbar.userProfile.models,
           onClick: () => {
-            navigate(APPLICATION_ROUTES.ACCOUNT_MODELS);
+            navigate(APPLICATION_ROUTES.PROFILE_MODELS);
             onDropdownHide();
           },
         },
         {
           value: SHARED_CONTENT.navbar.userProfile.settings,
           onClick: () => {
-            navigate(APPLICATION_ROUTES.ACCOUNT_SETTINGS);
+            navigate(APPLICATION_ROUTES.PROFILE_SETTINGS);
             onDropdownHide();
           },
         },
@@ -58,13 +73,7 @@ export const UserProfile = ({
       placement={DropdownPlacement.BOTTOM_END}
       triggerComponent={
         <div className={styles.userProfile}>
-          <SlAvatar
-            image={user?.img_url}
-            label={user?.username}
-            loading="lazy"
-            initials={user?.username.charAt(0)}
-            style={{ "--size": size } as TCSSWithVars}
-          />
+          <Avatar label={user?.username} size={size} imageUrl={user?.img_url} />
           {!hideFullName && (
             <p className={styles.userProfileName}>
               {truncateString(user?.username, 20)}

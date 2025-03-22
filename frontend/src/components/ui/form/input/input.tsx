@@ -26,7 +26,10 @@ type InputProps = {
   maxLength?: number;
   minLength?: number;
   pattern?: RegExp | string;
-  validationStateUpdateCallback?: (validity: boolean) => void;
+  validationStateUpdateCallback?: (validity: {
+    valid: boolean;
+    message: string;
+  }) => void;
   isValid?: boolean;
   min?: number;
   max?: number;
@@ -67,17 +70,15 @@ const Input: React.FC<InputProps> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { isMobile } = useScreenSize();
   const currentLength = String(value).length;
+
   return (
     <SlInput
       onSlInput={(e) => {
         validationStateUpdateCallback &&
-          validationStateUpdateCallback?.(
-            // @ts-expect-error bad type definition
-            {
-              valid: inputRef.current?.validity?.valid,
-              message: inputRef.current?.validationMessage,
-            },
-          );
+          validationStateUpdateCallback?.({
+            valid: inputRef.current?.validity?.valid as boolean,
+            message: inputRef.current?.validationMessage as string,
+          });
 
         // @ts-expect-error bad type definition
         handleInput(e);
