@@ -76,6 +76,7 @@ export const API_ENDPOINTS = {
   CREATE_TRAINING_AREA: "aoi/",
   CREATE_TRAINING_REQUEST: "training/",
   UPDATE_TRAINING: (id: number) => `training/publish/${id}/`,
+  TERMINATE_TRAINING: (id: number) => `training/terminate/${id}/`,
   DELETE_TRAINING_AREA: (id: number) => `aoi/${id}/`,
   UPLOAD_TRAINING_AREA_LABELS: (aioId: number) => `label/upload/${aioId}/`,
 

@@ -14,17 +14,18 @@ import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { useState } from "react";
-import { useToastNotification } from "@/hooks/use-toast-notification";
 import { useTrainingHistory } from "@/features/models/hooks/use-training";
-import { useUpdateTraining } from "@/features/models/api/update-trainings";
+import { useTerminateTraining, useUpdateTraining } from "@/features/models/api/update-trainings";
 import {
   formatDate,
   formatDuration,
   roundNumber,
   showErrorToast,
+  showSuccessToast,
   truncateString,
 } from "@/utils";
 import { Link } from "@/components/ui/link";
+import { ModelTrainingStatus } from "@/enums";
 
 type TrainingHistoryTableProps = {
   modelId?: string;
@@ -38,10 +39,13 @@ const columnDefinitions = (
   authUsername: string,
   isAuthenticated: boolean,
   handleTrainingModal: (trainingId: number) => void,
+  // Same as mutate 
   publishTraining: (trainingId: number) => void,
+  terminationMutation: (trainingId: number) => void,
   publishedTrainingId?: number,
   showUserTrainingHistory?: boolean,
   modelOwner?: string,
+
 ): ColumnDef<TTrainingDetails>[] => [
     {
       accessorKey: "id",
@@ -207,10 +211,16 @@ const columnDefinitions = (
               <Badge
                 variant="default"
                 className="rounded-lg px-2"
-                onClick={() => handleTrainingModal(Number(row.getValue("id")))}
+                onClick={
+                  (e) => {
+                    // Prevent the row click event from firing
+                    e.stopPropagation();
+                    handleTrainingModal(Number(row.getValue("id")))
+                  }
+                }
               >
                 <InfoIcon className="icon text-dark font-bold" />
-              </Badge>
+              </Badge >
             );
           },
         },
@@ -251,19 +261,38 @@ const columnDefinitions = (
                     {
                       name: "Set as active training dataset",
                       value: "Set as active training dataset",
-                      onClick: () => publishTraining(row.getValue("id")),
+                      onClick: (e) => {
+                        // Prevent the row click event from firing
+                        e.stopPropagation();
+                        publishTraining(row.getValue("id"))
+                      },
                       disabled:
-                        row.getValue("status") === "FAILED" ||
-                        row.getValue("status") === "SUBMITTED",
+                        row.getValue("status") === ModelTrainingStatus.FAILED ||
+                        row.getValue("status") === ModelTrainingStatus.FINISHED,
+                    },
+                    {
+                      name: "Cancel training",
+                      value: "Cancel training",
+                      onClick: (e) => {
+                        // Prevent the row click event from firing
+                        e.stopPropagation();
+                        terminationMutation(row.getValue("id"))
+                      },
+                      disabled:
+                        row.getValue("status") === ModelTrainingStatus.FAILED ||
+                        row.getValue("status") === ModelTrainingStatus.FINISHED,
                     },
                     {
                       name: "View training details",
                       value: "View training details",
-                      onClick: () =>
-                        handleTrainingModal(row.getValue("id") as number),
+                      onClick: (e) => {
+                        // Prevent the row click event from firing
+                        e.stopPropagation();
+                        handleTrainingModal(row.getValue("id") as number)
+                      }
                     },
                   ]}
-                ></DropDown>
+                ></DropDown >
               </>
             );
           },
@@ -298,11 +327,10 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
 
   const { isOpened, openDialog, closeDialog } = useDialog();
 
-  const toast = useToastNotification();
   const { mutate } = useUpdateTraining({
     mutationConfig: {
       onSuccess: (res) => {
-        toast(res.data, "success");
+        showSuccessToast(res.data);
       },
       onError: (err) => {
         showErrorToast(err);
@@ -310,6 +338,19 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
     },
     modelId: Number(modelId),
   });
+
+  const { mutate: terminationMutation } = useTerminateTraining({
+    mutationConfig: {
+      onSuccess: (res) => {
+        showSuccessToast(res.data);
+      },
+      onError: (err) => {
+        showErrorToast(err);
+      },
+    },
+    modelId: Number(modelId),
+  });
+
 
   const handleTrainingModal = (trainingId: number) => {
     setActiveTrainingId(trainingId);
@@ -360,6 +401,7 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
             isAuthenticated,
             handleTrainingModal,
             mutate,
+            terminationMutation,
             publishedTrainingId,
             showUserTrainingHistory,
             modelOwner,

@@ -75,3 +75,10 @@ export enum DropdownPlacement {
   BOTTOM_END = "bottom-end",
   TOP_END = "top-end",
 }
+
+export enum ModelTrainingStatus {
+  SUBMITTED = 'SUBMITTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FINISHED = 'FINISHED',
+  FAILED = 'FAILED',
+}
