@@ -120,7 +120,7 @@ export const ModelDetailsPage = () => {
           <TrainingHistoryTable
             modelId={data?.id as string}
             publishedTrainingId={data?.published_training as number}
-            modelOwner={data?.user.username as string}
+            modelOwner={data?.user?.username as string}
           />
         </ModelDetailsSection>
       </div>

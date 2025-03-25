@@ -26,43 +26,43 @@ const pages: {
   icon: React.ElementType;
   path: string;
 }[] = [
-  {
-    id: 1,
-    title: MODELS_CONTENT.modelCreation.progressStepper.modelDetails,
-    icon: TagsIcon,
-    path: MODELS_ROUTES.DETAILS,
-  },
-  {
-    id: 2,
-    title: MODELS_CONTENT.modelCreation.progressStepper.trainingDataset,
-    icon: DatabaseIcon,
-    path: MODELS_ROUTES.TRAINING_DATASET,
-  },
-  {
-    id: 3,
-    title: MODELS_CONTENT.modelCreation.progressStepper.trainingArea,
-    icon: SquareShadowIcon,
-    path: MODELS_ROUTES.TRAINING_AREA,
-  },
-  {
-    id: 4,
-    title: MODELS_CONTENT.modelCreation.progressStepper.trainingSettings,
-    icon: SettingsIcon,
-    path: MODELS_ROUTES.TRAINING_SETTINGS,
-  },
-  {
-    id: 5,
-    title: MODELS_CONTENT.modelCreation.progressStepper.submitModel,
-    icon: CloudIcon,
-    path: MODELS_ROUTES.MODEL_SUMMARY,
-  },
-  {
-    id: 6,
-    title: MODELS_CONTENT.modelCreation.progressStepper.confirmation,
-    icon: StarIcon,
-    path: MODELS_ROUTES.CONFIRMATION,
-  },
-];
+    {
+      id: 1,
+      title: MODELS_CONTENT.modelCreation.progressStepper.modelDetails,
+      icon: TagsIcon,
+      path: MODELS_ROUTES.DETAILS,
+    },
+    {
+      id: 2,
+      title: MODELS_CONTENT.modelCreation.progressStepper.trainingDataset,
+      icon: DatabaseIcon,
+      path: MODELS_ROUTES.TRAINING_DATASET,
+    },
+    {
+      id: 3,
+      title: MODELS_CONTENT.modelCreation.progressStepper.trainingArea,
+      icon: SquareShadowIcon,
+      path: MODELS_ROUTES.TRAINING_AREA,
+    },
+    {
+      id: 4,
+      title: MODELS_CONTENT.modelCreation.progressStepper.trainingSettings,
+      icon: SettingsIcon,
+      path: MODELS_ROUTES.TRAINING_SETTINGS,
+    },
+    {
+      id: 5,
+      title: MODELS_CONTENT.modelCreation.progressStepper.submitModel,
+      icon: CloudIcon,
+      path: MODELS_ROUTES.MODEL_SUMMARY,
+    },
+    {
+      id: 6,
+      title: MODELS_CONTENT.modelCreation.progressStepper.confirmation,
+      icon: StarIcon,
+      path: MODELS_ROUTES.CONFIRMATION,
+    },
+  ];
 
 export const ModelFormsLayout = () => {
   const { pathname } = useLocation();
@@ -85,7 +85,7 @@ export const ModelFormsLayout = () => {
       <div className="flex flex-col gap-y-8 my-6 w-full min-h-screen h-full">
         <BackButton />
         <div className="min-h-screen grid grid-cols-12 grid-rows-[auto_1fr_auto] gap-y-8 w-full justify-center my-2">
-          <div className="col-span-12 lg:col-start-2 lg:col-span-10 w-full">
+          <div className="col-span-12 xl:col-start-2 xl:col-span-10 w-full">
             <ProgressBar
               currentPath={pathname}
               currentPageIndex={currentPageIndex}
@@ -94,7 +94,7 @@ export const ModelFormsLayout = () => {
           </div>
 
           <div
-            className={`col-span-12 mb-24  bg-white rounded-xl shadow-sm p-6 border border-gray-border ${pathname.includes(MODELS_ROUTES.TRAINING_AREA) || pathname.includes(MODELS_ROUTES.TRAINING_DATASET) ? "" : "md:col-start-2 md:col-span-10 lg:col-start-4 lg:col-span-6"}`}
+            className={`col-span-12 mb-24  bg-white rounded-xl shadow-sm p-6 border border-gray-border ${pathname.includes(MODELS_ROUTES.TRAINING_AREA) || pathname.includes(MODELS_ROUTES.TRAINING_DATASET) ? "" : " xl:col-start-2 xl:col-span-10 2xl:col-start-4 2xl:col-span-6"}`}
           >
             <Outlet />
           </div>

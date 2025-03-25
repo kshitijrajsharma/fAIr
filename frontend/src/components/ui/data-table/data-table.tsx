@@ -47,7 +47,7 @@ const DataTable = <TData, TValue>({
   });
 
   return (
-    <Table>
+    <Table >
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
@@ -57,9 +57,9 @@ const DataTable = <TData, TValue>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                 </TableHead>
               );
             })}

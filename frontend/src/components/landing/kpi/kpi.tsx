@@ -1,13 +1,15 @@
-import styles from "./kpi.module.css";
 import { API_ENDPOINTS, apiClient } from "@/services";
 import { KPI_STATS_CACHE_TIME_MS } from "@/config";
 import { SHARED_CONTENT } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
+import { BotIcon, FeedbackIcon, ProductionCheckmarkIcon } from "@/components/ui/icons";
+import { IconProps } from "@/types";
 
 type TKPIS = {
   figure?: number;
   label: string;
+  icon: FC<IconProps>;
 }[];
 
 type TKPIResponse = {
@@ -48,29 +50,38 @@ export const Kpi = () => {
     {
       figure: data?.total_models_published ?? 0,
       label: SHARED_CONTENT.homepage.kpi.publishedAIModels,
+      icon: BotIcon
     },
     {
       figure: data?.total_registered_users ?? 0,
       label: SHARED_CONTENT.homepage.kpi.totalUsers,
+      icon: BotIcon
     },
     {
       figure: data?.total_feedback_labels ?? 0,
       label: SHARED_CONTENT.homepage.kpi.humanFeedback,
+      icon: FeedbackIcon
     },
     {
       figure: data?.total_accepted_predictions ?? 0,
       label: SHARED_CONTENT.homepage.kpi.acceptedPrediction,
+      icon: ProductionCheckmarkIcon
     },
   ];
 
   return (
-    <section className={styles.kpiContainer}>
+    <section className="p-4 grid grid-cols-1 gap-y-4 sm:grid-cols-2 min-h-40 place-items-center lg:grid-cols-4 justify-items-center bg-off-white">
       {KPIs.map((kpi, id) => (
-        <div key={`kpi-${id}`} className={styles.kpiItem}>
-          <h1 className={`${isLoading || isError ? "animate-pulse" : ""}`}>
-            {kpi.figure?.toLocaleString()}
-          </h1>
-          <h3>{kpi.label}</h3>
+        <div className={`flex gap-x-3 items-center h-24 w-48`} key={`kpi-${id}`}>
+          <div className="bg-primary rounded-full flex items-center justify-center p-2">
+            <kpi.icon className="h-8 w-8 text-white" />
+          </div>
+          <div className="flex flex-col items-start">
+            <h1 className={`text-title-2 font-bold text-primary ${isLoading || isError ? "animate-pulse" : ""}`}>
+              {kpi.figure?.toLocaleString()}
+            </h1>
+            <p className="text-body-3 font-semibold text-nowrap">{kpi.label}</p>
+          </div>
         </div>
       ))}
     </section>
