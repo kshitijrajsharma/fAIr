@@ -3,7 +3,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 var(--sl-spacing-large);
+  padding: 0 var(--sl-spacing-medium);
 }
 
 .navLinkItem:hover,
@@ -125,6 +125,7 @@ nav {
 
   .webNavLinks {
     display: flex;
+
     gap: var(--sl-spacing-3x-large);
   }
 

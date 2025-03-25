@@ -175,7 +175,7 @@ export const TrainingAreaMap = ({
                                   .map(
                                     ([key, value]) => `
                                     <tr>
-                                        <td class="text-gray">${key}</td>
+                                        <td class="text-grey">${key}</td>
                                         <td class="font-semibold text-dark">${typeof value === "boolean" ? JSON.stringify(value) : value}</td>
                                     </tr>
                                 `,

@@ -19,13 +19,14 @@ export const useMapInstance = (pmtiles: boolean = false) => {
   );
 
   useEffect(() => {
+    if (!mapContainerRef.current) return;
     const map = setupMaplibreMap(mapContainerRef, pmtiles);
 
     map.on("load", () => {
       setMap(map);
     });
     return () => map.remove();
-  }, []);
+  }, [mapContainerRef]);
 
   const terraDraw = useMemo(() => {
     if (map) {

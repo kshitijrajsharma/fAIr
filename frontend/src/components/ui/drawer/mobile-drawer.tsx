@@ -41,7 +41,7 @@ export const MobileDrawer = ({
               className="w-full flex justify-end app-padding"
               onClick={closeDrawer}
             >
-              <span className="text-body-2 text-gray icon-interaction w-fit py-1 px-2.5 rounded-full">
+              <span className="text-body-2 text-grey icon-interaction w-fit py-1 px-2.5 rounded-full">
                 {" "}
                 &#x2715;
               </span>
@@ -51,7 +51,7 @@ export const MobileDrawer = ({
           <Drawer.Description hidden>{dialogTitle}</Drawer.Description>
           <div
             aria-hidden
-            className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray mb-4"
+            className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-grey mb-4"
           />
           <div
             className={cn(

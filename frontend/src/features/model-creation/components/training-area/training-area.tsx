@@ -11,7 +11,7 @@ import { Polygon } from "geojson";
 import { StepHeading } from "@/features/model-creation/components/";
 import { UploadIcon, YouTubePlayIcon } from "@/components/ui/icons";
 import { useDialog } from "@/hooks/use-dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import {
   MODEL_CREATION_FORM_NAME,
@@ -83,6 +83,14 @@ const TrainingAreaForm = () => {
     });
   };
 
+  const mapElementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mapElementRef.current) {
+      mapElementRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [mapElementRef.current]);
+
   return (
     <>
       <FileUploadDialog
@@ -124,7 +132,10 @@ const TrainingAreaForm = () => {
             OAMData={data as TileJSON}
           />
         </div>
-        <div className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen xl:no-fullscreen">
+        <div
+          ref={mapElementRef}
+          className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen xl:no-fullscreen"
+        >
           <div className="w-full h-[90vh] col-span-12 lg:col-span-6 2xl:col-span-7">
             <TrainingAreaMap
               tileJSONURL={tileJSONURL}

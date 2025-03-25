@@ -63,13 +63,13 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
             <p className="font-medium text-body-1 text-black line-clamp-2 h-16">
               {truncateString(model.name, 50)}
             </p>
-            <p className="text-gray text-body-2">
+            <p className="text-grey text-body-2">
               ID: <span>{model.id}</span>
             </p>
           </div>
           {/* accuracy */}
           <div>
-            <p className="text-gray text-body-3">
+            <p className="text-grey text-body-3">
               {MODELS_CONTENT.models.modelsList.modelCard.accuracy}
             </p>
             <p className="text-dark font-semibold text-body-2">
@@ -83,13 +83,13 @@ const ModelCard: React.FC<ModelCardProps> = ({ model }) => {
             <p className="font-semibold text-body-2base text-dark">
               {model.user.username}
             </p>
-            <p className="text-gray text-body-3">
+            <p className="text-grey text-body-3">
               {MODELS_CONTENT.models.modelsList.modelCard.lastModified}{" "}
               <span className="font-bold">
                 {extractDatePart(model.last_modified)}
               </span>
             </p>
-            <p className="text-gray text-body-3 flex gap-x-2">
+            <p className="text-grey text-body-3 flex gap-x-2">
               {MODELS_CONTENT.models.modelsList.modelCard.baseModel}
               <span className="font-bold text-dark">
                 {extractDatePart(model.base_model)}

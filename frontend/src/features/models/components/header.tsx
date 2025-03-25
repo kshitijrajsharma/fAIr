@@ -25,7 +25,7 @@ const PageHeader = ({
         </h1>
       </div>
       <div className="flex flex-col md:flex-row gap-y-6 justify-between">
-        <p className="max-w-[80%] md:max-w-[50%] text-gray text-body-2base md:text-body-2">
+        <p className="max-w-[80%] md:max-w-[50%] text-grey text-body-2base md:text-body-2">
           {description ?? MODELS_CONTENT.models.modelsList.description}
         </p>
         <div className="self-start">

@@ -79,7 +79,7 @@ export const RootLayout = () => {
       <AuthenticationModal
         isOpen={state?.backgroundLocation && !isAuthenticated}
       />
-      <main className="min-h-screen relative mx-auto flex flex-col justify-between">
+      <main className="min-h-screen relative flex flex-col">
         {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
           !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
           !pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) &&
@@ -94,7 +94,7 @@ export const RootLayout = () => {
 
         <div
           // Disable global padding on landing page.
-          className={`${pathname === APPLICATION_ROUTES.HOMEPAGE ? "" : "app-padding"} w-full`}
+          className={`flex-1 mx-auto w-full ${pathname === APPLICATION_ROUTES.HOMEPAGE ? "" : "app-padding"} ${pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) || modelId ? "bg-frosted-blue" : ""}`}
         >
           <Outlet />
         </div>

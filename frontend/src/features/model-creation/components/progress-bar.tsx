@@ -73,7 +73,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
                   `rounded-full flex items-center justify-center w-9 h-9 ${
                     activeStep
                       ? "outline-dashed outline-2 outline-offset-2 outline-primary bg-primary"
-                      : "bg-gray"
+                      : "bg-grey"
                   }`,
                 )}
               >
@@ -81,7 +81,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
               </span>
             )}
 
-            <span className="text-gray whitespace-nowrap">{step.title}</span>
+            <span className="text-dark whitespace-nowrap">{step.title}</span>
           </button>
         );
       })}

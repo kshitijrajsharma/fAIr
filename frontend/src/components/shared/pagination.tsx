@@ -74,7 +74,7 @@ export const Pagination: React.FC<PaginationProps> = ({
     >
       <div>
         <p
-          className={`"text-body-4 text-nowrap md:inline-block  ${showCountOnMobile ? "inline-block" : "hidden"}`}
+          className={`"text-body-4 text-nowrap md:inline-block mr-1  ${showCountOnMobile ? "inline-block" : "hidden"}`}
         >
           <span className="md:font-semibold text-body-4">
             {totalLength > 0 ? _offset + 1 : 0} -{" "}

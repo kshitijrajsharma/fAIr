@@ -47,12 +47,11 @@ export const MODELS_CONTENT: TModelsContent = {
           label: "Model Description",
           toolTip: "",
           helpText:
-            "Model description should descriptive, be at least 10 characters and at most 500 characters.",
+            "Model description should be descriptive, be at least 10 characters and at most 500 characters.",
           placeholder: "This model is used to detect damaged buildings in ...",
         },
       },
-      pageDescription:
-        "Model creation has steps as shown above. Please enter your model metadata below.",
+      pageDescription: "Please enter your model metadata below.",
     },
     trainingDataset: {
       pageTitle: "Training Dataset",
@@ -76,10 +75,9 @@ export const MODELS_CONTENT: TModelsContent = {
             "TMS imagery link should look like this https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}. Please ensure your imagery URL complies with the license requirements.",
           placeholder: "https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}",
         },
-        existingTrainingDatasetSectionHeading: "Existing Training Dataset",
         existingTrainingDatasetSectionDescription:
           "Browse or search for a dataset name. Select a dataset to proceed.",
-        newTrainingDatasetSectionHeading: "Create New Training Dataset",
+
         searchBar: {
           placeholder: "Enter a dataset name to search",
         },

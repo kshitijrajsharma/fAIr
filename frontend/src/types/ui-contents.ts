@@ -58,9 +58,8 @@ export type TModelsContent = {
           helpText: string;
           placeholder: string;
         };
-        existingTrainingDatasetSectionHeading: string;
         existingTrainingDatasetSectionDescription: string;
-        newTrainingDatasetSectionHeading: string;
+
         searchBar: {
           placeholder: string;
         };

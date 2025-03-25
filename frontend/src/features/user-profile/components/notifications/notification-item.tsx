@@ -65,7 +65,7 @@ export const NotificationItem = ({
         </div>
       </div>
       <div className="w-full flex justify-between items-center group">
-        <p className="text-body-4 text-gray">
+        <p className="text-body-4 text-grey">
           {formatDate(notification.created_at)}
         </p>
         <DropDown

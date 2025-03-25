@@ -91,7 +91,7 @@ const ModelTrainingSettingsDialog: React.FC<ModelEnhancementDialogProps> = ({
         <div className="h-40 w-full animate-pulse bg-light-gray"></div>
       ) : (
         <div className="flex flex-col gap-y-6 w-full">
-          <p className="text-gray">
+          <p className="text-grey">
             {
               MODELS_CONTENT.models.modelsDetailsCard.trainingSettings
                 .description

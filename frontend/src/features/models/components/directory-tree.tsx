@@ -65,7 +65,7 @@ const FileItem = ({
         <span title={keyName} className="text-dark text-nowrap text-body-2base">
           {truncateString(keyName)}
         </span>
-        <span className="text-gray text-body-3 text-nowrap flex items-center gap-x-2">
+        <span className="text-grey text-body-3 text-nowrap flex items-center gap-x-2">
           <SlFormatBytes value={size} />
           {isDownloading && <Spinner />}
         </span>
@@ -121,10 +121,10 @@ const DirectoryItem = ({
           {truncateString(keyName)}
         </span>
         <div className="flex gap-x-2">
-          <span className="text-gray text-body-3 text-nowrap">
+          <span className="text-grey text-body-3 text-nowrap">
             <SlFormatBytes value={size} />
           </span>
-          <span className="text-gray text-body-3 text-nowrap">
+          <span className="text-grey text-body-3 text-nowrap">
             {length} items
           </span>
         </div>

@@ -75,7 +75,7 @@ export const ModelDetailsPage = () => {
           title={MODELS_CONTENT.models.modelsDetailsCard.propertiesSectionTitle}
         >
           {!data?.published_training ? (
-            <div className="rounded-xl w-full h-80 border border-gray-border text-center flex flex-col gap-y-6 items-center justify-center text-gray">
+            <div className="rounded-xl w-full h-80 border border-gray-border text-center flex flex-col gap-y-6 items-center justify-center text-grey">
               <Image
                 src={TrainingInProgressImage}
                 alt="Model training in progress"

@@ -3,6 +3,8 @@ import { API_ENDPOINTS, apiClient } from "@/services";
 import { KPI_STATS_CACHE_TIME_MS } from "@/config";
 import { SHARED_CONTENT } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+
 type TKPIS = {
   figure?: number;
   label: string;
@@ -21,11 +23,26 @@ const fetchKPIStats = async (): Promise<TKPIResponse> => {
 };
 
 export const Kpi = () => {
+  const [enabled, setEnabled] = useState<boolean>(false);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["kpis"],
     queryFn: fetchKPIStats,
     refetchInterval: KPI_STATS_CACHE_TIME_MS,
+    enabled: enabled,
   });
+
+  /**
+   * This effect is used to delay the KPI stats fetching by 1 second.
+   * This is done to allow the page to load first and then fetch the KPI stats.
+   */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setEnabled(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const KPIs: TKPIS = [
     {

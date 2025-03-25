@@ -232,7 +232,7 @@ export const UserProfileSettingsPage = () => {
                         <h3 className="text-body-3 md:text-body-2">
                           {notification.label}
                         </h3>
-                        <p className="text-body-4 md:text-body-3 text-gray">
+                        <p className="text-body-4 md:text-body-3 text-grey">
                           {notification.description}
                         </p>
                       </div>
@@ -293,7 +293,7 @@ export const UserProfileSettingsPage = () => {
                 <p className="text-body-3 md:text-body-2">
                   {USER_PROFILE_PAGE_CONTENT.settings.account.title}
                 </p>
-                <p className="text-gray text-body-3">
+                <p className="text-grey text-body-3">
                   {!user.account_deletion_requested
                     ? USER_PROFILE_PAGE_CONTENT.settings.account.description
                     : USER_PROFILE_PAGE_CONTENT.settings.account

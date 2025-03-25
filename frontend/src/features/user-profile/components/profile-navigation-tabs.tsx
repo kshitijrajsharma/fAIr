@@ -32,7 +32,7 @@ export const ProfileNavigationTabs = () => {
                   title={route.title}
                   nativeAnchor={false}
                   disableLinkStyle
-                  className={`text-gray text-body-3 transition-all duration-300 flex flex-col whitespace-nowrap`}
+                  className={`text-grey text-body-3 transition-all duration-300 flex flex-col whitespace-nowrap`}
                 >
                   {route.title}
                   <span

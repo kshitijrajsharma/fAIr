@@ -77,7 +77,7 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
               >
                 <span className="flex flex-col gap-y-2">
                   <p className="text-dark text-body-1">{option.name}</p>
-                  <p className="text-gray text-body-3">{option.description}</p>
+                  <p className="text-grey text-body-3">{option.description}</p>
                 </span>
               </button>
               <div className="w-1/6 text-right">

@@ -1,3 +1,4 @@
+import { PAGE_LIMIT } from "@/components/shared";
 import { API_ENDPOINTS, apiClient } from "@/services";
 import { TTrainingDataset } from "@/types";
 
@@ -8,22 +9,13 @@ export const getTrainingDataset = async (
   return res.data;
 };
 
-export const getTrainingDatasets = async (
-  searchQuery: string,
-  ordering: string = "-id",
-): Promise<TTrainingDataset[]> => {
-  const res = await apiClient.get(
-    API_ENDPOINTS.GET_TRAINING_DATASETS(searchQuery, ordering),
-  );
-  return res.data?.results;
-};
-
 export const getTrainingDatasetsV2 = async (
   searchQuery?: string,
   // todo - add date ordering
   ordering: string = "-id",
   // page: number,
   userId?: number,
+  offset?: number,
 ): Promise<{
   count: number;
   next: string | null;
@@ -32,9 +24,15 @@ export const getTrainingDatasetsV2 = async (
   hasNext: boolean;
   hasPrev: boolean;
 }> => {
-  const res = await apiClient.get(
-    API_ENDPOINTS.GET_TRAINING_DATASETS_V2(searchQuery, ordering, userId),
-  );
+  const res = await apiClient.get(API_ENDPOINTS.GET_TRAINING_DATASETS_V2, {
+    params: {
+      search: searchQuery,
+      ordering,
+      userId,
+      offset,
+      limit: PAGE_LIMIT,
+    },
+  });
   return {
     ...res.data,
     hasNext: res.data.next !== null,

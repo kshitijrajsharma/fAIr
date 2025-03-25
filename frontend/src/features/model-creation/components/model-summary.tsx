@@ -25,7 +25,7 @@ const SummaryItem = ({
   <div className="flex items-center gap-x-4 gap-y-4">
     <Icon className="icon-lg text-primary" />
     <div>
-      <p className="text-gray">{label}</p>
+      <p className="text-grey">{label}</p>
       {Array.isArray(content) ? (
         <div className="flex flex-col md:flex-row md:items-center gap-x-4">
           {content.map((item, index) => (

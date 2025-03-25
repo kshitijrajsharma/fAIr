@@ -79,7 +79,7 @@ export const LearnPage = () => {
 //           <h1 className="text-body-1 md:text-title-3 font-bold text-dark text-nowrap">
 //             {guide.title}
 //           </h1>
-//           <p className="text-body-2base md:text-body-2 text-gray">
+//           <p className="text-body-2base md:text-body-2 text-grey">
 //             {guide.description}
 //           </p>
 //         </div>
@@ -147,7 +147,7 @@ export const LearnPage = () => {
 //         <h2 className="text-body-1 lg:text-title-3 font-bold text-dark">
 //           {video.title}
 //         </h2>
-//         <p className="text-body-2base lg:text-body-2 text-gray">
+//         <p className="text-body-2base lg:text-body-2 text-grey">
 //           {video.description}
 //         </p>
 //       </div>

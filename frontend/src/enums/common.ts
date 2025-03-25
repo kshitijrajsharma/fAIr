@@ -20,9 +20,8 @@ export enum TrainingType {
 }
 
 export enum TrainingDatasetOption {
-  CREATE_NEW = "new",
-  USE_EXISTING = "existing",
-  NONE = "none",
+  CREATE_NEW = "Create New",
+  USE_EXISTING = "Select Existing",
 }
 
 export enum DrawingModes {

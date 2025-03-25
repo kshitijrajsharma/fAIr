@@ -40,7 +40,7 @@ export const ModelConfirmationPage = () => {
         <p className="text-title-2">
           Model {modelId} is {isEditMode ? "Updated" : "Created"}!
         </p>
-        <p className="text-gray">
+        <p className="text-grey">
           {isEditMode
             ? MODELS_CONTENT.modelCreation.confirmation.updateDescription
             : MODELS_CONTENT.modelCreation.confirmation.description}

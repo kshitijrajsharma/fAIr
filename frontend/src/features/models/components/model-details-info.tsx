@@ -41,7 +41,7 @@ const ModelDetailsInfo = ({
       <ModelDetailsSection title="">
         <div className="flex flex-col gap-y-8">
           <div className="inline-flex flex-col gap-y-4">
-            <p className="text-gray text-body-2">
+            <p className="text-grey text-body-2">
               {MODELS_CONTENT.models.modelsDetailsCard.modelId} {data?.id}
             </p>
             <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-y-8">
@@ -52,7 +52,7 @@ const ModelDetailsInfo = ({
                 >
                   {truncateString(data?.name, 40)}
                 </h1>
-                <p className="text-body-3 text-gray md:text-body-2 text-wrap max-w-lg md:max-w-xl xl:max-w-4xl">
+                <p className="text-body-3 text-grey md:text-body-2 text-wrap max-w-lg md:max-w-xl xl:max-w-4xl">
                   {data?.description ??
                     MODELS_CONTENT.models.modelsDetailsCard
                       .modelDescriptionNotAvailable}
@@ -99,7 +99,7 @@ const ModelDetailsInfo = ({
           </div>
           <div className="col-span-1 items-start justify-between flex flex-col gap-y-4">
             <div className="text-dark text-body-2 flex w-full gap-x-1 text-nowrap flex-wrap">
-              <span className="text-gray">
+              <span className="text-grey">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetName}
               </span>
               <p title={trainingDataset?.name}>
@@ -107,7 +107,7 @@ const ModelDetailsInfo = ({
               </p>
             </div>
             <div className="text-dark text-body-2 flex gap-x-1">
-              <span className="text-gray">
+              <span className="text-grey">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetId}
               </span>
               <p>{data?.dataset.id}</p>

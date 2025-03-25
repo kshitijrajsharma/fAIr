@@ -226,17 +226,6 @@ const TrainingAreaMap = ({
       mapContainerRef={mapContainerRef}
       currentZoom={currentZoom}
       layerControlLayers={[
-        ...(data?.results?.features?.length
-          ? [
-              {
-                value: "Training Areas",
-                subLayers: [
-                  trainingAreasOutlineLayerId,
-                  trainingAreasFillLayerId,
-                ],
-              },
-            ]
-          : []),
         ...(labels && labels?.features.length > 0
           ? [
               {
@@ -244,6 +233,17 @@ const TrainingAreaMap = ({
                 subLayers: [
                   trainingAreasLabelsFillLayerId,
                   trainingAreasLabelsOutlineLayerId,
+                ],
+              },
+            ]
+          : []),
+        ...(data?.results?.features?.length
+          ? [
+              {
+                value: "Training Areas",
+                subLayers: [
+                  trainingAreasOutlineLayerId,
+                  trainingAreasFillLayerId,
                 ],
               },
             ]

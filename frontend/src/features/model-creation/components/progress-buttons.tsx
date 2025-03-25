@@ -58,35 +58,11 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
 
   const prevPage = () => {
     if (currentPageIndex > 0) {
-      const prevRoute = getFullPath(pages[currentPageIndex - 1].path);
-      // When going back, if it's the training dataset page and the user already selected an option previously, and not in edit mode,
-      // Reset the selection to none so they can see the options again.
-      if (
-        !isEditMode &&
-        currentPageIndex === 1 &&
-        formData.trainingDatasetOption !== TrainingDatasetOption.NONE
-      ) {
-        handleChange(
-          MODEL_CREATION_FORM_NAME.TRAINING_DATASET_OPTION,
-          TrainingDatasetOption.NONE,
-        );
-        // When the user clicks the back button, all their changes will be lost. This is because if we don't clear it, the user can
-        // be able to select existing dataset and also create a new one which will lead to confusion.
-        // So it's safe to clear all changes to ensure that only one option will go through.
-        handleChange(MODEL_CREATION_FORM_NAME.SELECTED_TRAINING_DATASET_ID, "");
-        handleChange(MODEL_CREATION_FORM_NAME.DATASET_NAME, "");
-        handleChange(MODEL_CREATION_FORM_NAME.TMS_URL, "");
-        handleChange(MODEL_CREATION_FORM_NAME.TMS_URL_VALIDITY, {
-          valid: false,
-          message: "",
-        });
+      if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
+        navigate(MODELS_BASE);
       } else {
-        navigate(prevRoute);
+        navigate(-1);
       }
-    } else if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
-      navigate(MODELS_BASE);
-    } else {
-      navigate(-1);
     }
   };
 

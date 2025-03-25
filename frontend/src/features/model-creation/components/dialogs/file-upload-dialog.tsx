@@ -247,7 +247,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     return (
       <li
         key={file.id}
-        className="border-2 border-gray-border rounded-lg px-3.5 py-1 text-gray w-full"
+        className="border-2 border-gray-border rounded-lg px-3.5 py-1 text-grey w-full"
       >
         <div className="flex flex-col">
           <div className="flex items-center justify-between">
@@ -284,7 +284,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     >
       <div className="flex flex-col gap-y-4">
         <div
-          className="h-80 border-2 border-gray border-dashed w-full flex items-center justify-center flex-col gap-y-4 text-gray rounded-lg"
+          className="h-80 border-2 border-gray border-dashed w-full flex items-center justify-center flex-col gap-y-4 text-grey rounded-lg"
           {...getRootProps()}
         >
           <UploadIcon className="icon-lg w-10 h-10 " />
