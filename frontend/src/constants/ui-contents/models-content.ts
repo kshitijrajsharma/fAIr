@@ -73,7 +73,7 @@ export const MODELS_CONTENT: TModelsContent = {
           toolTip:
             "Enter the Tile Map Service (TMS) URL. You can input the TMS from OpenAerialMap (OAM), or provide a custom one.",
           helpText:
-            "TMS imagery link should look like this https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}",
+            "TMS imagery link should look like this https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}. Please ensure your imagery URL complies with the license requirements.",
           placeholder: "https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}",
         },
         existingTrainingDatasetSectionHeading: "Existing Training Dataset",

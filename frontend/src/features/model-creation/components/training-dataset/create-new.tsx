@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/form";
+import { HelpText, Input } from "@/components/ui/form";
 import { INPUT_TYPES } from "@/enums";
 import { MODELS_CONTENT } from "@/constants";
 import { useEffect } from "react";
@@ -8,13 +8,9 @@ import {
   useModelsContext,
 } from "@/app/providers/models-provider";
 
+
 const CreateNewTrainingDatasetForm = () => {
   const { formData, handleChange } = useModelsContext();
-
-  const tmsURLHelpText =
-    formData.tmsURLValidation.message.length > 0
-      ? formData.tmsURLValidation.message
-      : MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.helpText;
 
   useEffect(() => {
     // Shoelace will handle the validation when it's more than 0 characters.
@@ -65,33 +61,53 @@ const CreateNewTrainingDatasetForm = () => {
         }
       />
       {/* Check mark icon for validated inputs */}
-      <Input
-        value={formData.tmsURL}
-        labelWithTooltip
-        toolTipContent={
-          MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.toolTip
-        }
-        label={MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.label}
-        placeholder={
-          MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.placeholder
-        }
-        showBorder
-        helpText={tmsURLHelpText}
-        pattern={
-          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.TMS_URL].pattern
-        }
-        handleInput={(e) =>
-          handleChange(MODEL_CREATION_FORM_NAME.TMS_URL, e.target.value)
-        }
-        type={INPUT_TYPES.URL}
-        validationStateUpdateCallback={(validationState) =>
-          handleChange(
-            MODEL_CREATION_FORM_NAME.TMS_URL_VALIDITY,
-            validationState,
-          )
-        }
-        isValid={formData.tmsURLValidation.valid}
-      />
+      <div>
+        <Input
+          value={formData.tmsURL}
+          labelWithTooltip
+          toolTipContent={
+            MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.toolTip
+          }
+          label={MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.label}
+          placeholder={
+            MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.placeholder
+          }
+          showBorder
+          pattern={
+            FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.TMS_URL].pattern
+          }
+          handleInput={(e) =>
+            handleChange(MODEL_CREATION_FORM_NAME.TMS_URL, e.target.value)
+          }
+          type={INPUT_TYPES.URL}
+          validationStateUpdateCallback={(validationState) =>
+            handleChange(
+              MODEL_CREATION_FORM_NAME.TMS_URL_VALIDITY,
+              validationState,
+            )
+          }
+          isValid={formData.tmsURLValidation.valid}
+        />
+        <HelpText>
+          {formData.tmsURLValidation.message.length > 0 ? (
+            formData.tmsURLValidation.message
+          ) : (
+            <span>
+              TMS imagery link should look like this{" "}
+              {`https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}`}. Please
+              ensure your imagery URL complies with the{" "}
+              <a
+                href="https://github.com/hotosm/fair?tab=readme-ov-file#imagery-license"
+                target="_blank"
+                className="underline"
+              >
+                license requirements
+              </a>
+              .
+            </span>
+          )}
+        </HelpText>
+      </div>
     </div>
   );
 };
