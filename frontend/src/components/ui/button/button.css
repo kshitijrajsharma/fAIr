@@ -1,5 +1,5 @@
 sl-button.button::part(base) {
-  border-radius: 4px;
+  border-radius: 0px;
   border: none;
   font-size: var(--hot-fair-font-size-body-text-3);
   width: 100%;

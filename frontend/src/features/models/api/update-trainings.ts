@@ -12,7 +12,6 @@ export const terminateTraining = (trainingId: number) => {
   return apiClient.post(`${API_ENDPOINTS.TERMINATE_TRAINING(trainingId)}`);
 };
 
-
 type UseUpdateTrainingOptions = {
   mutationConfig?: MutationConfig<typeof updateTraining>;
   modelId: number;
@@ -48,12 +47,10 @@ export const useUpdateTraining = ({
   });
 };
 
-
 export const useTerminateTraining = ({
   mutationConfig,
-  modelId
+  modelId,
 }: UseUpdateTrainingOptions) => {
-
   const { refetch: refetchTrainingHistory } = useTrainingHistory(
     0,
     PAGE_LIMIT,

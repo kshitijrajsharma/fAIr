@@ -1,5 +1,5 @@
 import { APPLICATION_ROUTES, SHARED_CONTENT } from "@/constants";
-import { BrandLogo } from "@/assets/svgs";
+import { HOTLogo } from "@/assets/svgs";
 import { Image } from "@/components/ui/image";
 import { useNavigate } from "react-router-dom";
 
@@ -22,15 +22,15 @@ export const NavLogo = ({
     <button
       onClick={handleClick}
       title={SHARED_CONTENT.navbar.logoAlt}
-      className="flex items-center gap-x-1"
+      className="flex items-center gap-x-2"
     >
       <Image
-        src={BrandLogo}
+        src={HOTLogo}
         alt={SHARED_CONTENT.navbar.logoAlt}
         width={width}
         height={height}
       />
-      <p className="font-semibold text-body-2">fAIr</p>
+      <p className="font-semibold text-title-3">fAIr</p>
     </button>
   );
 };

@@ -77,8 +77,8 @@ export enum DropdownPlacement {
 }
 
 export enum ModelTrainingStatus {
-  SUBMITTED = 'SUBMITTED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  FINISHED = 'FINISHED',
-  FAILED = 'FAILED',
+  SUBMITTED = "SUBMITTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
+  FAILED = "FAILED",
 }

@@ -60,7 +60,7 @@ export const NavBar = () => {
         </div>
       </Drawer>
 
-      <nav className={`${styles.nav} app-padding z-20`}>
+      <nav className={`${styles.nav} app-padding z-20 py-2`}>
         <NavLogo />
         <div>
           <NavBarLinks className={styles.webNavLinks} />

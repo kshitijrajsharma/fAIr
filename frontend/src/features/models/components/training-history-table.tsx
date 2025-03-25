@@ -15,7 +15,10 @@ import { useDialog } from "@/hooks/use-dialog";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { useState } from "react";
 import { useTrainingHistory } from "@/features/models/hooks/use-training";
-import { useTerminateTraining, useUpdateTraining } from "@/features/models/api/update-trainings";
+import {
+  useTerminateTraining,
+  useUpdateTraining,
+} from "@/features/models/api/update-trainings";
 import {
   formatDate,
   formatDuration,
@@ -39,52 +42,51 @@ const columnDefinitions = (
   authUsername: string,
   isAuthenticated: boolean,
   handleTrainingModal: (trainingId: number) => void,
-  // Same as mutate 
+  // Same as mutate
   publishTraining: (trainingId: number) => void,
   terminationMutation: (trainingId: number) => void,
   publishedTrainingId?: number,
   showUserTrainingHistory?: boolean,
   modelOwner?: string,
-
 ): ColumnDef<TTrainingDetails>[] => [
-    {
-      accessorKey: "id",
-      header: ({ column }) => <SortableHeader title={"ID"} column={column} />,
+  {
+    accessorKey: "id",
+    header: ({ column }) => <SortableHeader title={"ID"} column={column} />,
+  },
+  {
+    header:
+      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
+        .epochAndBatchSize,
+    accessorFn: (row) => `${row.epochs}/${row.batch_size}`,
+    cell: (row) => (
+      <span title={row.getValue() as string}>{row.getValue() as string}</span>
+    ),
+  },
+  {
+    accessorKey: "started_at",
+    accessorFn: (row) =>
+      row.started_at !== null ? formatDate(row.started_at) : "-",
+    header:
+      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
+        .startedAt,
+    cell: (row) => {
+      return <span>{row.getValue() as string}</span>;
     },
-    {
-      header:
-        MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
-          .epochAndBatchSize,
-      accessorFn: (row) => `${row.epochs}/${row.batch_size}`,
-      cell: (row) => (
-        <span title={row.getValue() as string}>{row.getValue() as string}</span>
-      ),
-    },
-    {
-      accessorKey: "started_at",
-      accessorFn: (row) =>
-        row.started_at !== null ? formatDate(row.started_at) : "-",
-      header:
-        MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
-          .startedAt,
-      cell: (row) => {
-        return <span>{row.getValue() as string}</span>;
-      },
-    },
-    {
-      header:
-        MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
-          .duration,
-      accessorFn: (row) =>
-        row.finished_at && row.started_at
-          ? formatDuration(new Date(row.started_at), new Date(row.finished_at))
-          : "-",
-      cell: (row) => (
-        <span title={row.getValue() as string}>{row.getValue() as string}</span>
-      ),
-    },
-    ...(showUserTrainingHistory
-      ? [
+  },
+  {
+    header:
+      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
+        .duration,
+    accessorFn: (row) =>
+      row.finished_at && row.started_at
+        ? formatDuration(new Date(row.started_at), new Date(row.finished_at))
+        : "-",
+    cell: (row) => (
+      <span title={row.getValue() as string}>{row.getValue() as string}</span>
+    ),
+  },
+  ...(showUserTrainingHistory
+    ? [
         {
           accessorKey: "model",
           header: ({ column }: { column: any }) => (
@@ -112,7 +114,7 @@ const columnDefinitions = (
           },
         },
       ]
-      : [
+    : [
         {
           accessorKey: "user.username",
           header:
@@ -124,62 +126,62 @@ const columnDefinitions = (
         },
       ]),
 
-    {
-      accessorKey: "chips_length",
-      header:
-        MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader.dsSize,
-      cell: ({ row }) => {
-        return <span>{row.getValue("chips_length") ?? 0}</span>;
-      },
+  {
+    accessorKey: "chips_length",
+    header:
+      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader.dsSize,
+    cell: ({ row }) => {
+      return <span>{row.getValue("chips_length") ?? 0}</span>;
     },
-    {
-      accessorKey: "accuracy",
-      header: ({ column }) => (
-        <SortableHeader
-          title={
-            MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
-              .accuracy
-          }
-          column={column}
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <span>
-            {Number(row.getValue("accuracy")) > 0
-              ? roundNumber(row.getValue("accuracy") ?? 0)
-              : "-"}
-          </span>
-        );
-      },
+  },
+  {
+    accessorKey: "accuracy",
+    header: ({ column }) => (
+      <SortableHeader
+        title={
+          MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
+            .accuracy
+        }
+        column={column}
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <span>
+          {Number(row.getValue("accuracy")) > 0
+            ? roundNumber(row.getValue("accuracy") ?? 0)
+            : "-"}
+        </span>
+      );
     },
-    {
-      header:
-        MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader.status,
-      accessorKey: "status",
-      cell: (row) => {
-        const statusToVariant: Record<string, TBadgeVariants> = {
-          finished: "green",
-          failed: "red",
-          submitted: "blue",
-          running: "yellow",
-        };
+  },
+  {
+    header:
+      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader.status,
+    accessorKey: "status",
+    cell: (row) => {
+      const statusToVariant: Record<string, TBadgeVariants> = {
+        finished: "green",
+        failed: "red",
+        submitted: "blue",
+        running: "yellow",
+      };
 
-        return (
-          <Badge
-            variant={
-              statusToVariant[
+      return (
+        <Badge
+          variant={
+            statusToVariant[
               String(row.getValue()).toLocaleLowerCase() as TBadgeVariants
-              ]
-            }
-          >
-            {String(row.getValue()).toLocaleLowerCase() as string}
-          </Badge>
-        );
-      },
+            ]
+          }
+        >
+          {String(row.getValue()).toLocaleLowerCase() as string}
+        </Badge>
+      );
     },
-    ...(publishedTrainingId
-      ? [
+  },
+  ...(publishedTrainingId
+    ? [
         {
           header:
             MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
@@ -198,9 +200,9 @@ const columnDefinitions = (
           },
         },
       ]
-      : []),
-    ...(modelOwner !== authUsername
-      ? [
+    : []),
+  ...(modelOwner !== authUsername
+    ? [
         {
           header:
             MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
@@ -211,23 +213,21 @@ const columnDefinitions = (
               <Badge
                 variant="default"
                 className="rounded-lg px-2"
-                onClick={
-                  (e) => {
-                    // Prevent the row click event from firing
-                    e.stopPropagation();
-                    handleTrainingModal(Number(row.getValue("id")))
-                  }
-                }
+                onClick={(e) => {
+                  // Prevent the row click event from firing
+                  e.stopPropagation();
+                  handleTrainingModal(Number(row.getValue("id")));
+                }}
               >
                 <InfoIcon className="icon text-dark font-bold" />
-              </Badge >
+              </Badge>
             );
           },
         },
       ]
-      : []),
-    ...(modelOwner === authUsername && isAuthenticated
-      ? [
+    : []),
+  ...(modelOwner === authUsername && isAuthenticated
+    ? [
         {
           header:
             MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
@@ -264,7 +264,7 @@ const columnDefinitions = (
                       onClick: (e) => {
                         // Prevent the row click event from firing
                         e.stopPropagation();
-                        publishTraining(row.getValue("id"))
+                        publishTraining(row.getValue("id"));
                       },
                       disabled:
                         row.getValue("status") === ModelTrainingStatus.FAILED ||
@@ -276,7 +276,7 @@ const columnDefinitions = (
                       onClick: (e) => {
                         // Prevent the row click event from firing
                         e.stopPropagation();
-                        terminationMutation(row.getValue("id"))
+                        terminationMutation(row.getValue("id"));
                       },
                       disabled:
                         row.getValue("status") === ModelTrainingStatus.FAILED ||
@@ -288,18 +288,18 @@ const columnDefinitions = (
                       onClick: (e) => {
                         // Prevent the row click event from firing
                         e.stopPropagation();
-                        handleTrainingModal(row.getValue("id") as number)
-                      }
+                        handleTrainingModal(row.getValue("id") as number);
+                      },
                     },
                   ]}
-                ></DropDown >
+                ></DropDown>
               </>
             );
           },
         },
       ]
-      : []),
-  ];
+    : []),
+];
 
 const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
   publishedTrainingId,
@@ -342,7 +342,7 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
   const { mutate: terminationMutation } = useTerminateTraining({
     mutationConfig: {
       onSuccess: (res) => {
-        showSuccessToast(res.data);
+        showSuccessToast("Training has been cancelled successfully.");
       },
       onError: (err) => {
         showErrorToast(err);
@@ -350,7 +350,6 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
     },
     modelId: Number(modelId),
   });
-
 
   const handleTrainingModal = (trainingId: number) => {
     setActiveTrainingId(trainingId);
