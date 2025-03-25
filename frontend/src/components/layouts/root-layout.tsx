@@ -81,9 +81,17 @@ export const RootLayout = () => {
       />
       <main className="min-h-screen relative mx-auto flex flex-col justify-between">
         {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
-          !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && (
+          !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
+          !pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) &&
+          !modelId && (
             <>
               {showBanner && <Banner />}
+            </>
+          )}
+
+        {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
+          !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) && (
+            <>
               <NavBar />
             </>
           )}
