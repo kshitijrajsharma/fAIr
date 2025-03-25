@@ -15,11 +15,12 @@ import boto3
 import requests
 from botocore.exceptions import ClientError, NoCredentialsError
 from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackSegment, GPXWaypoint
 from tqdm import tqdm
 
-from .models import AOI, FeedbackAOI, FeedbackLabel, Label
+from .models import AOI, FeedbackAOI, FeedbackLabel, Label, UserNotification
 from .serializers import FeedbackLabelSerializer, LabelSerializer
 
 
@@ -450,3 +451,53 @@ class S3Uploader:
             "total_files_uploaded": total_files,
             "s3_path": f"s3://{bucket_name}/{self.parent}/",
         }
+
+
+def get_email_message(training_instance, status):
+
+    hostname = settings.FRONTEND_URL
+    training_model_url = f"{hostname}/ai-models/{training_instance.model.id}"
+
+    message_template = (
+        "Hi {username},\n\n"
+        "Your training task (ID: {training_id}) of model {model_name} has {status}. You can view the details here:\n"
+        "{training_model_url}\n\n"
+        "Thank you for using fAIr - AI Assisted Mapping Tool.\n\n"
+        "Best regards,\n"
+        "The fAIr Dev Team\n\n"
+        "Get Involved : https://www.hotosm.org/get-involved/\n"
+        "https://github.com/hotosm/fAIr/"
+    )
+
+    message = message_template.format(
+        username=training_instance.user.username,
+        training_id=training_instance.id,
+        model_name=training_instance.model.name,
+        status=status.lower(),
+        training_model_url=training_model_url,
+        hostname=hostname,
+    )
+    subject = f"fAIr : Training {training_instance.id} {status.capitalize()}"
+    return message, subject
+
+
+def send_notification(training_instance, status):
+    if any(
+        method in training_instance.user.notifications_delivery_methods
+        for method in ["web", "email"]
+    ):
+        UserNotification.objects.create(
+            user=training_instance.user,
+            message=f"Training {training_instance.id} has {status}.",
+            training=training_instance,
+        )
+    if "email" in training_instance.user.notifications_delivery_methods:
+        if training_instance.user.email and training_instance.user.email != "":
+            message, subject = get_email_message(training_instance, status)
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[training_instance.user.email],
+                fail_silently=False,
+            )

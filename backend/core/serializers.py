@@ -496,12 +496,27 @@ class UserStatsSerializer(serializers.ModelSerializer):
 
 
 class UserNotificationSerializer(serializers.ModelSerializer):
+    training_model = serializers.SerializerMethodField()
+
     class Meta:
         model = UserNotification
-        fields = ("id", "is_read", "created_at", "read_at", "message")
+        fields = (
+            "id",
+            "is_read",
+            "created_at",
+            "read_at",
+            "message",
+            "training_model",
+        )
         read_only_fields = (
             "id",
             "created_at",
             "read_at",
             "message",
+            "training_model",
         )
+
+    def get_training_model(self, obj):
+        if obj.training and obj.training.model:
+            return obj.training.model.id
+        return None

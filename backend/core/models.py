@@ -187,6 +187,7 @@ class UserNotification(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     read_at = models.DateTimeField(null=True, blank=True)
     message = models.TextField(max_length=500)
+    training = models.ForeignKey(Training, to_field="id", on_delete=models.DO_NOTHING)
 
     def mark_as_read(self):
         if not self.is_read:
