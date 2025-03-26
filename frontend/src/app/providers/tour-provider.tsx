@@ -11,6 +11,7 @@ import { useTour } from "@reactour/tour";
 import { useLocation } from "react-router-dom";
 import { MODELS_ROUTES } from "@/constants";
 import { TRAINING_AREA_TOUR_LOCAL_STORAGE_KEY } from "@/config";
+import { APP_TOUR_STEPS } from "@/constants/site-tour";
 
 type TTourContext = {
   startTrainingAreaTour: () => void;
@@ -20,10 +21,10 @@ type TTourContext = {
 };
 
 const AppTourContext = createContext<TTourContext>({
-  startTrainingAreaTour: () => {},
-  stopTrainingAreaTour: () => {},
+  startTrainingAreaTour: () => { },
+  stopTrainingAreaTour: () => { },
   showTourModal: false,
-  setShowTourModal: () => {},
+  setShowTourModal: () => { },
 });
 
 export const useAppTour = () => {
@@ -41,7 +42,7 @@ type AppTourProviderProps = {
 export const AppTourProvider: React.FC<AppTourProviderProps> = ({
   children,
 }) => {
-  const { setIsOpen, setCurrentStep } = useTour();
+  const { setIsOpen, setCurrentStep, setSteps } = useTour();
   const { getValue, setValue } = useLocalStorage();
   const [showTourModal, setShowTourModal] = useState<boolean>(false);
   const location = useLocation();
@@ -50,6 +51,13 @@ export const AppTourProvider: React.FC<AppTourProviderProps> = ({
   const startTrainingAreaTour = useCallback(() => {
     setShowTourModal(false);
     setIsOpen(true);
+    // @ts-expect-error bad types definition
+    setSteps(prevSteps => {
+      const visibleSteps = APP_TOUR_STEPS.filter(step =>
+        document.querySelector(step.selector)
+      );
+      return visibleSteps;
+    });
     setCurrentStep(0);
     setValue(TRAINING_AREA_TOUR_LOCAL_STORAGE_KEY, "true");
   }, [setIsOpen, setCurrentStep, setShowTourModal]);
