@@ -199,18 +199,25 @@ class TrainingSerializer(
         instance = Training.objects.create(**validated_data)
 
         # run your function here
-        task = train_model.delay(
-            dataset_id=instance.model.dataset.id,
-            training_id=instance.id,
-            epochs=instance.epochs,
-            batch_size=instance.batch_size,
-            zoom_level=instance.zoom_level,
-            source_imagery=instance.source_imagery
-            or instance.model.dataset.source_imagery,
-            freeze_layers=instance.freeze_layers,
-            multimasks=multimasks,
-            input_contact_spacing=input_contact_spacing,
-            input_boundary_width=input_boundary_width,
+        task = train_model.apply_async(
+            kwargs={
+                "dataset_id": instance.model.dataset.id,
+                "training_id": instance.id,
+                "epochs": instance.epochs,
+                "batch_size": instance.batch_size,
+                "zoom_level": instance.zoom_level,
+                "source_imagery": instance.source_imagery
+                or instance.model.dataset.source_imagery,
+                "freeze_layers": instance.freeze_layers,
+                "multimasks": multimasks,
+                "input_contact_spacing": input_contact_spacing,
+                "input_boundary_width": input_boundary_width,
+            },
+            queue=(
+                "ramp_training"
+                if instance.model.base_model == "RAMP"
+                else "yolo_training"
+            ),
         )
         logging.info("Record saved in queue")
 
