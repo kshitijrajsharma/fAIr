@@ -27,6 +27,7 @@ export const App = () => {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <TourProvider
+        // @ts-expect-error bad type definition 
         steps={APP_TOUR_STEPS}
         scrollSmooth
         padding={{
