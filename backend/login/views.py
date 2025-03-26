@@ -3,6 +3,7 @@ import json
 from core.serializers import UserStatsSerializer
 from django.conf import settings
 from django.http import JsonResponse
+from django.utils import timezone
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from login.authentication import OsmAuthentication
@@ -59,7 +60,11 @@ class GetMyData(APIView):
     permission_classes = [IsOsmAuthenticated]
 
     def get(self, request, format=None):
-        serialized_field = UserStatsSerializer(instance=request.user)
+
+        user = request.user
+        user.last_login = timezone.now()
+        user.save(update_fields=["last_login"])
+        serialized_field = UserStatsSerializer(instance=user)
         return Response(serialized_field.data, status=status.HTTP_201_CREATED)
 
     @swagger_auto_schema(
