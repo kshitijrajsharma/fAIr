@@ -77,7 +77,7 @@ const ModelDetailsInfo = ({
         </div>
         <TrainingAreaButton
           onClick={openTrainingAreaDrawer}
-          disabled={trainingDataset?.source_imagery === null}
+          disabled={!data.published_training}
         />
       </ModelDetailsSection>
       <Divider />

@@ -420,7 +420,7 @@ export const TrainingAreaItem: React.FC<
     {
       tooltip: disableLabelsFetchOrUpload
         ? MODELS_CONTENT.modelCreation.trainingArea.toolTips
-          .labelsFetchInProgress
+            .labelsFetchInProgress
         : MODELS_CONTENT.modelCreation.trainingArea.toolTips.uploadLabels,
       isIcon: true,
       Icon: UploadIcon,
@@ -484,14 +484,17 @@ export const TrainingAreaItem: React.FC<
             isFetching={labelState.isFetching}
           />
         </div>
-        <div className="flex items-center gap-x-3" id={APP_TOUR_IDS.TRAINING_AREA_TOOLS}>
+        <div
+          className="flex items-center gap-x-3"
+          id={APP_TOUR_IDS.TRAINING_AREA_TOOLS}
+        >
           <ToolTip
             content={
               disableLabelsFetchOrUpload
                 ? MODELS_CONTENT.modelCreation.trainingArea.toolTips
-                  .labelsFetchInProgress
+                    .labelsFetchInProgress
                 : MODELS_CONTENT.modelCreation.trainingArea.toolTips
-                  .fetchOSMLabels
+                    .fetchOSMLabels
             }
           >
             <button

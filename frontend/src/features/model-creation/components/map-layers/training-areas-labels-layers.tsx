@@ -32,6 +32,7 @@ export const TrainingAreasLabelsLayers = ({
 
   useEffect(() => {
     if (!map) return;
+
     if (!map.getSource(trainingAreasLabelsSourceId)) {
       map.addSource(trainingAreasLabelsSourceId, {
         type: "geojson",
@@ -43,7 +44,8 @@ export const TrainingAreasLabelsLayers = ({
         id: trainingAreasLabelsFillLayerId,
         type: "fill",
         source: trainingAreasLabelsSourceId,
-        minzoom: MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
+
+        minzoom: MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS - 2,
         paint: {
           "fill-color": TRAINING_AREAS_AOI_LABELS_FILL_COLOR,
           "fill-opacity": TRAINING_AREAS_AOI_LABELS_FILL_OPACITY,
@@ -56,7 +58,7 @@ export const TrainingAreasLabelsLayers = ({
         id: trainingAreasLabelsOutlineLayerId,
         type: "line",
         source: trainingAreasLabelsSourceId,
-        minzoom: MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
+        minzoom: MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS - 2,
         paint: {
           "line-color": TRAINING_AREAS_AOI_LABELS_OUTLINE_COLOR,
           "line-width": TRAINING_AREAS_AOI_LABELS_OUTLINE_WIDTH,

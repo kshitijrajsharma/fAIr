@@ -16,6 +16,7 @@ import {
   MAP_STYLES_PREFIX,
   MAX_TRAINING_AREA_SIZE,
   MIN_TRAINING_AREA_SIZE,
+  MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS,
 } from "@/config";
 import {
   calculateGeoJSONArea,
@@ -260,7 +261,8 @@ const TrainingAreaMap = ({
         />
       )}
 
-      {!trainingAreasLabelsIsPending && (
+      {!trainingAreasLabelsIsPending &&
+      currentZoom >= MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS ? (
         <TrainingAreasLabelsLayers
           map={map}
           features={labels?.features}
@@ -268,7 +270,7 @@ const TrainingAreaMap = ({
           trainingAreasLabelsOutlineLayerId={trainingAreasLabelsOutlineLayerId}
           trainingAreasLabelsSourceId={trainingAreasLabelsSourceId}
         />
-      )}
+      ) : null}
       {OAMData?.bounds && mapBounds && (
         <MaskBoundsLayers
           map={map}

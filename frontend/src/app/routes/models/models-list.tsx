@@ -93,7 +93,7 @@ export const ModelsPage = () => {
             />
           </div>
           <div className="row-start-1" id={mapViewElementId}>
-            {modelsMapDataIsPending || modelsMapDataIsError ? (
+            {modelsMapDataIsPending || modelsMapDataIsError || !mapData ? (
               <div className="w-full h-full animate-pulse bg-light-gray"></div>
             ) : (
               <ModelsMap
