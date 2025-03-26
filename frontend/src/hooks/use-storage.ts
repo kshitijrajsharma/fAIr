@@ -25,7 +25,7 @@ export const useLocalStorage = () => {
     try {
       localStorage.setItem(key, value);
     } catch (error) {
-      showErrorToast(error);
+      showErrorToast("Storage limit exceeded. Please clear the predictions or hard refresh the application.");
     }
   };
 
