@@ -53,6 +53,11 @@ export const API_ENDPOINTS = {
   GET_TRAINING_DETAILS: (id: number) => `training/${id}`,
   GET_TRAINING_DATASETS: (searchQuery: string, ordering: string) =>
     `dataset/?search=${searchQuery}&ordering=${ordering}`,
+  GET_TRAINING_DATASETS_V2: (
+    searchQuery?: string,
+    ordering?: string,
+    userId?: number,
+  ) => `dataset/?search=${searchQuery}&ordering=${ordering}&user=${userId}`,
   GET_TRAINING_DATASET: (id: number) => `dataset/${id}`,
   GET_TRAINING_AREA_GPX: (aoiId: number) => `aoi/gpx/${aoiId}`,
   GET_TRAINING_AREA_LABELS_FROM_OSM: (aoiId: number) =>
@@ -64,7 +69,7 @@ export const API_ENDPOINTS = {
     `aoi/?dataset=${datasetId}&offset=${offset}&limit=${limit}`,
   GET_TRAINING_AREA: (aoiId: number) => `aoi/${aoiId}/`,
   GET_TRAINING_STATUS: (taskId: string) => `training/status/${taskId}`,
-  GET_MODEL_TRAINING_HISTORY: (id: string) => `training/?model=${id}`,
+  GET_TRAINING_HISTORY: "training/",
   GET_TRAINING_FEEDBACKS: (trainingId: number) =>
     `feedback/?training=${trainingId}`,
   CREATE_TRAINING_DATASET: "dataset/",
@@ -83,4 +88,11 @@ export const API_ENDPOINTS = {
     `workspace/training_${trainingId}/${directory_name}`,
   DOWNLOAD_TRAINING_FILE: (trainingId: number, directory_name: string) =>
     `workspace/download/training_${trainingId}/${directory_name}/`,
+
+  // Notifications
+  NOTIFICATIONS: "notifications/me",
+
+  UPDATE_NOTIFICATION: (id: number) => `notifications/mark-as-read/${id}/`,
+
+  UPDATE_NOTIFICATIONS: "notifications/mark-all-as-read/",
 };

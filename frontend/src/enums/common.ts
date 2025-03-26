@@ -39,6 +39,7 @@ export enum INPUT_TYPES {
   TEXT = "text",
   NUMBER = "number",
   URL = "url",
+  EMAIL = "email",
 }
 
 export enum SHOELACE_SELECT_SIZES {
@@ -64,4 +65,13 @@ export enum DropdownPlacement {
   BOTTOM_START = "bottom-start",
   BOTTOM_END = "bottom-end",
   TOP_END = "top-end",
+}
+
+export enum ButtonVariant {
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
+  DARK = "dark",
+  DEFAULT = "default",
+  TERTIARY = "tertiary",
+  NONE = "none",
 }

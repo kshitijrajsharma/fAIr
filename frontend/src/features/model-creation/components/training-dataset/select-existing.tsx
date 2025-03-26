@@ -4,12 +4,12 @@ import { HelpText, Input } from "@/components/ui/form";
 import { MODELS_CONTENT } from "@/constants";
 import { SearchIcon } from "@/components/ui/icons";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
-import { useGetTrainingDatasets } from "@/features/model-creation/hooks/use-training-datasets";
 import { useState } from "react";
 import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
 } from "@/app/providers/models-provider";
+import { useGetTrainingDatasets } from "@/features/datasets/hooks/use-datasets";
 
 const SelectExistingTrainingDatasetForm = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");

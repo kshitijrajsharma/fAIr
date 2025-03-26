@@ -11,6 +11,26 @@ from .models import *
 # from .tasks import train_model
 
 
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OsmUser
+        fields = [
+            "osm_id",
+            "username",
+            # "is_superuser",
+            # "is_active",
+            # "is_staff",
+            # "date_joined",
+            # "email",
+            # "img_url",
+            # "user_permissions",
+        ]
+
+    read_only_fields = ["osm_id", "username"]
+
+
 class DatasetSerializer(serializers.ModelSerializer):
     models_count = serializers.SerializerMethodField()
 
@@ -41,25 +61,13 @@ class DatasetSerializer(serializers.ModelSerializer):
     def get_models_count(self, obj):
         return Model.objects.filter(dataset=obj).count()
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OsmUser
-        fields = [
-            "osm_id",
-            "username",
-            # "is_superuser",
-            # "is_active",
-            # "is_staff",
-            # "date_joined",
-            # "email",
-            # "img_url",
-            # "user_permissions",
-        ]
-
-    read_only_fields = ["osm_id", "username"]
-
-
+    def to_representation(self, instance):
+        # get default
+        ret = super().to_representation(instance)
+        # For GET requests, replace the user field with detailed UserSerializer data
+        if self.context.get('request') and self.context['request'].method == 'GET':
+            ret['user'] = UserSerializer(instance.user).data
+        return ret
 class ModelSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     accuracy = serializers.SerializerMethodField()

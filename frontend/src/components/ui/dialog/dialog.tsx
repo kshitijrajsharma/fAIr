@@ -4,7 +4,7 @@ import { SlDialog } from "@shoelace-style/shoelace/dist/react";
 import "./dialog.css";
 
 type DialogProps = {
-  label: string;
+  label?: string;
   isOpened: boolean;
   closeDialog: () => void;
   children: React.ReactNode;
@@ -15,7 +15,7 @@ type DialogProps = {
 const Dialog: React.FC<DialogProps> = ({
   isOpened,
   closeDialog,
-  label,
+  label = "",
   children,
   preventClose,
   labelColor = "default",

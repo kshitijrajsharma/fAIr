@@ -43,13 +43,17 @@ export const useTrainingWorkspace = (
 };
 
 export const useTrainingHistory = (
-  modelId: string,
   offset: number,
   limit: number,
   ordering: string,
+  modelId?: string,
+  userId?: number,
+  enabled?: boolean,
+  refetchInterval?: number,
 ) => {
   return useQuery({
-    ...getTrainingHistoryQueryOptions(modelId, offset, limit, ordering),
-    refetchInterval: 10000, // 10 seconds
+    ...getTrainingHistoryQueryOptions(offset, limit, ordering, modelId, userId),
+    refetchInterval: refetchInterval,
+    enabled: enabled,
   });
 };

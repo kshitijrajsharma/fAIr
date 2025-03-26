@@ -17,6 +17,7 @@ type TAuthContext = {
   authenticateUser: (state: string, code: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  setUser: (user: TUser) => void;
 };
 
 // @ts-expect-error bad type definition
@@ -134,10 +135,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Poll the backend for the user profile information every 10 seconds.
+   * This is majorly to keep the user profile information up to date, especially when the user is logged in.
+   */
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (token) {
+        authService.getUser().then(setUser).catch(showErrorToast);
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [token]);
+
   return (
     <AuthContext.Provider
-      // @ts-expect-error bad type definition
-      value={{ token, user, authenticateUser, logout, isAuthenticated }}
+      value={{
+        // @ts-expect-error bad type definition
+        token,
+        // @ts-expect-error bad type definition
+        user,
+        authenticateUser,
+        logout,
+        isAuthenticated,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

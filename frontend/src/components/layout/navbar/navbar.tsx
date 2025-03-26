@@ -10,14 +10,17 @@ import { NavLogo } from "@/components/layout";
 import { SHARED_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import { UserProfile } from "@/components/layout";
 import { useState } from "react";
+import { UserNotifications } from "@/features/user-profile/components/notifications/user-notifications";
 
 export const NavBar = () => {
   const [open, setOpen] = useState(false);
+
   const { isAuthenticated } = useAuth();
+
   const navigate = useNavigate();
+
   const location = useLocation();
 
   return (
@@ -57,14 +60,17 @@ export const NavBar = () => {
           </div>
         </div>
       </Drawer>
-      <nav className={`${styles.nav} app-padding`}>
+
+      <nav className={`${styles.nav} app-padding z-20`}>
         <NavLogo />
         <div>
           <NavBarLinks className={styles.webNavLinks} />
         </div>
         <div>
           {isAuthenticated ? (
-            <div className={styles.profileContainer}>
+            <div className={`${styles.profileContainer} `}>
+              {/* Notification on the web */}
+              {isAuthenticated && <UserNotifications />}
               <UserProfile />
             </div>
           ) : (
@@ -84,15 +90,22 @@ export const NavBar = () => {
             </Button>
           )}
         </div>
-        <button className={styles.hamburgerMenu} onClick={() => setOpen(true)}>
-          <Image
-            src={HamburgerIcon}
-            alt={SHARED_CONTENT.navbar.hamburgerMenuAlt}
-            title={SHARED_CONTENT.navbar.hamburgerMenuTitle}
-            width="20px"
-            height="20px"
-          />
-        </button>
+        <div className="flex items-center gap-x-2 mdx:hidden">
+          {/* Notification bell on the small screens */}
+          {isAuthenticated && <UserNotifications />}
+          <button
+            className={styles.hamburgerMenu}
+            onClick={() => setOpen(true)}
+          >
+            <Image
+              src={HamburgerIcon}
+              alt={SHARED_CONTENT.navbar.hamburgerMenuAlt}
+              title={SHARED_CONTENT.navbar.hamburgerMenuTitle}
+              width="20px"
+              height="20px"
+            />
+          </button>
+        </div>
       </nav>
     </>
   );

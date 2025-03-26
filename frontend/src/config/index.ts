@@ -373,6 +373,12 @@ export const OSM_LAST_UPDATED_POOLING_INTERVAL_MS: number = parseIntEnv(
 );
 
 /**
+ * The time to poll the backend for the user notifications, in milliseconds (ms).
+ * Default value: 10000 (ms i.e 10 seconds).
+ */
+export const NOTIFICATIONS_POLLING_INTERVAL_MS: number = 10000;
+
+/**
  * The current version of the application.
  * This is used in the OSM redirect callback when a training area is opened in OSM.
  */

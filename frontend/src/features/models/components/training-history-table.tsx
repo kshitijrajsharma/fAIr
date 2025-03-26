@@ -4,7 +4,7 @@ import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { DropDown } from "@/components/ui/dropdown";
 import { ElipsisIcon, InfoIcon } from "@/components/ui/icons";
-import { MODELS_CONTENT } from "@/constants";
+import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { PAGE_LIMIT, Pagination } from "@/components/shared";
 import { SortableHeader } from "@/features/models/components/table-header";
 import { TableSkeleton } from "@/features/models/components/skeletons";
@@ -24,23 +24,24 @@ import {
   showErrorToast,
   truncateString,
 } from "@/utils";
+import { Link } from "@/components/ui/link";
 
 type TrainingHistoryTableProps = {
-  modelId: string;
-  trainingId: number;
-  modelOwner: string;
-  datasetId: number;
-  baseModel: string;
-  tmsUrl: string;
+  modelId?: string;
+  publishedTrainingId?: number;
+  modelOwner?: string;
+  tmsUrl?: string;
+  showUserTrainingHistory?: boolean;
 };
 
 const columnDefinitions = (
-  trainingId: number,
-  modelOwner: string,
   authUsername: string,
   isAuthenticated: boolean,
   handleTrainingModal: (trainingId: number) => void,
   publishTraining: (trainingId: number) => void,
+  publishedTrainingId?: number,
+  showUserTrainingHistory?: boolean,
+  modelOwner?: string,
 ): ColumnDef<TTrainingDetails>[] => [
   {
     accessorKey: "id",
@@ -78,15 +79,47 @@ const columnDefinitions = (
       <span title={row.getValue() as string}>{row.getValue() as string}</span>
     ),
   },
-  {
-    accessorKey: "user.username",
-    header:
-      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
-        .sumittedBy,
-    cell: ({ row }) => {
-      return <span>{truncateString(row.original.user.username)}</span>;
-    },
-  },
+  ...(showUserTrainingHistory
+    ? [
+        {
+          accessorKey: "model",
+          header: ({ column }: { column: any }) => (
+            <SortableHeader
+              title={
+                MODELS_CONTENT.models.modelsDetailsCard
+                  .trainingHistoryTableHeader.model
+              }
+              column={column}
+            />
+          ),
+          cell: ({ row }: { row: any }) => {
+            return (
+              <span className="hover:underline">
+                <Link
+                  nativeAnchor={false}
+                  disableLinkStyle
+                  href={`${APPLICATION_ROUTES.MODELS}/${row.original.model.id}`}
+                  title={row.original.model.id}
+                >
+                  {row.original.model.id}
+                </Link>
+              </span>
+            );
+          },
+        },
+      ]
+    : [
+        {
+          accessorKey: "user.username",
+          header:
+            MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
+              .sumittedBy,
+          cell: ({ row }: { row: any }) => {
+            return <span>{truncateString(row.original.user.username)}</span>;
+          },
+        },
+      ]),
+
   {
     accessorKey: "chips_length",
     header:
@@ -141,22 +174,27 @@ const columnDefinitions = (
       );
     },
   },
-  {
-    header:
-      MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader.inUse,
+  ...(publishedTrainingId
+    ? [
+        {
+          header:
+            MODELS_CONTENT.models.modelsDetailsCard.trainingHistoryTableHeader
+              .inUse,
 
-    cell: ({ row }) => {
-      return (
-        <span>
-          {row.getValue("id") === trainingId ? (
-            <Badge variant="green" rounded>
-              <CheckIcon className="icon" />
-            </Badge>
-          ) : null}
-        </span>
-      );
-    },
-  },
+          cell: ({ row }: { row: any }) => {
+            return (
+              <span>
+                {row.getValue("id") === publishedTrainingId ? (
+                  <Badge variant="green" rounded>
+                    <CheckIcon className="icon" />
+                  </Badge>
+                ) : null}
+              </span>
+            );
+          },
+        },
+      ]
+    : []),
   ...(modelOwner !== authUsername
     ? [
         {
@@ -232,23 +270,31 @@ const columnDefinitions = (
 ];
 
 const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
-  trainingId,
+  publishedTrainingId,
   modelId,
   modelOwner,
-  datasetId,
-  baseModel,
-  tmsUrl,
+  showUserTrainingHistory = false,
 }) => {
   const [offset, setOffset] = useState(0);
+  const { user, isAuthenticated } = useAuth();
+
   const { data, isPending, isPlaceholderData } = useTrainingHistory(
-    modelId,
     offset,
     PAGE_LIMIT,
     "-id",
+    showUserTrainingHistory ? undefined : modelId,
+    showUserTrainingHistory ? user.osm_id : undefined,
+    !!modelId || showUserTrainingHistory,
+    10000,
   );
+
   const [sorting, setSorting] = useState<SortingState>([]);
-  const { user, isAuthenticated } = useAuth();
+  const [activeTrainingId, setActiveTrainingId] = useState<number | undefined>(
+    publishedTrainingId,
+  );
+
   const { isOpened, openDialog, closeDialog } = useDialog();
+
   const toast = useToastNotification();
   const { mutate } = useUpdateTraining({
     mutationConfig: {
@@ -262,8 +308,6 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
     modelId: Number(modelId),
   });
 
-  const [activeTrainingId, setActiveTrainingId] = useState<number>(trainingId);
-
   const handleTrainingModal = (trainingId: number) => {
     setActiveTrainingId(trainingId);
     openDialog();
@@ -273,14 +317,14 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
 
   return (
     <>
-      <TrainingDetailsDialog
-        isOpened={isOpened}
-        closeDialog={closeDialog}
-        trainingId={activeTrainingId}
-        datasetId={datasetId}
-        baseModel={baseModel}
-        tmsUrl={tmsUrl}
-      />
+      {activeTrainingId && (
+        <TrainingDetailsDialog
+          isOpened={isOpened}
+          closeDialog={closeDialog}
+          trainingId={activeTrainingId}
+        />
+      )}
+
       <div className="h-full">
         <div className="w-full items-center text-body-3 flex justify-between my-4">
           <p className="text-nowrap">
@@ -309,15 +353,17 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
         <DataTable
           data={data?.results as TTrainingDetails[]}
           columns={columnDefinitions(
-            trainingId,
-            modelOwner,
             user?.username,
             isAuthenticated,
             handleTrainingModal,
             mutate,
+            publishedTrainingId,
+            showUserTrainingHistory,
+            modelOwner,
           )}
           sorting={sorting}
           setSorting={setSorting}
+          onRowClick={(d) => handleTrainingModal(d.id)}
         />
       </div>
     </>

@@ -1,3 +1,4 @@
+import { BASE_MODELS } from "@/enums";
 import { BBOX } from "./common";
 import { GeoJsonProperties, Geometry } from "geojson";
 
@@ -25,6 +26,15 @@ export type TUser = {
   osm_id: number;
   user_permission: [];
   username: string;
+  models_count: number;
+  approved_predictions_count: number;
+  feedbacks_count: number;
+  datasets_count: number;
+  profile_completion_percentage: number;
+  newsletter_subscription: boolean;
+  notifications_delivery_methods: string[];
+  account_deletion_requested: boolean;
+  unread_notifications_count: number;
 };
 
 type TOSMUser = {
@@ -64,6 +74,23 @@ export type PaginatedTrainings = {
   next: string | null;
   previous: string | null;
   results: TTrainingDetails[];
+  hasNext: boolean;
+  hasPrev: boolean;
+};
+
+export type TNotification = {
+  id: number;
+  created_at: string;
+  message: string;
+  is_read: boolean;
+  training_model: number;
+};
+
+export type PaginatedNotifications = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: TNotification[];
   hasNext: boolean;
   hasPrev: boolean;
 };
@@ -108,6 +135,7 @@ export type TTrainingDataset = {
   status: number;
   user: number;
   source_imagery: string;
+  models_count: number;
 };
 
 // Training API response types
@@ -130,7 +158,13 @@ export type TTrainingDetails = {
   chips_length: number;
   batch_size: number;
   freeze_layers: boolean;
-  model: number;
+  model: {
+    base_model: BASE_MODELS;
+    dataset: number;
+    id: number;
+    name: string;
+    status: number;
+  };
   created_by: number;
   user: TUser;
 };
