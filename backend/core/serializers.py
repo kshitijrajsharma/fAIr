@@ -11,8 +11,6 @@ from .models import *
 # from .tasks import train_model
 
 
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = OsmUser
@@ -65,9 +63,11 @@ class DatasetSerializer(serializers.ModelSerializer):
         # get default
         ret = super().to_representation(instance)
         # For GET requests, replace the user field with detailed UserSerializer data
-        if self.context.get('request') and self.context['request'].method == 'GET':
-            ret['user'] = UserSerializer(instance.user).data
+        if self.context.get("request") and self.context["request"].method == "GET":
+            ret["user"] = UserSerializer(instance.user).data
         return ret
+
+
 class ModelSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     accuracy = serializers.SerializerMethodField()
@@ -453,6 +453,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "username",
             "email",
             "date_joined",
+            "last_login",
             "img_url",
             "notifications_delivery_methods",
             "newsletter_subscription",
