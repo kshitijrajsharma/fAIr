@@ -1,15 +1,15 @@
 import ModelDetailItem from "@/features/models/components/model-detail-item";
 import ModelDetailsSection from "@/features/models/components/model-details-section";
-import ModelDetailsUpdateDialog from "./dialogs/model-details-update-dialog";
+import ModelDetailsUpdateDialog from "@/features/models/components/dialogs/model-details-update-dialog";
 import ModelFeedbacks from "@/features/models/components/model-feedbacks";
-import ModelFilesButton from "./model-files-button";
+import ModelFilesButton from "@/features/models/components/model-files-button";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { formatDate, truncateString } from "@/utils";
 import { MapIcon, PenIcon } from "@/components/ui/icons";
 import { TModelDetails, TTrainingDataset } from "@/types";
-import { TrainingAreaButton } from "./training-area-button";
+import { TrainingAreaButton } from "@/features/models/components/training-area-button";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
 import { useNavigate } from "react-router-dom";
@@ -77,7 +77,7 @@ const ModelDetailsInfo = ({
         </div>
         <TrainingAreaButton
           onClick={openTrainingAreaDrawer}
-          disabled={trainingDataset.source_imagery === null}
+          disabled={trainingDataset?.source_imagery === null}
         />
       </ModelDetailsSection>
       <Divider />
@@ -86,7 +86,7 @@ const ModelDetailsInfo = ({
           <div className="flex flex-col gap-y-4">
             <ModelDetailItem
               label={MODELS_CONTENT.models.modelsDetailsCard.createdBy}
-              value={data?.user.username}
+              value={data?.user?.username}
             />
             <ModelDetailItem
               label={MODELS_CONTENT.models.modelsDetailsCard.createdOn}
@@ -110,7 +110,7 @@ const ModelDetailsInfo = ({
               <span className="text-grey">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetId}
               </span>
-              <p>{data?.dataset.id}</p>
+              <p>{data?.dataset?.id}</p>
             </div>
             <ModelFilesButton
               openModelFilesDialog={openModelFilesDialog}
@@ -120,7 +120,7 @@ const ModelDetailsInfo = ({
 
           <div className="col-span-1 flex flex-col md:items-end md:justify-between gap-y-4">
             <div>
-              {isAuthenticated && user.osm_id === data.user.osm_id && (
+              {isAuthenticated && user?.osm_id === data?.user?.osm_id && (
                 <button
                   className="flex items-center gap-x-4"
                   onClick={openDialog}

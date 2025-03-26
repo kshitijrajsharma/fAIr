@@ -151,6 +151,7 @@ export const ModelsMap: React.FC<ModelsMapProps> = ({
         map={map}
         currentZoom={currentZoom}
         mapContainerRef={mapContainerRef}
+        zoomControls
       />
     </div>
   );

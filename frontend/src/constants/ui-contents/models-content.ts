@@ -106,7 +106,7 @@ export const MODELS_CONTENT: TModelsContent = {
       },
       pageTitle: "Create Training Area",
       datasetID: "Dataset ID:",
-      tutorialText: "Tutorial",
+      tutorialText: "Take a Tour",
       layerControl: {
         tmsLayerName: "TMS Layer",
         trainingAreaLayerName: "Training Areas",

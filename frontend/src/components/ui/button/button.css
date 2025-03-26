@@ -21,6 +21,9 @@ sl-button.dark::part(base) {
   background-color: var(--hot-fair-color-dark);
   color: var(--hot-fair-color-white);
 }
+sl-button.dark::part(base):hover {
+  opacity: 0.9;
+}
 
 sl-button.tertiary::part(base) {
   background-color: var(--hot-fair-color-dark);

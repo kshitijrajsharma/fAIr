@@ -24,6 +24,7 @@ export const useMapInstance = (pmtiles: boolean = false) => {
 
     map.on("load", () => {
       setMap(map);
+      setCurrentZoom(Math.round(map.getZoom()) + 1);
     });
     return () => map.remove();
   }, [mapContainerRef]);

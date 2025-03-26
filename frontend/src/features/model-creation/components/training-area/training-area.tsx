@@ -28,6 +28,8 @@ import {
 } from "@/utils";
 import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
 import { TileJSON } from "@/types";
+import { APP_TOUR_IDS } from "@/constants/site-tour";
+import { useAppTour } from "@/app/providers/tour-provider";
 
 const TrainingAreaForm = () => {
   const { formData } = useModelsContext();
@@ -47,7 +49,7 @@ const TrainingAreaForm = () => {
   const { handleChange } = useModelsContext();
 
   const [offset, setOffset] = useState<number>(0);
-
+  const { startTrainingAreaTour } = useAppTour();
   const {
     data: trainingAreasData,
     isPending: trainingAreaIsPending,
@@ -112,13 +114,19 @@ const TrainingAreaForm = () => {
             />
           </div>
           <div className="flex flex-col md:items-end gap-y-4 ">
-            <p className="flex items-center gap-x-2">
+            <button
+              className="flex items-center gap-x-2"
+              onClick={startTrainingAreaTour}
+              id={APP_TOUR_IDS.TUTORIAL_BUTTON}
+            >
               <YouTubePlayIcon className="icon-lg" />
               {MODELS_CONTENT.modelCreation.trainingArea.tutorialText}
-            </p>
+            </button>
             <p className="text-dark">
               {MODELS_CONTENT.modelCreation.trainingArea.datasetID}{" "}
-              {formData.selectedTrainingDatasetId}
+              <span className="font-semibold">
+                {formData.selectedTrainingDatasetId}
+              </span>
             </p>
           </div>
         </div>
@@ -215,7 +223,7 @@ const ActionButtons = ({
     <div
       className={`flex gap-y-2 mt-auto px-4 md:px-1 lg:px-4  w-full ${trainingAreasDataCount === 0 ? "flex-col w-full" : "items-center justify-between gap-x-1 md:gap-x-2 "}"`}
     >
-      <div className="w-full">
+      <div className="w-full" id={APP_TOUR_IDS.DRAW_TRAINING_AREA}>
         <Button
           size={isTablet ? SHOELACE_SIZES.SMALL : SHOELACE_SIZES.MEDIUM}
           onClick={() => {

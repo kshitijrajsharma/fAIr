@@ -132,6 +132,12 @@ export const HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY = (
   modelId: string,
 ): string => `__hot_fair_model_predictions_for_model_${modelId}`;
 
+/**
+ * The key used to store the training area tour seen status in local storage for the application.
+ */
+export const TRAINING_AREA_TOUR_LOCAL_STORAGE_KEY =
+  "__fAIr_training_area_tour_seen";
+
 // ==============================================================================================================================
 // Training Area Configurations
 // ==============================================================================================================================

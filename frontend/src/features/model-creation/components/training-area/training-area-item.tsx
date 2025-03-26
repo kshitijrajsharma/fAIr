@@ -43,6 +43,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/services";
 import { Spinner } from "@/components/ui/spinner";
 import { DeleteModal } from "@/components/shared/modals";
+import { APP_TOUR_IDS } from "@/constants/site-tour";
 
 type LabelState = {
   isFetching: boolean;
@@ -419,7 +420,7 @@ export const TrainingAreaItem: React.FC<
     {
       tooltip: disableLabelsFetchOrUpload
         ? MODELS_CONTENT.modelCreation.trainingArea.toolTips
-            .labelsFetchInProgress
+          .labelsFetchInProgress
         : MODELS_CONTENT.modelCreation.trainingArea.toolTips.uploadLabels,
       isIcon: true,
       Icon: UploadIcon,
@@ -483,17 +484,18 @@ export const TrainingAreaItem: React.FC<
             isFetching={labelState.isFetching}
           />
         </div>
-        <div className="flex items-center gap-x-3">
+        <div className="flex items-center gap-x-3" id={APP_TOUR_IDS.TRAINING_AREA_TOOLS}>
           <ToolTip
             content={
               disableLabelsFetchOrUpload
                 ? MODELS_CONTENT.modelCreation.trainingArea.toolTips
-                    .labelsFetchInProgress
+                  .labelsFetchInProgress
                 : MODELS_CONTENT.modelCreation.trainingArea.toolTips
-                    .fetchOSMLabels
+                  .fetchOSMLabels
             }
           >
             <button
+              id={APP_TOUR_IDS.FETCH_OSM_DATA}
               disabled={disableLabelsFetchOrUpload}
               className="bg-green-secondary px-2 py-1 rounded-md text-nowrap text-[9px] flex items-center gap-x-2 font-light"
               onClick={handleFetchLabels}
@@ -513,12 +515,14 @@ export const TrainingAreaItem: React.FC<
               <FullScreenIcon className="icon" />
             </button>
           </ToolTip>
-          <DropdownMenu
-            dropdownMenuItems={dropdownMenuItems}
-            dropdownIsOpened={dropdownIsOpened}
-            onDropdownHide={onDropdownHide}
-            onDropdownShow={onDropdownShow}
-          />
+          <div id={APP_TOUR_IDS.MORE_INFORMATION}>
+            <DropdownMenu
+              dropdownMenuItems={dropdownMenuItems}
+              dropdownIsOpened={dropdownIsOpened}
+              onDropdownHide={onDropdownHide}
+              onDropdownShow={onDropdownShow}
+            />
+          </div>
         </div>
       </div>
     </>

@@ -58,3 +58,4 @@ export { NoTrainingAreaIcon } from "./no-training-area-icon";
 export { ArrowMoveIcon } from "./arrow-move-icon";
 export { ProductionCheckmarkIcon } from "./production-checkmark";
 export { NotificationBellIcon } from "./notification-bell-icon";
+export { PeopleIcon } from "./people-icon";
