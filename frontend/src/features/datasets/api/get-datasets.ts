@@ -28,7 +28,7 @@ export const getTrainingDatasetsV2 = async (
     params: {
       search: searchQuery,
       ordering,
-      userId,
+      user: userId,
       offset,
       limit: PAGE_LIMIT,
     },
