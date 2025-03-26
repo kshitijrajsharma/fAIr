@@ -133,7 +133,10 @@ export type TTrainingDataset = {
   last_modified: string;
   name: string;
   status: number;
-  user: number;
+  user: {
+    username: string;
+    osm_id: number;
+  };
   source_imagery: string;
   models_count: number;
 };

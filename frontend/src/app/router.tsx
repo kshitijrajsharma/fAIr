@@ -1,14 +1,17 @@
 import { APPLICATION_ROUTES } from "@/constants";
 import { MainErrorFallback } from "@/components/errors";
-import { ModelFormsLayout, RootLayout } from "@/layouts";
-import { ProtectedRoute } from "@/app/routes/protected-route";
+import {
+  ModelFormsLayout,
+  RootLayout,
+  UserProfileLayout,
+} from "@/components/layouts";
+import { ProtectedRoute } from "@/components/shared";
 import {
   Navigate,
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
 import { ModelsProvider } from "@/app/providers/models-provider";
-import { UserProfileLayout } from "@/layouts/user-profile-layout";
 
 const router = createBrowserRouter([
   {

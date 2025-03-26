@@ -1,6 +1,7 @@
 import { AddIcon } from "@/components/ui/icons";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ButtonVariant } from "@/enums";
 
 export const ProfileSectionHeader = ({
   title,
@@ -23,7 +24,7 @@ export const ProfileSectionHeader = ({
       {createRoute && createButtonAlt && (
         <ButtonWithIcon
           onClick={handleClick}
-          variant="primary"
+          variant={ButtonVariant.PRIMARY}
           prefixIcon={AddIcon}
           label={createButtonAlt}
         />

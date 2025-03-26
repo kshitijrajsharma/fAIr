@@ -22,7 +22,7 @@ export const LandingPage = () => {
       <CoreFeatures />
       <Corevalues />
       <section className="app-padding">
-        <FAQs />
+        <FAQs disableSeeMoreButton />
       </section>
       <TaglineBanner />
       <CallToAction />

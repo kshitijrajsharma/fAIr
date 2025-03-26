@@ -1,18 +1,19 @@
 import ModelDetailItem from "@/features/models/components/model-detail-item";
 import ModelDetailsSection from "@/features/models/components/model-details-section";
-import ModelDetailsUpdateDialog from "./dialogs/model-details-update-dialog";
+import ModelDetailsUpdateDialog from "@/features/models/components/dialogs/model-details-update-dialog";
 import ModelFeedbacks from "@/features/models/components/model-feedbacks";
-import ModelFilesButton from "./model-files-button";
+import ModelFilesButton from "@/features/models/components/model-files-button";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { formatDate, truncateString } from "@/utils";
 import { MapIcon, PenIcon } from "@/components/ui/icons";
 import { TModelDetails, TTrainingDataset } from "@/types";
-import { TrainingAreaButton } from "./training-area-button";
+import { TrainingAreaButton } from "@/features/models/components/training-area-button";
 import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
 import { useNavigate } from "react-router-dom";
+import { ButtonVariant } from "@/enums";
 
 const ModelDetailsInfo = ({
   data,
@@ -40,7 +41,7 @@ const ModelDetailsInfo = ({
       <ModelDetailsSection title="">
         <div className="flex flex-col gap-y-8">
           <div className="inline-flex flex-col gap-y-4">
-            <p className="text-gray text-body-2">
+            <p className="text-grey text-body-2">
               {MODELS_CONTENT.models.modelsDetailsCard.modelId} {data?.id}
             </p>
             <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-y-8">
@@ -51,7 +52,7 @@ const ModelDetailsInfo = ({
                 >
                   {truncateString(data?.name, 40)}
                 </h1>
-                <p className="text-body-3 text-gray md:text-body-2 text-wrap max-w-lg md:max-w-xl xl:max-w-4xl">
+                <p className="text-body-3 text-grey md:text-body-2 text-wrap max-w-lg md:max-w-xl xl:max-w-4xl">
                   {data?.description ??
                     MODELS_CONTENT.models.modelsDetailsCard
                       .modelDescriptionNotAvailable}
@@ -60,7 +61,7 @@ const ModelDetailsInfo = ({
               <div className="max-w-fit">
                 <ButtonWithIcon
                   label={MODELS_CONTENT.models.modelsDetailsCard.startMapping}
-                  variant="primary"
+                  variant={ButtonVariant.PRIMARY}
                   size="medium"
                   prefixIcon={MapIcon}
                   disabled={data?.published_training === null}
@@ -76,7 +77,7 @@ const ModelDetailsInfo = ({
         </div>
         <TrainingAreaButton
           onClick={openTrainingAreaDrawer}
-          disabled={trainingDataset.source_imagery === null}
+          disabled={!data.published_training}
         />
       </ModelDetailsSection>
       <Divider />
@@ -85,7 +86,7 @@ const ModelDetailsInfo = ({
           <div className="flex flex-col gap-y-4">
             <ModelDetailItem
               label={MODELS_CONTENT.models.modelsDetailsCard.createdBy}
-              value={data?.user.username}
+              value={data?.user?.username}
             />
             <ModelDetailItem
               label={MODELS_CONTENT.models.modelsDetailsCard.createdOn}
@@ -98,7 +99,7 @@ const ModelDetailsInfo = ({
           </div>
           <div className="col-span-1 items-start justify-between flex flex-col gap-y-4">
             <div className="text-dark text-body-2 flex w-full gap-x-1 text-nowrap flex-wrap">
-              <span className="text-gray">
+              <span className="text-grey">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetName}
               </span>
               <p title={trainingDataset?.name}>
@@ -106,10 +107,10 @@ const ModelDetailsInfo = ({
               </p>
             </div>
             <div className="text-dark text-body-2 flex gap-x-1">
-              <span className="text-gray">
+              <span className="text-grey">
                 {MODELS_CONTENT.models.modelsDetailsCard.datasetId}
               </span>
-              <p>{data?.dataset.id}</p>
+              <p>{data?.dataset?.id}</p>
             </div>
             <ModelFilesButton
               openModelFilesDialog={openModelFilesDialog}
@@ -119,7 +120,7 @@ const ModelDetailsInfo = ({
 
           <div className="col-span-1 flex flex-col md:items-end md:justify-between gap-y-4">
             <div>
-              {isAuthenticated && user.osm_id === data.user.osm_id && (
+              {isAuthenticated && user?.osm_id === data?.user?.osm_id && (
                 <button
                   className="flex items-center gap-x-4"
                   onClick={openDialog}

@@ -4,6 +4,15 @@ export enum BASE_MODELS {
   YOLOV8_V2 = "YOLO_V8_V2",
 }
 
+export enum ButtonVariant {
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
+  DARK = "dark",
+  DEFAULT = "default",
+  TERTIARY = "tertiary",
+  NONE = "none",
+}
+
 export enum TrainingType {
   BASIC = "Basic",
   INTERMEDIATE = "Intermediate",
@@ -11,9 +20,8 @@ export enum TrainingType {
 }
 
 export enum TrainingDatasetOption {
-  CREATE_NEW = "new",
-  USE_EXISTING = "existing",
-  NONE = "none",
+  CREATE_NEW = "Create New",
+  USE_EXISTING = "Select Existing",
 }
 
 export enum DrawingModes {
@@ -67,11 +75,9 @@ export enum DropdownPlacement {
   TOP_END = "top-end",
 }
 
-export enum ButtonVariant {
-  PRIMARY = "primary",
-  SECONDARY = "secondary",
-  DARK = "dark",
-  DEFAULT = "default",
-  TERTIARY = "tertiary",
-  NONE = "none",
+export enum ModelTrainingStatus {
+  SUBMITTED = "SUBMITTED",
+  IN_PROGRESS = "IN_PROGRESS",
+  FINISHED = "FINISHED",
+  FAILED = "FAILED",
 }

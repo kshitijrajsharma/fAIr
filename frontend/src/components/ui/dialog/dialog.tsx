@@ -11,6 +11,7 @@ type DialogProps = {
   preventClose?: boolean;
   labelColor?: "default" | "primary";
   borderRadius?: "rounded";
+  size?: SHOELACE_SIZES;
 };
 const Dialog: React.FC<DialogProps> = ({
   isOpened,
@@ -20,6 +21,7 @@ const Dialog: React.FC<DialogProps> = ({
   preventClose,
   labelColor = "default",
   borderRadius,
+  size,
 }) => {
   // Prevent the dialog from closing when the user clicks on the overlay
   function handleRequestClose(event: any) {
@@ -30,11 +32,13 @@ const Dialog: React.FC<DialogProps> = ({
 
   const { isLaptop, isSmallViewport } = useScreenSize();
 
-  const size = isSmallViewport
-    ? SHOELACE_SIZES.EXTRA_LARGE
-    : isLaptop
-      ? SHOELACE_SIZES.LARGE
-      : SHOELACE_SIZES.MEDIUM;
+  const size_ = size
+    ? size
+    : isSmallViewport
+      ? SHOELACE_SIZES.EXTRA_LARGE
+      : isLaptop
+        ? SHOELACE_SIZES.LARGE
+        : SHOELACE_SIZES.MEDIUM;
 
   return (
     <SlDialog
@@ -51,12 +55,11 @@ const Dialog: React.FC<DialogProps> = ({
         //@ts-expect-error bad type definition
 
         "--width":
-          //@ts-expect-error bad type definition
-          size === SHOELACE_SIZES.SMALL
+          size_ === SHOELACE_SIZES.SMALL
             ? "25vw"
-            : size === SHOELACE_SIZES.MEDIUM
+            : size_ === SHOELACE_SIZES.MEDIUM
               ? "50vw"
-              : size === SHOELACE_SIZES.EXTRA_LARGE
+              : size_ === SHOELACE_SIZES.EXTRA_LARGE
                 ? "100vw"
                 : "75vw",
       }}

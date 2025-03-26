@@ -7,7 +7,7 @@ import { LngLatBoundsLike, Map } from "maplibre-gl";
 import { roundNumber } from "../number-utils";
 import { TModelPredictions, TModelPredictionsConfig } from "@/types";
 import { uuid4 } from "../general-utils";
-
+import { booleanWithin } from "@turf/boolean-within";
 /**
  * Calculates the area of a GeoJSON Feature or FeatureCollection.
  *
@@ -397,4 +397,43 @@ export const handleConflation = (
     accepted: existingPredictions.accepted,
     rejected: existingPredictions.rejected,
   };
+};
+
+/**
+ * Checks if a GeoJSON feature is within the specified bounding box.
+ *
+ * This function determines whether a given GeoJSON feature is entirely
+ * contained within the specified bounding box coordinates.
+ *
+ * @param {LngLatBoundsLike} OAMBounds - The bounding box defined by [west, south, east, north] coordinates.
+ * @param {Feature} feature - The GeoJSON feature to check.
+ *
+ * @returns {boolean} True if the feature is within the bounding box, false otherwise.
+ */
+export const featureIsWithinBounds = (
+  OAMBounds: LngLatBoundsLike,
+  feature: Feature,
+): boolean => {
+  const [west, south, east, north] = OAMBounds as [
+    number,
+    number,
+    number,
+    number,
+  ];
+  const OAMFeature = {
+    type: "Feature",
+    geometry: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [west, south],
+          [east, south],
+          [east, north],
+          [west, north],
+          [west, south],
+        ],
+      ],
+    },
+  };
+  return booleanWithin(feature, OAMFeature as Feature);
 };

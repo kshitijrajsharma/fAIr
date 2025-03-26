@@ -21,7 +21,7 @@ export const ProfileOverview = ({ user }: { user: TUser }) => {
           <h1 className="text-title-3 md:text-title-2 font-bold">
             {user.username}
           </h1>
-          <small className="text-gray text-body-4 md:text-body-3">
+          <small className="text-grey text-body-4 md:text-body-3">
             {USER_PROFILE_PAGE_CONTENT.overview.dateJoinedPrefix}{" "}
             {new Date(user.date_joined).toLocaleString("default", {
               month: "long",

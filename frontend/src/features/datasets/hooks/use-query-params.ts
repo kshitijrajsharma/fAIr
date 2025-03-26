@@ -32,9 +32,12 @@ export const useDatasetsQueryParams = (userId?: number) => {
 
   const { isPending, isError, data, refetch, isPlaceholderData } =
     useGetTrainingDatasetsV2(
-      debouncedSearchText,
+      debouncedSearchText.length > 0 ? debouncedSearchText : undefined,
       query[QUERY_PARAMS.ordering] as string,
-      userId as number,
+      userId !== undefined ? userId : undefined,
+      query[QUERY_PARAMS.offset] !== undefined
+        ? (query[QUERY_PARAMS.offset] as number)
+        : undefined,
     );
 
   const updateQuery = useCallback(

@@ -7,7 +7,7 @@ export default {
         primary: "var(--hot-fair-color-primary)",
         secondary: "var(--hot-fair-color-secondary)",
         dark: "var(--hot-fair-color-dark)",
-        gray: "var(--hot-fair-color-gray)",
+        grey: "var(--hot-fair-color-gray)",
         "light-gray": "var(--hot-fair-color-light-gray)",
         "off-white": "var(--hot-fair-color-off-white)",
         "gray-disabled": "var(--hot-fair-color-gray-disabled)",

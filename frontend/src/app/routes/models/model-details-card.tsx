@@ -18,6 +18,7 @@ import {
   TrainingHistoryTable,
 } from "@/features/models/components";
 import { useModelsContext } from "@/app/providers/models-provider";
+import { ButtonVariant } from "@/enums";
 
 export const ModelDetailsPage = () => {
   const {
@@ -74,7 +75,7 @@ export const ModelDetailsPage = () => {
           title={MODELS_CONTENT.models.modelsDetailsCard.propertiesSectionTitle}
         >
           {!data?.published_training ? (
-            <div className="rounded-xl w-full h-80 border border-gray-border text-center flex flex-col gap-y-6 items-center justify-center text-gray">
+            <div className="rounded-xl w-full h-80 border border-gray-border text-center flex flex-col gap-y-6 items-center justify-center text-grey">
               <Image
                 src={TrainingInProgressImage}
                 alt="Model training in progress"
@@ -93,7 +94,7 @@ export const ModelDetailsPage = () => {
         <div className="flex md:hidden">
           <ButtonWithIcon
             label={MODELS_CONTENT.models.modelsDetailsCard.enhanceModel}
-            variant="dark"
+            variant={ButtonVariant.DARK}
             size="medium"
             prefixIcon={StarStackIcon}
             onClick={openModelEnhancementDialog}
@@ -109,7 +110,7 @@ export const ModelDetailsPage = () => {
           <div className="md:flex self-end hidden">
             <ButtonWithIcon
               label={MODELS_CONTENT.models.modelsDetailsCard.enhanceModel}
-              variant="dark"
+              variant={ButtonVariant.DARK}
               size="medium"
               prefixIcon={StarStackIcon}
               onClick={openModelEnhancementDialog}
@@ -119,7 +120,7 @@ export const ModelDetailsPage = () => {
           <TrainingHistoryTable
             modelId={data?.id as string}
             publishedTrainingId={data?.published_training as number}
-            modelOwner={data?.user.username as string}
+            modelOwner={data?.user?.username as string}
           />
         </ModelDetailsSection>
       </div>

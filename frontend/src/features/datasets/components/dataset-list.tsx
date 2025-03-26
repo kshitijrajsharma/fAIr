@@ -9,11 +9,17 @@ export const DatasetList = ({
   isPending,
   isError,
   refetch,
+  showUsername,
+  selectedDatasetId,
+  onDatasetSelect,
 }: {
   datasets: TTrainingDataset[];
   isPending: boolean;
   isError: boolean;
   refetch: () => void;
+  showUsername?: boolean;
+  selectedDatasetId?: number;
+  onDatasetSelect?: (dataset: TTrainingDataset) => void;
 }) => {
   /**
    * Pending state.
@@ -53,9 +59,15 @@ export const DatasetList = ({
    * Dataset list
    */
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(299px,1fr))] gap-8">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(299px,1fr))] gap-8">
       {datasets.map((dataset) => (
-        <DatasetCard key={dataset.id} dataset={dataset} />
+        <DatasetCard
+          key={dataset.id}
+          dataset={dataset}
+          showUsername={showUsername}
+          selectedDatasetId={selectedDatasetId}
+          onDatasetSelect={onDatasetSelect}
+        />
       ))}
     </div>
   );

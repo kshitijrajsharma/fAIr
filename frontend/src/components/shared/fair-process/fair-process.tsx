@@ -118,7 +118,7 @@ export const TheFAIRProcess = ({
                 ref={itemRefs.current[id]}
               >
                 <step.icon
-                  className={`w-7 h-7 md:w-8 md:h-8 p-1 transition-all ${activeIndex !== id ? "text-gray-disabled" : "text-white scale-125"}`}
+                  className={`w-7 h-7 md:w-8 md:h-8 p-1 transition-all ${activeIndex !== id ? "text-grey-disabled" : "text-white scale-125"}`}
                 />
               </div>
               {/* Disable for the last timeline on web. */}
@@ -139,12 +139,12 @@ export const TheFAIRProcess = ({
 
             <div className="inline-flex flex-col gap-y-4 pe-8 md:mt-[34px] ml-6 md:ml-0">
               <h3
-                className={`text-body-1 md:text-2xl md:mt-4 font-bold transition-all  ${activeIndex !== id ? "text-gray-disabled" : "text-dark"}`}
+                className={`text-body-1 md:text-2xl md:mt-4 font-bold transition-all  ${activeIndex !== id ? "text-grey-disabled" : "text-dark"}`}
               >
                 {step.title}
               </h3>
               <p
-                className={`text-body-2base md:text-body-2 mb-[68px] md:mb-0 md:mt-2 ${activeIndex !== id ? "text-gray" : "text-gray-600 "}`}
+                className={`text-body-2base md:text-body-2 mb-[68px] md:mb-0 md:mt-2 ${activeIndex !== id ? "text-grey" : "text-grey-600 "}`}
               >
                 {step.paragraph}
               </p>

@@ -11,6 +11,7 @@ import { useClickOutside } from "@/hooks/use-click-outside";
 import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { NotificationType } from "@/enums/user-profile";
 import { NotificationItem } from "./notification-item";
+import { ButtonVariant } from "@/enums";
 
 const NotificationsPanelSkeleton = () => {
   return (
@@ -122,8 +123,8 @@ export const NotificationsPanel = ({
               <Button
                 variant={
                   notificationType === NotificationType.UNREAD
-                    ? "default"
-                    : "tertiary"
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.TERTIARY
                 }
                 size="small"
                 className={`!w-fit ${notificationType === NotificationType.ALL ? "font-bold" : ""}`}
@@ -136,8 +137,8 @@ export const NotificationsPanel = ({
               <Button
                 variant={
                   notificationType === NotificationType.ALL
-                    ? "default"
-                    : "tertiary"
+                    ? ButtonVariant.DEFAULT
+                    : ButtonVariant.TERTIARY
                 }
                 size="small"
                 className={`!w-fit ${notificationType === NotificationType.UNREAD ? "font-bold" : ""}`}
@@ -151,7 +152,7 @@ export const NotificationsPanel = ({
             {unreadCount > 0 && (
               <button
                 disabled={isNotificationsUpdatePending}
-                className="text-gray text-body-4"
+                className="text-grey text-body-4"
                 onClick={() => updateNotifications(undefined)}
               >
                 {USER_PROFILE_PAGE_CONTENT.notifications.markAllAsRead}
@@ -175,7 +176,7 @@ export const NotificationsPanel = ({
           ) : !notificationsToRender || notificationsToRender.length === 0 ? (
             <div className="flex items-center justify-center gap-y-4 w-full h-full flex-col">
               <NoTrainingAreaIcon className="w-10 h-10" />
-              <p className="text-gray text-body-3">
+              <p className="text-grey text-body-3">
                 {" "}
                 {USER_PROFILE_PAGE_CONTENT.notifications.emptyState}
               </p>

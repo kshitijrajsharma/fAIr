@@ -58,9 +58,8 @@ export type TModelsContent = {
           helpText: string;
           placeholder: string;
         };
-        existingTrainingDatasetSectionHeading: string;
         existingTrainingDatasetSectionDescription: string;
-        newTrainingDatasetSectionHeading: string;
+
         searchBar: {
           placeholder: string;
         };
@@ -297,6 +296,7 @@ export type TModelsContent = {
         submitButtonText: string;
       };
       modelEnhancement: {
+        dialogHeading: string;
         newSettings: {
           title: string;
           description: string;
@@ -348,34 +348,6 @@ export type TSharedContent = {
       secondSegment: string;
       thirdSegment: string;
       fourthSegment: string;
-    };
-    siteMap: {
-      groupOne: [
-        {
-          title: string;
-          route: string;
-        },
-        {
-          title: string;
-          route: string;
-        },
-        {
-          title: string;
-          route: string;
-        },
-      ];
-      groupTwo: [
-        {
-          title: string;
-          route: string;
-          isExternalLink: boolean;
-        },
-        {
-          title: string;
-          route: string;
-          isExternalLink: boolean;
-        },
-      ];
     };
   };
   homepage: {
@@ -506,6 +478,10 @@ export type TStartMappingPageContent = {
         tooltip: string;
       };
       legendControl: {
+        toolTip: {
+          show: string;
+          hide: string;
+        };
         title: string;
         acceptedPredictions: string;
         rejectedPredictions: string;

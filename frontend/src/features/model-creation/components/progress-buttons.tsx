@@ -2,7 +2,7 @@ import { ButtonWithIcon } from "@/components/ui/button";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { MODELS_BASE, MODELS_ROUTES } from "@/constants";
 import { MODELS_CONTENT } from "@/constants";
-import { TrainingDatasetOption } from "@/enums";
+import { ButtonVariant, TrainingDatasetOption } from "@/enums";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -26,7 +26,6 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
 
   const {
     formData,
-    handleChange,
     hasLabeledTrainingAreas,
     hasAOIsWithGeometry,
     getFullPath,
@@ -58,35 +57,11 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
 
   const prevPage = () => {
     if (currentPageIndex > 0) {
-      const prevRoute = getFullPath(pages[currentPageIndex - 1].path);
-      // When going back, if it's the training dataset page and the user already selected an option previously, and not in edit mode,
-      // Reset the selection to none so they can see the options again.
-      if (
-        !isEditMode &&
-        currentPageIndex === 1 &&
-        formData.trainingDatasetOption !== TrainingDatasetOption.NONE
-      ) {
-        handleChange(
-          MODEL_CREATION_FORM_NAME.TRAINING_DATASET_OPTION,
-          TrainingDatasetOption.NONE,
-        );
-        // When the user clicks the back button, all their changes will be lost. This is because if we don't clear it, the user can
-        // be able to select existing dataset and also create a new one which will lead to confusion.
-        // So it's safe to clear all changes to ensure that only one option will go through.
-        handleChange(MODEL_CREATION_FORM_NAME.SELECTED_TRAINING_DATASET_ID, "");
-        handleChange(MODEL_CREATION_FORM_NAME.DATASET_NAME, "");
-        handleChange(MODEL_CREATION_FORM_NAME.TMS_URL, "");
-        handleChange(MODEL_CREATION_FORM_NAME.TMS_URL_VALIDITY, {
-          valid: false,
-          message: "",
-        });
+      if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
+        navigate(MODELS_BASE);
       } else {
-        navigate(prevRoute);
+        navigate(-1);
       }
-    } else if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
-      navigate(MODELS_BASE);
-    } else {
-      navigate(-1);
     }
   };
 
@@ -97,20 +72,15 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
     if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
       return (
         formData.modelName.length >=
-          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME]
-            .minLength &&
+        FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME]
+          .minLength &&
         formData.modelDescription.length >=
-          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]
-            .minLength
+        FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]
+          .minLength
       );
     } else if (currentPath.includes(MODELS_ROUTES.TRAINING_DATASET)) {
-      // if the user hasn't selected any of the options, then they can not proceed to next page.
+
       if (
-        !isEditMode &&
-        formData.trainingDatasetOption === TrainingDatasetOption.NONE
-      ) {
-        return false;
-      } else if (
         formData.trainingDatasetOption === TrainingDatasetOption.CREATE_NEW
       ) {
         // If the form submission is in progress or if any error disable the continue button.
@@ -120,8 +90,8 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
         return (
           formData.tmsURLValidation.valid &&
           formData.datasetName.length >=
-            FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.DATASET_NAME]
-              .minLength
+          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.DATASET_NAME]
+            .minLength
         );
       } else if (
         formData.trainingDatasetOption === TrainingDatasetOption.USE_EXISTING
@@ -146,7 +116,7 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
   return (
     <div className="col-span-12 md:col-start-4 md:col-span-6 w-full flex items-center justify-between">
       <ButtonWithIcon
-        variant="default"
+        variant={ButtonVariant.DEFAULT}
         prefixIcon={ChevronDownIcon}
         label={MODELS_CONTENT.modelCreation.progressButtons.back}
         iconClassName="rotate-90"
@@ -162,7 +132,7 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
         }
       />
       <ButtonWithIcon
-        variant="primary"
+        variant={ButtonVariant.PRIMARY}
         suffixIcon={ChevronDownIcon}
         label={
           trainingDatasetCreationInProgress

@@ -20,7 +20,7 @@ export const ModelPredictionsTracker = ({
       modelPredictions.rejected.length > 0 ||
       modelPredictions.all.length > 0 ? (
         <button
-          className="text-body-3 px-3 py-0.5 md:py-1 bg-gray text-white rounded-md"
+          className="text-body-3 px-3 py-0.5 md:py-1 bg-grey text-white rounded-md"
           onClick={clearPredictions}
         >
           Clear

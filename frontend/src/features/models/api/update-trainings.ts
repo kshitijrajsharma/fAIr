@@ -8,6 +8,10 @@ export const updateTraining = (trainingId: number) => {
   return apiClient.post(`${API_ENDPOINTS.UPDATE_TRAINING(trainingId)}`);
 };
 
+export const terminateTraining = (trainingId: number) => {
+  return apiClient.post(`${API_ENDPOINTS.TERMINATE_TRAINING(trainingId)}`);
+};
+
 type UseUpdateTrainingOptions = {
   mutationConfig?: MutationConfig<typeof updateTraining>;
   modelId: number;
@@ -40,5 +44,30 @@ export const useUpdateTraining = ({
     },
     ...restConfig,
     mutationFn: updateTraining,
+  });
+};
+
+export const useTerminateTraining = ({
+  mutationConfig,
+  modelId,
+}: UseUpdateTrainingOptions) => {
+  const { refetch: refetchTrainingHistory } = useTrainingHistory(
+    0,
+    PAGE_LIMIT,
+    "-id",
+    String(modelId),
+    undefined,
+    !!modelId,
+  );
+
+  const { onSuccess, ...restConfig } = mutationConfig || {};
+
+  return useMutation({
+    onSuccess: (...args) => {
+      refetchTrainingHistory();
+      onSuccess?.(...args);
+    },
+    ...restConfig,
+    mutationFn: terminateTraining,
   });
 };

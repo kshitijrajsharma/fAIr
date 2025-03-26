@@ -4,14 +4,14 @@ import TrainingAreaList from "@/features/model-creation/components/training-area
 import TrainingAreaMap from "@/features/model-creation/components/training-area/training-area-map";
 import useScreenSize from "@/hooks/use-screen-size";
 import { Button, ButtonWithIcon } from "@/components/ui/button";
-import { DrawingModes, SHOELACE_SIZES } from "@/enums";
+import { ButtonVariant, DrawingModes, SHOELACE_SIZES } from "@/enums";
 import { geojsonToWKT } from "@terraformer/wkt";
 import { MODELS_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import { Polygon } from "geojson";
 import { StepHeading } from "@/features/model-creation/components/";
 import { UploadIcon, YouTubePlayIcon } from "@/components/ui/icons";
 import { useDialog } from "@/hooks/use-dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import {
   MODEL_CREATION_FORM_NAME,
@@ -26,6 +26,10 @@ import {
   showSuccessToast,
   snapGeoJSONPolygonToClosestTile,
 } from "@/utils";
+import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
+import { TileJSON } from "@/types";
+import { APP_TOUR_IDS } from "@/constants/site-tour";
+import { useAppTour } from "@/app/providers/tour-provider";
 
 const TrainingAreaForm = () => {
   const { formData } = useModelsContext();
@@ -37,16 +41,25 @@ const TrainingAreaForm = () => {
     terraDraw,
     currentZoom,
   } = useMapInstance();
+
   const tileJSONURL = extractTileJSONURL(formData.tmsURL);
 
   const { closeDialog, isOpened, toggle } = useDialog();
+
   const { handleChange } = useModelsContext();
+
   const [offset, setOffset] = useState<number>(0);
+  const { startTrainingAreaTour } = useAppTour();
   const {
     data: trainingAreasData,
     isPending: trainingAreaIsPending,
     isPlaceholderData,
   } = useGetTrainingAreas(Number(formData.selectedTrainingDatasetId), offset);
+
+  const { isPending, data, isError } = useGetTMSTileJSON(
+    tileJSONURL,
+    !!formData.selectedTrainingDatasetId,
+  );
 
   useEffect(() => {
     if (!trainingAreasData) return;
@@ -72,6 +85,14 @@ const TrainingAreaForm = () => {
     });
   };
 
+  const mapElementRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mapElementRef.current) {
+      mapElementRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [mapElementRef.current]);
+
   return (
     <>
       <FileUploadDialog
@@ -93,25 +114,36 @@ const TrainingAreaForm = () => {
             />
           </div>
           <div className="flex flex-col md:items-end gap-y-4 ">
-            <p className="flex items-center gap-x-2">
+            <button
+              className="flex items-center gap-x-2"
+              onClick={startTrainingAreaTour}
+              id={APP_TOUR_IDS.TUTORIAL_BUTTON}
+            >
               <YouTubePlayIcon className="icon-lg" />
               {MODELS_CONTENT.modelCreation.trainingArea.tutorialText}
-            </p>
+            </button>
             <p className="text-dark">
               {MODELS_CONTENT.modelCreation.trainingArea.datasetID}{" "}
-              {formData.selectedTrainingDatasetId}
+              <span className="font-semibold">
+                {formData.selectedTrainingDatasetId}
+              </span>
             </p>
           </div>
         </div>
 
         <div className="border-t-8 border-x-8 border-off-white  fullscreen lg:no-fullscreen lg:hidden">
           <OpenAerialMap
-            tileJSONURL={tileJSONURL}
             map={map}
             trainingDatasetId={Number(formData.selectedTrainingDatasetId)}
+            OAMIsPending={isPending}
+            OAMIsError={isError}
+            OAMData={data as TileJSON}
           />
         </div>
-        <div className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen xl:no-fullscreen">
+        <div
+          ref={mapElementRef}
+          className="h-full grid grid-cols-12 lg:grid-cols-9  border-8 border-off-white fullscreen xl:no-fullscreen"
+        >
           <div className="w-full h-[90vh] col-span-12 lg:col-span-6 2xl:col-span-7">
             <TrainingAreaMap
               tileJSONURL={tileJSONURL}
@@ -124,13 +156,17 @@ const TrainingAreaForm = () => {
               setDrawingMode={setDrawingMode}
               drawingMode={drawingMode}
               currentZoom={currentZoom}
+              trainingAreaIsPending={trainingAreaIsPending}
+              OAMData={data as TileJSON}
             />
           </div>
           <div className="hidden lg:flex h-[90vh] max-h-screen col-span-12 lg:col-span-3 2xl:col-span-2 flex-col w-full border-l-8 border-off-white gap-y-6 py-4 ">
             <OpenAerialMap
-              tileJSONURL={tileJSONURL}
               map={map}
               trainingDatasetId={Number(formData.selectedTrainingDatasetId)}
+              OAMIsPending={isPending}
+              OAMIsError={isError}
+              OAMData={data as TileJSON}
             />
             <TrainingAreaList
               offset={offset}
@@ -187,9 +223,8 @@ const ActionButtons = ({
     <div
       className={`flex gap-y-2 mt-auto px-4 md:px-1 lg:px-4  w-full ${trainingAreasDataCount === 0 ? "flex-col w-full" : "items-center justify-between gap-x-1 md:gap-x-2 "}"`}
     >
-      <div className="w-full">
+      <div className="w-full" id={APP_TOUR_IDS.DRAW_TRAINING_AREA}>
         <Button
-          variant="primary"
           size={isTablet ? SHOELACE_SIZES.SMALL : SHOELACE_SIZES.MEDIUM}
           onClick={() => {
             setDrawingMode(DrawingModes.RECTANGLE);
@@ -206,7 +241,7 @@ const ActionButtons = ({
         <ButtonWithIcon
           size={isTablet ? SHOELACE_SIZES.SMALL : SHOELACE_SIZES.MEDIUM}
           label={MODELS_CONTENT.modelCreation.trainingArea.form.upload}
-          variant="dark"
+          variant={ButtonVariant.DARK}
           suffixIcon={UploadIcon}
           onClick={toggle}
         />

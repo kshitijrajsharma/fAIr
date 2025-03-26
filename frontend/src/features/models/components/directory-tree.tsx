@@ -1,5 +1,10 @@
 import { API_ENDPOINTS, apiClient } from "@/services";
-import { DirectoryIcon, FileIcon } from "@/components/ui/icons";
+import {
+  CloudDownloadIcon,
+  CopyIcon,
+  DirectoryIcon,
+  FileIcon,
+} from "@/components/ui/icons";
 import { getTrainingWorkspaceQueryOptions } from "@/features/models/api/factory";
 import { MODELS_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import { showErrorToast, showSuccessToast, truncateString } from "@/utils";
@@ -12,6 +17,9 @@ import {
   SlTree,
   SlTreeItem,
 } from "@shoelace-style/shoelace/dist/react";
+import { ToolTip } from "@/components/ui/tooltip";
+import useCopyToClipboard from "@/hooks/use-clipboard";
+import { BASE_API_URL } from "@/config";
 
 type DirectoryTreeProps = {
   datasetId: number;
@@ -20,14 +28,14 @@ type DirectoryTreeProps = {
 };
 
 const DirectoryLoadingSkeleton = () => (
-  <ul className="flex gap-y-4 flex-col">
-    {new Array(5).fill(null).map((_, id) => (
+  <ul className="flex gap-y-4 flex-col w-full">
+    {new Array(3).fill(null).map((_, id) => (
       <li
         key={`model-file-${id}`}
         className="h-10 flex gap-x-4 w-full items-center"
       >
-        <div className="h-10 w-[10%] animate-pulse bg-light-gray"></div>
-        <div className="h-6 w-[60%] animate-pulse bg-light-gray"></div>
+        <div className="h-6 w-[10%] animate-pulse bg-light-gray"></div>
+        <div className="h-6 w-[90%] animate-pulse bg-light-gray"></div>
       </li>
     ))}
   </ul>
@@ -38,25 +46,61 @@ const FileItem = ({
   size,
   onDownload,
   isDownloading,
+  trainingId,
+  validPath,
 }: {
   keyName: string;
   size: number;
   onDownload: () => void;
   isDownloading: boolean;
-}) => (
-  <div className="flex items-center gap-x-2" onClick={onDownload}>
-    <FileIcon className="w-4 h-4" />
-    <div className="flex flex-col md:flex-row gap-x-2">
-      <span title={keyName} className="text-dark text-nowrap text-body-2base">
-        {truncateString(keyName)}
-      </span>
-      <span className="text-gray text-body-3 text-nowrap flex items-center gap-x-2">
-        <SlFormatBytes value={size} />
-        {isDownloading && <Spinner />}
-      </span>
+  trainingId: number;
+  validPath: string;
+}) => {
+  const { copyToClipboard } = useCopyToClipboard();
+
+  return (
+    <div className="flex items-center gap-x-2 cursor-pointer group pr-20">
+      <FileIcon className="w-4 h-4" />
+      <div className="flex flex-col sm:flex-row gap-x-2">
+        <span title={keyName} className="text-dark text-nowrap text-body-2base">
+          {truncateString(keyName)}
+        </span>
+        <span className="text-grey text-body-3 text-nowrap flex items-center gap-x-2">
+          <SlFormatBytes value={size} />
+          {isDownloading && <Spinner />}
+        </span>
+        {validPath && trainingId && (
+          <div className="flex items-center gap-x-4 sm:hidden group-hover:inline-flex">
+            <ToolTip content="Click to download file.">
+              <button disabled={isDownloading} onClick={onDownload}>
+                <span className="group-hover:inline">
+                  <CloudDownloadIcon className="icon" />
+                </span>
+              </button>
+            </ToolTip>
+            <ToolTip content="Click to copy file download link. You can open this link in a new tab to download the file.">
+              <button
+                onClick={() =>
+                  copyToClipboard(
+                    BASE_API_URL +
+                      API_ENDPOINTS.DOWNLOAD_TRAINING_FILE(
+                        trainingId,
+                        validPath,
+                      ),
+                  )
+                }
+              >
+                <span className="roup-hover:inline">
+                  <CopyIcon className="icon" />
+                </span>
+              </button>
+            </ToolTip>
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const DirectoryItem = ({
   keyName,
@@ -77,10 +121,10 @@ const DirectoryItem = ({
           {truncateString(keyName)}
         </span>
         <div className="flex gap-x-2">
-          <span className="text-gray text-body-3 text-nowrap">
+          <span className="text-grey text-body-3 text-nowrap">
             <SlFormatBytes value={size} />
           </span>
-          <span className="text-gray text-body-3 text-nowrap">
+          <span className="text-grey text-body-3 text-nowrap">
             {length} items
           </span>
         </div>
@@ -95,8 +139,8 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
   trainingId,
 }) => {
   const [directoryTree, setDirectoryTree] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
   const [downLoadingFilePath, setDownLoadingFilePath] = useState<string>("");
@@ -173,6 +217,10 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
 
   const handleFileDownload = async (validPath: string) => {
     try {
+      if (!window.URL) {
+        showErrorToast(TOAST_NOTIFICATIONS.fileDownloadBlocked);
+        return;
+      }
       setDownLoadingFilePath(validPath);
       const response = await apiClient.get(
         API_ENDPOINTS.DOWNLOAD_TRAINING_FILE(trainingId, validPath),
@@ -230,6 +278,8 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({
               size={value.size}
               onDownload={() => handleFileDownload(currentPath)}
               isDownloading={downLoadingFilePath === currentPath}
+              validPath={currentPath}
+              trainingId={trainingId}
             />
           )}
         </SlTreeItem>

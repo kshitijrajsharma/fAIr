@@ -1,5 +1,5 @@
 sl-button.button::part(base) {
-  border-radius: 6px;
+  border-radius: 0px;
   border: none;
   font-size: var(--hot-fair-font-size-body-text-3);
   width: 100%;
@@ -21,11 +21,18 @@ sl-button.dark::part(base) {
   background-color: var(--hot-fair-color-dark);
   color: var(--hot-fair-color-white);
 }
+sl-button.dark::part(base):hover {
+  opacity: 0.9;
+}
 
 sl-button.tertiary::part(base) {
   background-color: var(--hot-fair-color-dark);
   color: var(--hot-fair-color-white);
   opacity: 0.7;
+}
+
+sl-button.tertiary::part(base):hover {
+  opacity: 0.6;
 }
 
 sl-button.default::part(base) {
@@ -34,12 +41,13 @@ sl-button.default::part(base) {
   border: 1px solid var(--hot-fair-color-gray-border);
 }
 
-sl-button.primary::part(base):hover {
-  background-color: #dd5f60;
-}
-
+sl-button.default::part(base):hover,
 sl-button.secondary::part(base):hover {
   background-color: #f4f4f4;
+}
+
+sl-button.primary::part(base):hover {
+  background-color: #dd5f60;
 }
 
 @media (min-width: 768px) {

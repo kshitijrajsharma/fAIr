@@ -1,5 +1,5 @@
 import { OSMLogo } from "@/assets/images";
-import { NavLogo } from "@/components/layout";
+import { NavLogo } from "@/components/layouts";
 import { MadeWithLove } from "@/components/shared";
 import { Dialog } from "@/components/ui/dialog";
 import { Image } from "@/components/ui/image";

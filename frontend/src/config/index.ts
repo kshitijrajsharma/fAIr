@@ -132,6 +132,12 @@ export const HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY = (
   modelId: string,
 ): string => `__hot_fair_model_predictions_for_model_${modelId}`;
 
+/**
+ * The key used to store the training area tour seen status in local storage for the application.
+ */
+export const TRAINING_AREA_TOUR_LOCAL_STORAGE_KEY =
+  "__fAIr_training_area_tour_seen";
+
 // ==============================================================================================================================
 // Training Area Configurations
 // ==============================================================================================================================
@@ -314,9 +320,14 @@ export const TRAINING_AREAS_AOI_LABELS_OUTLINE_COLOR: string = parseStringEnv(
   "#D73434",
 );
 
+export const TRAINING_AREAS_MASK_FILL_COLOR: string = parseStringEnv(
+  ENVS.TRAINING_AREAS_MASK_FILL_COLOR,
+  "#D73434",
+);
+
 // Start Mapping Legend - only the fill layers are in the legend.
 export const LEGEND_NAME_MAPPING: Record<string, string> = {
-  [ALL_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Map Result",
+  [ALL_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Default",
   [REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Rejected",
   [ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID]: "Accepted",
 };
@@ -324,11 +335,6 @@ export const LEGEND_NAME_MAPPING: Record<string, string> = {
 // ==============================================================================================================================
 // Others
 // ==============================================================================================================================
-
-/**
- * The web component tag name used in `hotosm/ui` for the tracking component.
- */
-export const HOT_TRACKING_HTML_TAG_NAME: string = "hot-tracking";
 
 /**
  * The matomo application ID.
@@ -343,6 +349,28 @@ export const MATOMO_ID: string = parseStringEnv(ENVS.MATOMO_ID, "0");
 export const MATOMO_APP_DOMAIN: string = parseStringEnv(
   ENVS.MATOMO_APP_DOMAIN,
   "fair.hotosm.org",
+);
+
+/**
+ * The matomo tracking URL.
+ */
+export const MATOMO_TRACKING_URL: string = parseStringEnv(
+  ENVS.MATOMO_TRACKING_URL,
+  "https://matomo.hotosm.org",
+);
+
+/**
+ * The timeout duration in milliseconds to show the tracking component.
+ * Default value: 1000 ms (1 seconds).
+ */
+export const MATOMO_TRACKING_TIMEOUT_DURATION: number = parseIntEnv(
+  ENVS.MATOMO_TRACKING_TIMEOUT_DURATION,
+  1000,
+);
+
+export const BANNER_TIMEOUT_DURATION: number = parseIntEnv(
+  ENVS.BANNER_TIMEOUT_DURATION,
+  3000,
 );
 
 /**

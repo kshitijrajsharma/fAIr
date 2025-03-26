@@ -41,6 +41,9 @@ import {
 } from "@/features/model-creation/hooks/use-training-areas";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/services";
+import { Spinner } from "@/components/ui/spinner";
+import { DeleteModal } from "@/components/shared/modals";
+import { APP_TOUR_IDS } from "@/constants/site-tour";
 
 type LabelState = {
   isFetching: boolean;
@@ -88,7 +91,12 @@ const LabelFetchStatus = ({
   }, [fetchedDate]);
 
   const getFetchStatus = () => {
-    if (isFetching) return "Fetching labels...";
+    if (isFetching)
+      return (
+        <span className="inline-flex items-center gap-x-1">
+          Fetching... <Spinner />
+        </span>
+      );
     if (isError) return "Error occurred. Please retry.";
     if (status === LabelStatus.DOWNLOADED) {
       return timeSince
@@ -165,6 +173,7 @@ export const TrainingAreaItem: React.FC<
   }
 > = ({ datasetId, offset, map, ...trainingArea }) => {
   const queryClient = useQueryClient();
+
   const initialLabelState: LabelState = {
     isFetching: false,
     error: false,
@@ -179,7 +188,13 @@ export const TrainingAreaItem: React.FC<
   const { onDropdownHide, onDropdownShow, dropdownIsOpened } =
     useDropdownMenu();
   const { isOpened, openDialog, closeDialog } = useDialog();
+  const {
+    isOpened: isDeleteModalOpened,
+    openDialog: openDeleteModal,
+    closeDialog: closeDeleteModal,
+  } = useDialog();
   const { formData } = useModelsContext();
+  const [isDeletingTA, setIsDeletingTA] = useState<boolean>(false);
 
   const getTrainingAreaLabels = useGetTrainingAreaLabels(
     trainingArea.id,
@@ -254,11 +269,6 @@ export const TrainingAreaItem: React.FC<
     },
   });
 
-  // const { refetch: refetchTrainingAreas } = useGetTrainingAreas(
-  //   datasetId,
-  //   offset,
-  // );
-
   const handleFetchLabels = useCallback(() => {
     setLabelState((prev) => ({
       ...prev,
@@ -318,6 +328,8 @@ export const TrainingAreaItem: React.FC<
       onSuccess: () => {
         showSuccessToast(TOAST_NOTIFICATIONS.trainingAreaDeletionSuccess);
         onDropdownHide();
+        closeDeleteModal();
+        setIsDeletingTA(false);
       },
       onError: (error) => showErrorToast(error),
     },
@@ -421,10 +433,10 @@ export const TrainingAreaItem: React.FC<
       Icon: DeleteIcon,
       isDelete: true,
       disabled: false,
-      onClick: () =>
-        deleteTrainingAreaMutation.mutate({
-          trainingAreaId: trainingArea.id,
-        }),
+      onClick: () => {
+        openDeleteModal();
+        onDropdownHide();
+      },
     },
   ];
 
@@ -432,8 +444,22 @@ export const TrainingAreaItem: React.FC<
     ? formatAreaInAppropriateUnit(calculateGeoJSONArea(trainingArea))
     : "0 m²";
 
+  const handleDelete = () => {
+    setIsDeletingTA(true);
+    deleteTrainingAreaMutation.mutate({
+      trainingAreaId: trainingArea.id,
+    });
+  };
   return (
     <>
+      <DeleteModal
+        title={`Delete Training Area ${trainingArea.id}`}
+        messageSuffix="this training area"
+        onClose={closeDeleteModal}
+        isOpen={isDeleteModalOpened}
+        onDelete={handleDelete}
+        isDeleting={isDeletingTA}
+      />
       <FileUploadDialog
         disabled={createTrainingLabelsForAOI.isPending}
         isOpened={isOpened}
@@ -458,7 +484,10 @@ export const TrainingAreaItem: React.FC<
             isFetching={labelState.isFetching}
           />
         </div>
-        <div className="flex items-center gap-x-3">
+        <div
+          className="flex items-center gap-x-3"
+          id={APP_TOUR_IDS.TRAINING_AREA_TOOLS}
+        >
           <ToolTip
             content={
               disableLabelsFetchOrUpload
@@ -469,6 +498,7 @@ export const TrainingAreaItem: React.FC<
             }
           >
             <button
+              id={APP_TOUR_IDS.FETCH_OSM_DATA}
               disabled={disableLabelsFetchOrUpload}
               className="bg-green-secondary px-2 py-1 rounded-md text-nowrap text-[9px] flex items-center gap-x-2 font-light"
               onClick={handleFetchLabels}
@@ -488,12 +518,14 @@ export const TrainingAreaItem: React.FC<
               <FullScreenIcon className="icon" />
             </button>
           </ToolTip>
-          <DropdownMenu
-            dropdownMenuItems={dropdownMenuItems}
-            dropdownIsOpened={dropdownIsOpened}
-            onDropdownHide={onDropdownHide}
-            onDropdownShow={onDropdownShow}
-          />
+          <div id={APP_TOUR_IDS.MORE_INFORMATION}>
+            <DropdownMenu
+              dropdownMenuItems={dropdownMenuItems}
+              dropdownIsOpened={dropdownIsOpened}
+              onDropdownHide={onDropdownHide}
+              onDropdownShow={onDropdownShow}
+            />
+          </div>
         </div>
       </div>
     </>

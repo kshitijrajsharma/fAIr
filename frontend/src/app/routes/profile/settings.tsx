@@ -8,7 +8,7 @@ import { Input, Switch } from "@/components/ui/form";
 import { DeleteIcon } from "@/components/ui/icons";
 import { Image } from "@/components/ui/image";
 import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
-import { INPUT_TYPES } from "@/enums";
+import { ButtonVariant, INPUT_TYPES } from "@/enums";
 import { NotificationDeliveryMethod } from "@/enums/user-profile";
 import { useUpdateUserProfile } from "@/features/user-profile/hooks/use-user-profile";
 import { useDialog } from "@/hooks/use-dialog";
@@ -163,7 +163,7 @@ export const UserProfileSettingsPage = () => {
                 {truncateString(email)}
               </p>
               <Button
-                variant="tertiary"
+                variant={ButtonVariant.TERTIARY}
                 onClick={() => setShowForm(true)}
                 uppercase={false}
                 className="!w-fit"
@@ -232,7 +232,7 @@ export const UserProfileSettingsPage = () => {
                         <h3 className="text-body-3 md:text-body-2">
                           {notification.label}
                         </h3>
-                        <p className="text-body-4 md:text-body-3 text-gray">
+                        <p className="text-body-4 md:text-body-3 text-grey">
                           {notification.description}
                         </p>
                       </div>
@@ -293,7 +293,7 @@ export const UserProfileSettingsPage = () => {
                 <p className="text-body-3 md:text-body-2">
                   {USER_PROFILE_PAGE_CONTENT.settings.account.title}
                 </p>
-                <p className="text-gray text-body-3">
+                <p className="text-grey text-body-3">
                   {!user.account_deletion_requested
                     ? USER_PROFILE_PAGE_CONTENT.settings.account.description
                     : USER_PROFILE_PAGE_CONTENT.settings.account
@@ -304,7 +304,7 @@ export const UserProfileSettingsPage = () => {
                 label={
                   USER_PROFILE_PAGE_CONTENT.settings.account.deleteButtonText
                 }
-                variant="primary"
+                variant={ButtonVariant.PRIMARY}
                 prefixIcon={DeleteIcon}
                 uppercase={false}
                 className="!w-fit"

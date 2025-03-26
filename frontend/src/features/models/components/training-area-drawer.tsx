@@ -56,7 +56,7 @@ export const TrainingAreaDrawer: React.FC<TrainingAreaDrawerProps> = ({
         {isLoading && (
           <div className="flex flex-col items-center justify-center">
             <Spinner />
-            <span className="text-gray">
+            <span className="text-grey">
               {MODELS_CONTENT.trainingArea.map.loadingText}
             </span>
           </div>

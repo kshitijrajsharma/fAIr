@@ -58,6 +58,7 @@ export const APPLICATION_ROUTES = {
   PROFILE_DATASETS: "/profile/datasets",
 };
 
+export const HOT_PRIVACY_POLICY_URL: string = "https://www.hotosm.org/privacy";
 /**
  * The navigation tabs used in the profile layout.
  */

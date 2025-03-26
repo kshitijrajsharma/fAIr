@@ -39,12 +39,12 @@ const baseModelOptions = [
 const ModelDetailsForm = () => {
   const { formData, handleChange } = useModelsContext();
   return (
-    <div className="flex flex-col gap-y-6">
+    <div className="flex flex-col gap-y-2 md:gap-y-4">
       <StepHeading
         heading={MODELS_CONTENT.modelCreation.modelDetails.pageTitle}
         description={MODELS_CONTENT.modelCreation.modelDetails.pageDescription}
       />
-      <div className="flex flex-col gap-y-10">
+      <div className="flex flex-col gap-y-6">
         <ModelNameFormInput
           value={formData.modelName}
           handleChange={(value) =>

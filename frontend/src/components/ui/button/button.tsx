@@ -1,9 +1,10 @@
 import useScreenSize from "@/hooks/use-screen-size";
-import { ButtonSize, ButtonVariant } from "@/types";
+import { ButtonSize } from "@/types";
 import { cn } from "@/utils";
 import { SlButton } from "@shoelace-style/shoelace/dist/react";
 import { Spinner } from "@/components/ui/spinner";
 import "./button.css";
+import { ButtonVariant } from "@/enums";
 
 type ButtonProps = {
   children: React.ReactNode;
@@ -20,7 +21,7 @@ type ButtonProps = {
 };
 const Button: React.FC<ButtonProps> = ({
   children,
-  variant = "primary",
+  variant = ButtonVariant.PRIMARY,
   className,
   onClick,
   spinner = false,

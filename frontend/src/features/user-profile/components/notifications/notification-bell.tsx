@@ -23,7 +23,7 @@ export const NotificationBell = ({
         <div className="relative">
           <NotificationBellIcon className="w-5 h-5" />
           <div
-            className={`w-2 h-2 text-white rounded-full absolute top-0 right-0 flex items-center justify-center ${unreadCount > 0 ? "bg-primary" : "bg-gray"}`}
+            className={`w-2 h-2 text-white rounded-full absolute top-0 right-0 flex items-center justify-center ${unreadCount > 0 ? "bg-primary" : "bg-grey"}`}
           ></div>
         </div>
       </button>

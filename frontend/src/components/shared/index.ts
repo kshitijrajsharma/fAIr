@@ -5,4 +5,6 @@ export * from "./pagination";
 export { TheFAIRProcess } from "./fair-process/fair-process";
 export { HotTracking } from "./hot-tracking";
 export { MadeWithLove } from "./made-with-love";
+export * from "./modals";
+export { ProtectedRoute } from "./protected-route";
 export * from "./filters";

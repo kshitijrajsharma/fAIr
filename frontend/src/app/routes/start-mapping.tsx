@@ -14,7 +14,7 @@ import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilej
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { UserProfile } from "@/components/layout";
+import { UserProfile } from "@/components/layouts";
 import { Feature, TileJSON, TModelPredictions } from "@/types";
 import {
   BrandLogoWithDropDown,
@@ -330,8 +330,8 @@ export const StartMappingPage = () => {
         />
         <div className="sticky top-0 bg-white z-10 px-4 xl:px-large py-1 hidden md:block">
           {/* Model Details Popup */}
-          {showModelDetailsPopup
-            && <ModelDetailsPopUp
+          {showModelDetailsPopup && (
+            <ModelDetailsPopUp
               showPopup={showModelDetailsPopup}
               handlePopup={handleModelDetailsPopup}
               closeMobileDrawer={() => setShowModelDetailsPopup(false)}
@@ -340,7 +340,7 @@ export const StartMappingPage = () => {
               modelInfoRequestIsPending={modelInfoRequestIspending}
               modelInfoRequestIsError={isError}
             />
-          }
+          )}
           {/* Web Header */}
           <StartMappingHeader
             modelInfo={modelInfo}

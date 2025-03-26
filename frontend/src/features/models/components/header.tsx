@@ -2,6 +2,7 @@ import { AddIcon } from "@/components/ui/icons";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { ButtonVariant } from "@/enums";
 
 const PageHeader = ({
   title,
@@ -11,6 +12,7 @@ const PageHeader = ({
   description?: string;
 }) => {
   const navigate = useNavigate();
+
   const handleClick = () => {
     navigate(APPLICATION_ROUTES.CREATE_NEW_MODEL);
   };
@@ -23,13 +25,13 @@ const PageHeader = ({
         </h1>
       </div>
       <div className="flex flex-col md:flex-row gap-y-6 justify-between">
-        <p className="max-w-[80%] md:max-w-[50%] text-gray text-body-2base md:text-body-2">
+        <p className="max-w-[80%] md:max-w-[50%] text-grey text-body-2base md:text-body-2">
           {description ?? MODELS_CONTENT.models.modelsList.description}
         </p>
         <div className="self-start">
           <ButtonWithIcon
             onClick={handleClick}
-            variant="primary"
+            variant={ButtonVariant.PRIMARY}
             prefixIcon={AddIcon}
             label={MODELS_CONTENT.models.modelsList.ctaButton}
           />

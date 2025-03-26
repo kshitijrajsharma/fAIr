@@ -4,29 +4,27 @@ import { MODELS_CONTENT } from "@/constants";
 import { showErrorToast } from "@/utils";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useCallback, useEffect } from "react";
-import { useGetTMSTileJSON } from "@/features/model-creation/hooks/use-tms-tilejson";
-
 import {
   MODEL_CREATION_FORM_NAME,
   useModelsContext,
 } from "@/app/providers/models-provider";
 import { useGetTrainingDataset } from "@/features/datasets/hooks/use-datasets";
+import { TileJSON } from "@/types";
 
 const OpenAerialMap = ({
-  tileJSONURL,
   map,
   trainingDatasetId,
+  OAMIsPending,
+  OAMIsError,
+  OAMData,
 }: {
-  tileJSONURL: string;
   map: Map | null;
   trainingDatasetId: number;
+  OAMIsPending: boolean;
+  OAMIsError: boolean;
+  OAMData: TileJSON;
 }) => {
   const { handleChange } = useModelsContext();
-
-  const { isPending, data, isError } = useGetTMSTileJSON(
-    tileJSONURL,
-    !!trainingDatasetId,
-  );
 
   const { data: trainingDataset, isError: trainingDatasetFetchError } =
     useGetTrainingDataset(trainingDatasetId);
@@ -38,18 +36,18 @@ const OpenAerialMap = ({
   }, [trainingDatasetFetchError]);
 
   const fitToTMSBounds = useCallback(() => {
-    if (!map || !data?.bounds) return;
-    map?.fitBounds(data?.bounds);
-  }, [map, data?.bounds]);
+    if (!map || !OAMData?.bounds) return;
+    map?.fitBounds(OAMData?.bounds);
+  }, [map, OAMData?.bounds]);
 
   useEffect(() => {
-    if (!data) return;
-    handleChange(MODEL_CREATION_FORM_NAME.OAM_BOUNDS, data.bounds);
-    handleChange(MODEL_CREATION_FORM_NAME.OAM_TILE_NAME, data.name);
-  }, [data]);
+    if (!OAMData) return;
+    handleChange(MODEL_CREATION_FORM_NAME.OAM_BOUNDS, OAMData.bounds);
+    handleChange(MODEL_CREATION_FORM_NAME.OAM_TILE_NAME, OAMData.name);
+  }, [OAMData]);
 
   useEffect(() => {
-    if (!map || !data?.bounds) return;
+    if (!map || !OAMData?.bounds) return;
     fitToTMSBounds();
   }, [map, fitToTMSBounds]);
 
@@ -59,21 +57,21 @@ const OpenAerialMap = ({
         {MODELS_CONTENT.modelCreation.trainingArea.form.openAerialMap}
       </p>
       <div className="flex flex-col w-full items-center justify-between gap-y-4">
-        {isError ? (
+        {OAMIsError ? (
           <p>
             {
               MODELS_CONTENT.modelCreation.trainingArea
                 .openAerialMapErrorMessage
             }
           </p>
-        ) : isPending ? (
+        ) : OAMIsPending ? (
           <div className="w-full h-16 bg-gray-border animate-pulse"></div>
         ) : (
           <>
             <div className="flex gap-x-3 justify-between w-full">
               <p
                 className="basis-4/5 text-start text-body-3 overflow-hidden text-ellipsis text-wrap w-full"
-                title={data?.name}
+                title={OAMData?.name}
               >
                 {trainingDataset?.name}
               </p>
@@ -85,7 +83,7 @@ const OpenAerialMap = ({
               >
                 <button
                   className="bg-off-white p-2 rounded-md h-fit w-fit "
-                  disabled={!map || isPending || isError}
+                  disabled={!map || OAMIsPending || OAMIsError}
                   onClick={fitToTMSBounds}
                 >
                   <FullScreenIcon className="icon-lg" />
@@ -95,11 +93,11 @@ const OpenAerialMap = ({
             <div className="flex items-center justify-between w-full gap-x-4">
               <p className="text-body-4">
                 {MODELS_CONTENT.modelCreation.trainingArea.form.maxZoom}{" "}
-                {data?.maxzoom ?? 0}
+                {OAMData?.maxzoom ?? 0}
               </p>
               <p className="text-body-4">
                 {MODELS_CONTENT.modelCreation.trainingArea.form.minZoom}{" "}
-                {data?.minzoom ?? 0}
+                {OAMData?.minzoom ?? 0}
               </p>
             </div>
           </>

@@ -21,13 +21,14 @@ import { TOAST_NOTIFICATIONS } from "@/constants";
  */
 export const useLogin = () => {
   const location = useLocation();
+  const currentPathWithQuery = `${location.pathname}${location.search}`;
 
   const { setSessionValue } = useSessionStorage();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (): Promise<void> => {
     setLoading(true);
-    setSessionValue(HOT_FAIR_SESSION_REDIRECT_KEY, location.pathname);
+    setSessionValue(HOT_FAIR_SESSION_REDIRECT_KEY, currentPathWithQuery);
     try {
       await authService.initializeOAuthFlow();
     } catch (error) {

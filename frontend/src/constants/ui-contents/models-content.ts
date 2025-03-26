@@ -47,12 +47,11 @@ export const MODELS_CONTENT: TModelsContent = {
           label: "Model Description",
           toolTip: "",
           helpText:
-            "Model description should descriptive, be at least 10 characters and at most 500 characters.",
+            "Model description should be descriptive, be at least 10 characters and at most 500 characters.",
           placeholder: "This model is used to detect damaged buildings in ...",
         },
       },
-      pageDescription:
-        "Model creation has steps as shown above. Please enter your model metadata below.",
+      pageDescription: "Please enter your model metadata below.",
     },
     trainingDataset: {
       pageTitle: "Training Dataset",
@@ -73,13 +72,12 @@ export const MODELS_CONTENT: TModelsContent = {
           toolTip:
             "Enter the Tile Map Service (TMS) URL. You can input the TMS from OpenAerialMap (OAM), or provide a custom one.",
           helpText:
-            "TMS imagery link should look like this https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}",
+            "TMS imagery link should look like this https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}. Please ensure your imagery URL complies with the license requirements.",
           placeholder: "https://tiles.openaerialmap.org/****/*/***/{z}/{x}/{y}",
         },
-        existingTrainingDatasetSectionHeading: "Existing Training Dataset",
         existingTrainingDatasetSectionDescription:
           "Browse or search for a dataset name. Select a dataset to proceed.",
-        newTrainingDatasetSectionHeading: "Create New Training Dataset",
+
         searchBar: {
           placeholder: "Enter a dataset name to search",
         },
@@ -108,7 +106,7 @@ export const MODELS_CONTENT: TModelsContent = {
       },
       pageTitle: "Create Training Area",
       datasetID: "Dataset ID:",
-      tutorialText: "Tutorial",
+      tutorialText: "Take a Tour",
       layerControl: {
         tmsLayerName: "TMS Layer",
         trainingAreaLayerName: "Training Areas",
@@ -167,7 +165,8 @@ export const MODELS_CONTENT: TModelsContent = {
         },
         trainingType: {
           label: "Select Model Training Type",
-          toolTip: "Choose the type of model training to apply.",
+          toolTip:
+            "Choose the type of model training to apply. Basic training is the fastest, ideal for quick results. Intermediate takes more time for balanced performance, while Advanced requires the longest time but provides the most optimized results.",
         },
         advancedSettings: {
           label: "Advanced Settings",
@@ -219,7 +218,7 @@ export const MODELS_CONTENT: TModelsContent = {
       ctaButton: "Create Model",
       filtersSection: {
         searchPlaceHolder: "Search",
-        mapViewToggleText: "Map View",
+        mapViewToggleText: "Show map",
       },
       sortingAndPaginationSection: {
         modelCountSuffix: "models",
@@ -322,7 +321,8 @@ export const MODELS_CONTENT: TModelsContent = {
       modelFilesDialog: {
         rootDirectory: "Root Directory",
         dialogTitle: "Model Files",
-        dialogDescription: "Click to download each file...",
+        dialogDescription:
+          "Model files contain trained parameters, weights, and configurations used for training the model. Browse expandable directories to access files. Hover over a file to reveal download and copy options.",
         error: "Error loading directories.",
       },
       trainingInfoDialog: {
@@ -340,6 +340,7 @@ export const MODELS_CONTENT: TModelsContent = {
         submitButtonText: "Submit",
       },
       modelEnhancement: {
+        dialogHeading: "Enhance Model",
         newSettings: {
           title: "Enhance with New Settings",
           description:

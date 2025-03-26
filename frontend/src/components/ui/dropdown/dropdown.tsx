@@ -10,7 +10,7 @@ import "./dropdown.css";
 
 export type DropdownMenuItem = {
   value: string;
-  onClick?: () => void;
+  onClick?: (e: any | undefined) => void;
   className?: string;
   name?: string;
   disabled?: boolean;

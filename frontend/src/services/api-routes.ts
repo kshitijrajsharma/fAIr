@@ -53,11 +53,7 @@ export const API_ENDPOINTS = {
   GET_TRAINING_DETAILS: (id: number) => `training/${id}`,
   GET_TRAINING_DATASETS: (searchQuery: string, ordering: string) =>
     `dataset/?search=${searchQuery}&ordering=${ordering}`,
-  GET_TRAINING_DATASETS_V2: (
-    searchQuery?: string,
-    ordering?: string,
-    userId?: number,
-  ) => `dataset/?search=${searchQuery}&ordering=${ordering}&user=${userId}`,
+  GET_TRAINING_DATASETS_V2: "dataset/",
   GET_TRAINING_DATASET: (id: number) => `dataset/${id}`,
   GET_TRAINING_AREA_GPX: (aoiId: number) => `aoi/gpx/${aoiId}`,
   GET_TRAINING_AREA_LABELS_FROM_OSM: (aoiId: number) =>
@@ -76,6 +72,7 @@ export const API_ENDPOINTS = {
   CREATE_TRAINING_AREA: "aoi/",
   CREATE_TRAINING_REQUEST: "training/",
   UPDATE_TRAINING: (id: number) => `training/publish/${id}/`,
+  TERMINATE_TRAINING: (id: number) => `training/terminate/${id}/`,
   DELETE_TRAINING_AREA: (id: number) => `aoi/${id}/`,
   UPLOAD_TRAINING_AREA_LABELS: (aioId: number) => `label/upload/${aioId}/`,
 

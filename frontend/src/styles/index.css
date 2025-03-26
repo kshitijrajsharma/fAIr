@@ -78,6 +78,7 @@ body {
   right: auto;
   top: 0;
   bottom: auto;
+  z-index: 1000000000000;
 }
 
 /* On Web, show at the bottom. */
@@ -87,6 +88,7 @@ body {
     right: auto;
     top: auto;
     bottom: 0;
+    z-index: 1000000000000;
   }
 }
 
@@ -137,17 +139,6 @@ sl-alert.success::part(base) {
 }
 
 /* Overriding the toast design styles ends*/
-
-/* Matomo placement style begins */
-
-.hot-matomo {
-  position: fixed;
-  z-index: 1000000000000;
-  bottom: 0;
-  width: 100vw;
-}
-
-/* Matomo placement style ends */
 
 /* Tailwind styles begins */
 

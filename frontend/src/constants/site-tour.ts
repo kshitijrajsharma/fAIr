@@ -1,0 +1,37 @@
+export const APP_TOUR_IDS = {
+  STEP_HEADING: "step-heading",
+  PROGRESS_BUTTONS: "progress-buttons",
+  FETCH_OSM_DATA: "fetch-osm-data",
+  DRAW_TRAINING_AREA: "draw-training-area",
+  MORE_INFORMATION: "more-information",
+  TUTORIAL_BUTTON: "tutorial-button",
+  TRAINING_AREA_TOOLS: "training-area-tools",
+};
+
+export const APP_TOUR_STEPS = [
+  {
+    selector: `#${APP_TOUR_IDS.DRAW_TRAINING_AREA}`,
+    content:
+      "Define a training area on the map. This area will be used for model training.",
+    position: "top",
+  },
+  {
+    selector: `#${APP_TOUR_IDS.TRAINING_AREA_TOOLS}`,
+    content:
+      "Hover on each tool to see its function. Use the tools to modify the training area.",
+  },
+  {
+    selector: `#${APP_TOUR_IDS.FETCH_OSM_DATA}`,
+    content:
+      "Fetch OpenStreetMap (OSM) data to use as labels for training. Ensure the data is relevant to your training area.",
+  },
+  {
+    selector: `#${APP_TOUR_IDS.MORE_INFORMATION}`,
+    content:
+      "Access additional options and details about the training area by clicking this icon.",
+  },
+  {
+    selector: `#${APP_TOUR_IDS.TUTORIAL_BUTTON}`,
+    content: "Restart the tour at any time by clicking this button.",
+  },
+];

@@ -1,7 +1,7 @@
 import Input from "@/components/ui/form/input/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
-import { INPUT_TYPES, SHOELACE_SIZES } from "@/enums";
+import { ButtonVariant, INPUT_TYPES, SHOELACE_SIZES } from "@/enums";
 
 type DateRangePickerProps = {
   startDate: string;
@@ -58,7 +58,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           )}
         >
           <Button
-            variant="default"
+            variant={ButtonVariant.DEFAULT}
             size={SHOELACE_SIZES.MEDIUM}
             onClick={onClear}
           >
@@ -66,7 +66,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
           </Button>
 
           <Button
-            variant="tertiary"
+            variant={ButtonVariant.TERTIARY}
             size={SHOELACE_SIZES.MEDIUM}
             onClick={onApply}
           >

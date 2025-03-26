@@ -65,7 +65,6 @@ export const PageNotFound = () => {
           </span>
         </h1>
         <Button
-          variant="primary"
           onClick={() => {
             navigate(
               modelNotFound

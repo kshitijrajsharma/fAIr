@@ -53,7 +53,7 @@ export const ResourcesPage = () => {
 //         <h2 className="text-body-1 lg:text-title-3 font-bold text-dark">
 //           {truncateString(article.title, 50)}
 //         </h2>
-//         <p className="text-body-2base lg:text-body-2 text-gray">
+//         <p className="text-body-2base lg:text-body-2 text-grey">
 //           {truncateString(article.snippet, 120)}
 //         </p>
 //         <Link href={article.link} blank title={article.title}>

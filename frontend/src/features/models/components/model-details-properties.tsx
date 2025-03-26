@@ -53,7 +53,7 @@ const PropertyDisplay: React.FC<PropertyDisplayProps> = ({
   const { copyToClipboard } = useCopyToClipboard();
   return (
     <div className="row-span-1 col-span-1 flex flex-col gap-y-5">
-      <span className="text-gray text-body-2base md:text-body-2 flex items-center gap-x-4 text-nowrap ">
+      <span className="text-grey text-body-2base md:text-body-2 flex items-center gap-x-4 text-nowrap ">
         {label}
         {tooltip && <ToolTip content={tooltip} />}
       </span>
@@ -345,7 +345,7 @@ const FailedTrainingTraceBack = ({ taskId }: { taskId: string }) => {
     <div className="col-span-3 flex flex-col gap-y-2 w-full">
       <button
         onClick={() => setShowLogs(!showLogs)}
-        className="flex items-center gap-x-2 text-gray text-body-2"
+        className="flex items-center gap-x-2 text-grey text-body-2"
       >
         <p>{MODELS_CONTENT.models.modelsDetailsCard.trainingInfoDialog.logs}</p>
         <ChevronDownIcon className={`icon ${showLogs && "rotate-180"}`} />

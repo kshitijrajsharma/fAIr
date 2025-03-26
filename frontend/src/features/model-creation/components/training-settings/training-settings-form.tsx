@@ -1,4 +1,4 @@
-import { BASE_MODELS, INPUT_TYPES, TrainingType } from "@/enums";
+import { BASE_MODELS, ButtonVariant, INPUT_TYPES, TrainingType } from "@/enums";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { CheckboxGroup, FormLabel, Input } from "@/components/ui/form";
 import { ChevronDownIcon } from "@/components/ui/icons";
@@ -99,7 +99,7 @@ const TrainingSettingsForm = () => {
       MODEL_CREATION_FORM_NAME.BOUNDARY_WIDTH,
       defaultTrainingSettings[formData.trainingType].boundaryWidth,
     );
-  }, [formData.trainingType]);
+  }, [formData.trainingType, formData.baseModel]);
 
   return (
     <div className="flex flex-col gap-y-20 w-full">
@@ -155,7 +155,9 @@ const TrainingSettingsForm = () => {
               }
               label={type.label}
               variant={
-                formData.trainingType === type.label ? "dark" : "default"
+                formData.trainingType === type.label
+                  ? ButtonVariant.DARK
+                  : ButtonVariant.DEFAULT
               }
               prefixIcon={type.Icon}
               iconClassName="md:icon-lg"

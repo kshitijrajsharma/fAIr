@@ -56,7 +56,7 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
         isOpened={isOpened}
         closeDialog={closeDialog}
         label={
-          MODELS_CONTENT.models.modelsDetailsCard.modelUpdate.dialogHeading
+          MODELS_CONTENT.models.modelsDetailsCard.modelEnhancement.dialogHeading
         }
       >
         <ModelTrainingSettingsDialog
@@ -72,15 +72,17 @@ const ModelEnhancementDialog: React.FC<ModelEnhancementDialogProps> = ({
               className="border border-gray-border rounded-lg px-2 hover:border-primary flex items-center justify-between"
             >
               <button
-                className="text-start transition-colors p-6"
+                className="text-start transition-colors p-6 w-5/6"
                 onClick={option.onClick}
               >
                 <span className="flex flex-col gap-y-2">
                   <p className="text-dark text-body-1">{option.name}</p>
-                  <p className="text-gray text-body-3">{option.description}</p>
+                  <p className="text-grey text-body-3">{option.description}</p>
                 </span>
               </button>
-              <ChevronDownIcon className="icon -rotate-90" />
+              <div className="w-1/6 text-right">
+                <ChevronDownIcon className="icon -rotate-90" />
+              </div>
             </li>
           ))}
         </ul>

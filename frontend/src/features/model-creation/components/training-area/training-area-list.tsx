@@ -47,7 +47,7 @@ const TrainingAreaList = ({
             {data?.count ?? 0}
           </span>
         </p>
-        <span className="flex flex-col gap-y-1 text-gray italic">
+        <span className="flex flex-col gap-y-1 text-grey italic">
           {isOSMPending || isOSMError ? (
             ""
           ) : (
@@ -72,7 +72,6 @@ const TrainingAreaList = ({
             offset={offset}
             disableNextPage={!data?.hasNext || isPlaceholderData}
             disablePrevPage={!data?.hasPrev}
-            pageLimit={20}
             totalLength={data?.count}
             setOffset={setOffset}
             isPlaceholderData={isPlaceholderData}
@@ -85,7 +84,7 @@ const TrainingAreaList = ({
         {data?.count === 0 ? (
           <div className="flex items-center justify-center flex-col gap-y-10 text-center">
             <NoTrainingAreaIcon />
-            <p className="text-gray">
+            <p className="text-grey">
               No Training Area (TA) added yet. Start by drawing a TA on the map
               or upload a TA from your device.
             </p>

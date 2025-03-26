@@ -174,7 +174,7 @@ const initialFormState: FormData = {
   [MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]: "",
   [MODEL_CREATION_FORM_NAME.BASE_MODELS]: BASE_MODELS.RAMP,
   [MODEL_CREATION_FORM_NAME.TRAINING_DATASET_OPTION]:
-    TrainingDatasetOption.NONE,
+    TrainingDatasetOption.USE_EXISTING,
   // create new dataset form
   [MODEL_CREATION_FORM_NAME.DATASET_NAME]: "",
   [MODEL_CREATION_FORM_NAME.TMS_URL]: "",
@@ -238,8 +238,8 @@ const ModelsContext = createContext<{
   isModelOwner: boolean;
 }>({
   formData: initialFormState,
-  setFormData: () => {},
-  handleChange: () => {},
+  setFormData: () => { },
+  handleChange: () => { },
   createNewTrainingDatasetMutation: {} as UseMutationResult<
     TTrainingDataset,
     Error,
@@ -254,13 +254,13 @@ const ModelsContext = createContext<{
   >,
   hasLabeledTrainingAreas: false,
   hasAOIsWithGeometry: false,
-  resetState: () => {},
+  resetState: () => { },
   isEditMode: false,
   modelId: "",
   getFullPath: () => "",
-  handleModelCreationAndUpdate: () => {},
+  handleModelCreationAndUpdate: () => { },
   trainingDatasetCreationInProgress: false,
-  handleTrainingDatasetCreation: () => {},
+  handleTrainingDatasetCreation: () => { },
   validateEditMode: false,
   isPending: false,
   isError: false,

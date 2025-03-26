@@ -127,11 +127,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.access_token);
     } catch (error) {
       showErrorToast(error, TOAST_NOTIFICATIONS.authenticationFailed);
-      // Delay for 3 seconds, incase it's the network speed.
+      // Delay for 5 seconds, incase it's the network speed.
       // Otherwise, redirect the user back to the home page.
       setTimeout(() => {
         window.location.href = APPLICATION_ROUTES.HOMEPAGE;
-      }, 3000);
+      }, 5000);
     }
   };
 

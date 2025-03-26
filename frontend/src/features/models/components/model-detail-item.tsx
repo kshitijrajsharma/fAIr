@@ -6,7 +6,7 @@ const ModelDetailItem = ({
   value?: string;
 }) => (
   <p className="text-dark text-body-2">
-    <span className="text-gray">{label}: </span>
+    <span className="text-grey">{label}: </span>
     {value}
   </p>
 );
