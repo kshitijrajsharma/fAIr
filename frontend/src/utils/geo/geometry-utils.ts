@@ -371,16 +371,22 @@ export const handleConflation = (
     );
 
     if (intersectingIndex !== -1) {
+      // Replace the intersecting feature in updatedAll.
       updatedAll[intersectingIndex] = {
         ...newFeature,
         properties: {
           ...newFeature.properties,
-          // Reuse existing id if available, or generate a new one.
           id: updatedAll[intersectingIndex].properties?.id || uuid4(),
           config: predictionConfig,
         },
       };
-    } else if (!intersectsAccepted && !intersectsRejected) {
+    } else if (
+      !intersectsAccepted &&
+      !intersectsRejected &&
+      !updatedAll.some((existingFeature) =>
+        booleanIntersects(newFeature, existingFeature),
+      )
+    ) {
       updatedAll.push({
         ...newFeature,
         properties: {
