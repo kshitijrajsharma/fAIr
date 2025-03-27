@@ -104,12 +104,12 @@ export const StartMappingPage = () => {
   const [query, setQuery] = useState<TQueryParams>(() => {
     return {
       [SEARCH_PARAMS.useJOSMQ]:
-        searchParams.get(SEARCH_PARAMS.useJOSMQ) || false,
+        searchParams.get(SEARCH_PARAMS.useJOSMQ) || true,
       [SEARCH_PARAMS.confidenceLevel]:
-        searchParams.get(SEARCH_PARAMS.confidenceLevel) || 90,
+        searchParams.get(SEARCH_PARAMS.confidenceLevel) || 50,
       [SEARCH_PARAMS.tolerance]:
-        searchParams.get(SEARCH_PARAMS.tolerance) || 0.5,
-      [SEARCH_PARAMS.area]: searchParams.get(SEARCH_PARAMS.area) || 4,
+        searchParams.get(SEARCH_PARAMS.tolerance) || 0.3,
+      [SEARCH_PARAMS.area]: searchParams.get(SEARCH_PARAMS.area) || 3,
     };
   });
   const { setValue, getValue } = useLocalStorage();
