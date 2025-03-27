@@ -30,7 +30,7 @@ export const NavLogo = ({
         width={width}
         height={height}
       />
-      <p className="font-semibold text-base md:text-title-3">fAIr</p>
+      <p className="font-semibold text-sm md:text-body-1">fAIr</p>
     </button>
   );
 };
