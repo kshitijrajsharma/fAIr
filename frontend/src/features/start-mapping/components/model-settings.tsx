@@ -13,6 +13,7 @@ import {
   SHOELACE_SELECT_SIZES,
   SHOELACE_SIZES,
 } from "@/enums";
+import { useEffect, useState } from "react";
 
 const confidenceLevels = [
   {
@@ -56,6 +57,22 @@ export const ModelSettings = ({
       [key]: val,
     });
   };
+
+  const [toleranceValidity, setToleranceValidity] = useState(true);
+  const [areaValidity, setAreaValidity] = useState(true);
+
+  /**
+   * Reset tolerance and area to default values if they are invalid.
+   * If the user enters a value that is not a number or greater than the limit, the input will be invalid.
+   */
+  useEffect(() => {
+    if (!toleranceValidity) {
+      handleQueryUpdate(SEARCH_PARAMS.tolerance, 0);
+    }
+    if (!areaValidity) {
+      handleQueryUpdate(SEARCH_PARAMS.area, 0);
+    }
+  }, [toleranceValidity, areaValidity]);
 
   const modelSettings = (
     <div className="flex flex-col bg-white p-3 justify-between rounded-xl flex-wrap gap-y-4">
@@ -112,7 +129,12 @@ export const ModelSettings = ({
               Number(event.target.value),
             )
           }
+          validationStateUpdateCallback={(validity) => {
+            setToleranceValidity(validity.valid)
+          }
+          }
           min={0}
+          max={10}
           step={0.1}
         />
       </div>
@@ -134,6 +156,10 @@ export const ModelSettings = ({
             handleQueryUpdate(SEARCH_PARAMS.area, Number(event.target.value))
           }
           min={0}
+          max={20}
+          validationStateUpdateCallback={(validity) => {
+            setAreaValidity(validity.valid)
+          }}
         />
       </div>
     </div>
