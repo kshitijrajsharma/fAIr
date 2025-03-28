@@ -108,7 +108,7 @@ export const ModelsPage = () => {
 
     if (query[SEARCH_PARAMS.layout] === LayoutView.LIST) {
       return (
-        <div className="col-span-5">
+        <div className="col-span-5 overflow-x-auto ">
           <ModelListTableLayout
             isPending={isPending}
             models={data?.results}
