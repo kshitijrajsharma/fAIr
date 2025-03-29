@@ -1,5 +1,9 @@
 import { DropDown } from "@/components/ui/dropdown";
-import { ELEMENT_DISTANCE_FROM_NAVBAR, MAXIMUM_PREDICTION_AREA, MAXIMUM_PREDICTION_TOLERANCE } from "@/config";
+import {
+  ELEMENT_DISTANCE_FROM_NAVBAR,
+  MAXIMUM_PREDICTION_AREA,
+  MAXIMUM_PREDICTION_TOLERANCE,
+} from "@/config";
 import { FormLabel, Input, Select, Switch } from "@/components/ui/form";
 import { SEARCH_PARAMS, TQueryParams } from "@/app/routes/start-mapping";
 import { SettingsIcon } from "@/components/ui/icons";
@@ -130,9 +134,8 @@ export const ModelSettings = ({
             )
           }
           validationStateUpdateCallback={(validity) => {
-            setToleranceValidity(validity.valid)
-          }
-          }
+            setToleranceValidity(validity.valid);
+          }}
           min={0}
           max={MAXIMUM_PREDICTION_TOLERANCE}
           step={0.1}
@@ -158,7 +161,7 @@ export const ModelSettings = ({
           min={0}
           max={MAXIMUM_PREDICTION_AREA}
           validationStateUpdateCallback={(validity) => {
-            setAreaValidity(validity.valid)
+            setAreaValidity(validity.valid);
           }}
         />
       </div>

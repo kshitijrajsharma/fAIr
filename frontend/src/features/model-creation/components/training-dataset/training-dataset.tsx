@@ -11,7 +11,7 @@ import { useCallback } from "react";
 import { TabGroup } from "@/components/ui/tab-group";
 
 const TrainingDatasetForm = () => {
-  const { handleChange, formData, } = useModelsContext();
+  const { handleChange, formData } = useModelsContext();
 
   const resetFormState = useCallback(() => {
     handleChange(MODEL_CREATION_FORM_NAME.SELECTED_TRAINING_DATASET_ID, "");
