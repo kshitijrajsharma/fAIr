@@ -30,6 +30,7 @@ import {
 import { Link } from "@/components/ui/link";
 import { ModelTrainingStatus } from "@/enums";
 
+
 type TrainingHistoryTableProps = {
   modelId?: string;
   publishedTrainingId?: number;
@@ -267,7 +268,8 @@ const columnDefinitions = (
                     },
                     disabled:
                       row.getValue("status") === ModelTrainingStatus.FAILED ||
-                      row.getValue("status") === ModelTrainingStatus.IN_PROGRESS,
+                      row.getValue("status") === ModelTrainingStatus.IN_PROGRESS ||
+                      row.getValue("status") === ModelTrainingStatus.SUBMITTED,
                   },
                   {
                     name: "Cancel training",
@@ -308,7 +310,7 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
   const [offset, setOffset] = useState<number>(0);
   const { user, isAuthenticated } = useAuth();
 
-  const { data, isPending, isPlaceholderData } = useTrainingHistory(
+  const { data, isPending, isPlaceholderData, refetch } = useTrainingHistory(
     offset,
     PAGE_LIMIT,
     "-id",
@@ -341,6 +343,7 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
     mutationConfig: {
       onSuccess: () => {
         showSuccessToast("Training has been cancelled successfully.");
+        refetch()
       },
       onError: (err) => {
         showErrorToast(err);
@@ -390,7 +393,7 @@ const TrainingHistoryTable: React.FC<TrainingHistoryTableProps> = ({
             />
           </div>
         </div>
-        <div className="max-w-full overflow-x-auto">
+        <div className="max-w-full overflow-auto">
           <DataTable
             data={data?.results as TTrainingDetails[]}
             columns={columnDefinitions(

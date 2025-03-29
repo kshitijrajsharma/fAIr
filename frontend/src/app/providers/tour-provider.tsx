@@ -21,10 +21,10 @@ type TTourContext = {
 };
 
 const AppTourContext = createContext<TTourContext>({
-  startTrainingAreaTour: () => { },
-  stopTrainingAreaTour: () => { },
+  startTrainingAreaTour: () => {},
+  stopTrainingAreaTour: () => {},
   showTourModal: false,
-  setShowTourModal: () => { },
+  setShowTourModal: () => {},
 });
 
 export const useAppTour = () => {
@@ -52,9 +52,9 @@ export const AppTourProvider: React.FC<AppTourProviderProps> = ({
     setShowTourModal(false);
     setIsOpen(true);
     // @ts-expect-error bad types definition
-    setSteps(prevSteps => {
-      const visibleSteps = APP_TOUR_STEPS.filter(step =>
-        document.querySelector(step.selector)
+    setSteps((prevSteps) => {
+      const visibleSteps = APP_TOUR_STEPS.filter((step) =>
+        document.querySelector(step.selector),
       );
       return visibleSteps;
     });

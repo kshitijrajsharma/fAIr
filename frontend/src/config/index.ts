@@ -228,7 +228,6 @@ export const MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS: number = parseIntEnv(
   18,
 );
 
-
 /**
  * OSM Basemap style.
  */
@@ -438,11 +437,8 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-  1000 +
+    1000 +
   REFRESH_BUFFER_MS;
-
-
-
 
 /**
  * The maximum tolerance for a prediction to be considered valid in the start mapping page.
@@ -452,7 +448,6 @@ export const MAXIMUM_PREDICTION_TOLERANCE: number = parseIntEnv(
   10,
 );
 
-
 /**
  * The maximum area for a prediction to be considered valid in the start mapping page.
  */
@@ -460,8 +455,6 @@ export const MAXIMUM_PREDICTION_AREA: number = parseIntEnv(
   ENVS.MAXIMUM_PREDICTION_AREA,
   20,
 );
-
-
 
 // ==============================================================================================================================
 // UI Settings

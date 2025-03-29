@@ -72,17 +72,14 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
     if (currentPath.includes(MODELS_ROUTES.DETAILS)) {
       return (
         formData.modelName.length >=
-        FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME]
-          .minLength &&
+          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME]
+            .minLength &&
         formData.modelDescription.length >=
-        FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]
-          .minLength
+          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]
+            .minLength
       );
     } else if (currentPath.includes(MODELS_ROUTES.TRAINING_DATASET)) {
-
-      if (
-        formData.trainingDatasetOption === TrainingDatasetOption.CREATE_NEW
-      ) {
+      if (formData.trainingDatasetOption === TrainingDatasetOption.CREATE_NEW) {
         // If the form submission is in progress or if any error disable the continue button.
         if (trainingDatasetCreationInProgress) {
           return true;
@@ -90,8 +87,8 @@ const ProgressButtons: React.FC<ProgressButtonsProps> = ({
         return (
           formData.tmsURLValidation.valid &&
           formData.datasetName.length >=
-          FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.DATASET_NAME]
-            .minLength
+            FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.DATASET_NAME]
+              .minLength
         );
       } else if (
         formData.trainingDatasetOption === TrainingDatasetOption.USE_EXISTING

@@ -344,12 +344,12 @@ export const MODELS_CONTENT: TModelsContent = {
         newSettings: {
           title: "Enhance with New Settings",
           description:
-            "Enhance the model by using the same training dataset but fine tuning again using different training setting!",
+            "Enhance the model by using the same training dataset but fine tuning again using different training setting.",
         },
         trainingData: {
           title: "Enhance with Training Data",
           description:
-            "Enhance the model and its training dataset, you will be redirected to model creation progress and have the ability to modify the training dataset and then submit a new training with your preferred training settings",
+            "Enhance the model and its training dataset, you will be redirected to model creation progress and have the ability to modify the training dataset and then submit a new training with your preferred training settings.",
         },
       },
     },
