@@ -179,19 +179,7 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
 
     if is_valid_offset(offset):
         print(f"Applying Offset: {offset}")
-        shifted_gdf = shift_labels_by_offset(serialized_field.data, offset)
-        shifted_gdf.to_file(
-            os.path.join(training_input_image_source, "labels.geojson"),
-            driver="GeoJSON",
-            encoding="utf-8",
-        )
-    else:
-        with open(
-            os.path.join(training_input_image_source, "labels.geojson"),
-            "w",
-            encoding="utf-8",
-        ) as f:
-            f.write(json.dumps(serialized_field.data))
+        serialized_field.data = shift_labels_by_offset(serialized_field.data, offset)
 
     return training_input_image_source, aoi_serializer, serialized_field
 
@@ -288,10 +276,9 @@ def ramp_model_training(
     with open(os.path.join(output_path, "checkpoint.tflite"), "wb") as f:
         f.write(tflite_model)
 
-    shutil.copytree(
-        os.path.join(training_input_image_source, "labels.geojson"),
-        os.path.join(output_path, "labels.geojson"),
-    )
+    with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
+        f.write(json.dumps(serialized_field.data))
+
     with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
         f.write(json.dumps(aoi_serializer.data))
 
@@ -472,10 +459,8 @@ def yolo_model_training(
         ),
     )
 
-    shutil.copytree(
-        os.path.join(training_input_image_source, "labels.geojson"),
-        os.path.join(output_path, "labels.geojson"),
-    )
+    with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
+        f.write(json.dumps(serialized_field.data))
 
     with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
         f.write(json.dumps(aoi_serializer.data))

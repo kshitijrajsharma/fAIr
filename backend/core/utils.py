@@ -511,4 +511,4 @@ def shift_labels_by_offset(serialized_labels, offset):
     gdf["geometry"] = gdf["geometry"].apply(
         lambda geom: translate(geom, xoff=offset[0], yoff=offset[1])
     )
-    return gdf
+    return gdf.to_json()
