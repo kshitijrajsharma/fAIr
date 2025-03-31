@@ -119,6 +119,8 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
         get_start_end_download_coords,
     )
 
+    print("Initalizing data preparation")
+
     def is_valid_offset(offset):
         return (
             isinstance(offset, list)
@@ -176,9 +178,9 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
     offset = training_instance.model.dataset.offset
 
     if is_valid_offset(offset):
-        logger.info(f"Applying Offset: {offset}")
-        gdf = shift_labels_by_offset(serialized_field.data, offset)
-        gdf.to_file(
+        print(f"Applying Offset: {offset}")
+        shifted_gdf = shift_labels_by_offset(serialized_field.data, offset)
+        shifted_gdf.to_file(
             os.path.join(training_input_image_source, "labels.geojson"),
             driver="GeoJSON",
             encoding="utf-8",
