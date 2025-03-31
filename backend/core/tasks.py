@@ -176,6 +176,7 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
     offset = training_instance.model.dataset.offset
 
     if is_valid_offset(offset):
+        logger.info(f"Applying Offset: {offset}")
         gdf = shift_labels_by_offset(serialized_field.data, offset)
         gdf.to_file(
             os.path.join(training_input_image_source, "labels.geojson"),
