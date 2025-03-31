@@ -146,6 +146,30 @@ class ModelCentroidSerializer(GeoFeatureModelSerializer):
         return None
 
 
+class DatasetCentroidSerializer(GeoFeatureModelSerializer):
+    geometry = serializers.SerializerMethodField()
+    did = serializers.IntegerField(source="id")
+
+    class Meta:
+        model = Dataset
+        geo_field = "geometry"
+        # fields = ("did", "geometry")
+        fields = ("did", "name", "geometry")
+
+    def get_geometry(self, obj):
+        """
+        Get the centroid of the AOI linked to the dataset of the given model.
+        """
+        aoi = AOI.objects.filter(dataset=obj.id).first()
+        if aoi and aoi.geom:
+            return {
+                "type": "Point",
+                "coordinates": aoi.geom.centroid.coords,
+            }
+        return None
+
+
+
 class AOISerializer(
     GeoFeatureModelSerializer
 ):  # serializers are used to translate models objects to api
