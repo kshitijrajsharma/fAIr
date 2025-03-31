@@ -1,10 +1,11 @@
 import mercantile
 from django.conf import settings
-from login.models import OsmUser
 from rest_framework import serializers
 from rest_framework_gis.serializers import (
     GeoFeatureModelSerializer,  # this will be used if we used to serialize as geojson
 )
+
+from login.models import OsmUser
 
 from .models import *
 
@@ -42,6 +43,7 @@ class DatasetSerializer(serializers.ModelSerializer):
             "created_at",
             "status",
             "models_count",
+            "offset",
             "user",
         ]
         read_only_fields = (
@@ -167,7 +169,6 @@ class DatasetCentroidSerializer(GeoFeatureModelSerializer):
                 "coordinates": aoi.geom.centroid.coords,
             }
         return None
-
 
 
 class AOISerializer(
