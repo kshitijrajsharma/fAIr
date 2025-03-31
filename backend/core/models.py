@@ -26,7 +26,7 @@ class Dataset(models.Model):
     offset = ArrayField(
         base_field=models.FloatField(),
         size=2,
-        default=lambda: [0.0, 0.0],
+        default=[0.0, 0.0],
         verbose_name="Imagery Offset [x, y]",
     )
 
