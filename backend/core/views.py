@@ -57,6 +57,7 @@ from .serializers import (
     AOISerializer,
     ApprovedPredictionsSerializer,
     BannerSerializer,
+    DatasetCentroidSerializer,
     DatasetSerializer,
     FeedbackAOISerializer,
     FeedbackLabelSerializer,
@@ -356,6 +357,19 @@ class ModelCentroidView(ListAPIView):
     )
     filterset_fields = ["id"]
     search_fields = ["name"]
+    pagination_class = None
+
+
+class DatasetCentroidView(ListAPIView):
+    queryset = Dataset.objects.filter(status=0)  ## only deliver the active datasets
+    serializer_class = DatasetCentroidSerializer
+    filter_backends = (
+        # InBBoxFilter,
+        DjangoFilterBackend,
+        filters.SearchFilter,
+    )
+    filterset_fields = ["id"]
+    search_fields = ["name","id"]
     pagination_class = None
 
 
