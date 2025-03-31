@@ -185,7 +185,7 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
             driver="GeoJSON",
             encoding="utf-8",
         )
-        labels_geojson = gdf.to_json()
+        labels_geojson = json.loads(gdf.to_json())
     else:
         with open(
             os.path.join(training_input_image_source, "labels.geojson"),
