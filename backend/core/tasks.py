@@ -176,12 +176,11 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
         serialized_field = LabelFileSerializer(label, many=True)
 
     offset = training_instance.model.dataset.offset
-
+    labels_geojson = serialized_field.data
     if is_valid_offset(offset):
         print(f"Applying Offset: {offset}")
-        serialized_field.data = shift_labels_by_offset(serialized_field.data, offset)
-
-    return training_input_image_source, aoi_serializer, serialized_field
+        labels_geojson = shift_labels_by_offset(serialized_field.data, offset)
+    return training_input_image_source, aoi_serializer, labels_geojson
 
 
 def ramp_model_training(
@@ -277,7 +276,7 @@ def ramp_model_training(
         f.write(tflite_model)
 
     with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(serialized_field.data))
+        f.write(json.dumps(serialized_field))
 
     with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
         f.write(json.dumps(aoi_serializer.data))
@@ -460,7 +459,7 @@ def yolo_model_training(
     )
 
     with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(serialized_field.data))
+        f.write(json.dumps(serialized_field))
 
     with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
         f.write(json.dumps(aoi_serializer.data))
