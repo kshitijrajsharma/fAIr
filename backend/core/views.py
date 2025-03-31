@@ -361,7 +361,7 @@ class ModelCentroidView(ListAPIView):
 
 
 class DatasetCentroidView(ListAPIView):
-    queryset = Dataset.objects.filter(status=0)  ## only deliver the published model
+    queryset = Dataset.objects.filter(status=0)  ## only deliver the active datasets
     serializer_class = DatasetCentroidSerializer
     filter_backends = (
         # InBBoxFilter,
