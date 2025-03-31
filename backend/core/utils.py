@@ -506,9 +506,27 @@ def send_notification(training_instance, status):
 
 
 def shift_labels_by_offset(serialized_labels, offset):
-    """Shifts label geometries by [x, y] offset (in coordinate units)."""
+    """
+    Shifts label geometries by [x, y] offset in meters.
+
+    Args:
+        serialized_labels (dict): GeoJSON-like dictionary with features
+        offset (list): [x, y] offset in meters
+
+    Returns:
+        GeoDataFrame: GeoDataFrame with shifted geometries
+    """
     gdf = gpd.GeoDataFrame.from_features(serialized_labels["features"])
-    gdf["geometry"] = gdf["geometry"].apply(
+
+    if gdf.crs is None:
+        gdf.set_crs(epsg=4326, inplace=True)
+
+    gdf_mercator = gdf.to_crs(epsg=3857)
+    # because we want shifting happens in meters not degrees
+    gdf_mercator["geometry"] = gdf_mercator["geometry"].apply(
         lambda geom: translate(geom, xoff=offset[0], yoff=offset[1])
     )
-    return gdf
+
+    gdf_shifted = gdf_mercator.to_crs(epsg=4326)
+
+    return gdf_shifted
