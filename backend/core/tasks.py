@@ -288,9 +288,10 @@ def ramp_model_training(
     with open(os.path.join(output_path, "checkpoint.tflite"), "wb") as f:
         f.write(tflite_model)
 
-    with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(serialized_field.data))
-
+    shutil.copytree(
+        os.path.join(training_input_image_source, "labels.geojson"),
+        os.path.join(output_path, "labels.geojson"),
+    )
     with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
         f.write(json.dumps(aoi_serializer.data))
 
@@ -471,8 +472,10 @@ def yolo_model_training(
         ),
     )
 
-    with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(serialized_field.data))
+    shutil.copytree(
+        os.path.join(training_input_image_source, "labels.geojson"),
+        os.path.join(output_path, "labels.geojson"),
+    )
 
     with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
         f.write(json.dumps(aoi_serializer.data))
