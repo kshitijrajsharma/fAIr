@@ -179,7 +179,20 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
     labels_geojson = serialized_field.data
     if is_valid_offset(offset):
         print(f"Applying Offset: {offset}")
-        labels_geojson = shift_labels_by_offset(serialized_field.data, offset)
+        gdf = shift_labels_by_offset(serialized_field.data, offset)
+        gdf.to_file(
+            os.path.join(training_input_image_source, "labels.geojson"),
+            driver="GeoJSON",
+            encoding="utf-8",
+        )
+        labels_geojson = gdf.to_json()
+    else:
+        with open(
+            os.path.join(training_input_image_source, "labels.geojson"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(json.dumps(serialized_field.data))
     return training_input_image_source, aoi_serializer, labels_geojson
 
 
