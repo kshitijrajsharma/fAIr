@@ -9,6 +9,12 @@ import tarfile
 import time
 
 from celery import shared_task
+from django.conf import settings
+from django.contrib.gis.db.models.aggregates import Extent
+from django.contrib.gis.geos import GEOSGeometry
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 from core.models import (
     AOI,
     Feedback,
@@ -27,13 +33,8 @@ from core.serializers import (
     LabelFileSerializer,
 )
 from core.utils import bbox, is_dir_empty
-from django.conf import settings
-from django.contrib.gis.db.models.aggregates import Extent
-from django.contrib.gis.geos import GEOSGeometry
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
-from .utils import S3Uploader, send_notification
+from .utils import S3Uploader, send_notification, shift_labels_by_offset
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -118,6 +119,13 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
         get_start_end_download_coords,
     )
 
+    def is_valid_offset(offset):
+        return (
+            isinstance(offset, list)
+            and len(offset) == 2
+            and not (float(offset[0]) == 0 and float(offset[1]) == 0)
+        )
+
     training_input_base_path = os.path.join(
         settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}"
     )
@@ -165,12 +173,22 @@ def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_ima
         label = Label.objects.filter(aoi__in=[r.id for r in aois])
         serialized_field = LabelFileSerializer(label, many=True)
 
-    with open(
-        os.path.join(training_input_image_source, "labels.geojson"),
-        "w",
-        encoding="utf-8",
-    ) as f:
-        f.write(json.dumps(serialized_field.data))
+    offset = training_instance.model.dataset.offset
+
+    if is_valid_offset(offset):
+        gdf = shift_labels_by_offset(serialized_field.data, offset)
+        gdf.to_file(
+            os.path.join(training_input_image_source, "labels.geojson"),
+            driver="GeoJSON",
+            encoding="utf-8",
+        )
+    else:
+        with open(
+            os.path.join(training_input_image_source, "labels.geojson"),
+            "w",
+            encoding="utf-8",
+        ) as f:
+            f.write(json.dumps(serialized_field.data))
 
     return training_input_image_source, aoi_serializer, serialized_field
 

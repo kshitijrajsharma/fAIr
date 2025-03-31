@@ -12,12 +12,14 @@ from xml.dom import ValidationErr
 from zipfile import ZipFile
 
 import boto3
+import geopandas as gpd
 import requests
 from botocore.exceptions import ClientError, NoCredentialsError
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackSegment, GPXWaypoint
+from shapely.affinity import translate
 from tqdm import tqdm
 
 from .models import AOI, FeedbackAOI, FeedbackLabel, Label, UserNotification
@@ -501,3 +503,12 @@ def send_notification(training_instance, status):
                 recipient_list=[training_instance.user.email],
                 fail_silently=False,
             )
+
+
+def shift_labels_by_offset(serialized_labels, offset):
+    """Shifts label geometries by [x, y] offset (in coordinate units)."""
+    gdf = gpd.GeoDataFrame.from_features(serialized_labels["features"])
+    gdf["geometry"] = gdf["geometry"].apply(
+        lambda geom: translate(geom, xoff=offset[0], yoff=offset[1])
+    )
+    return gdf
