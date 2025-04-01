@@ -14,6 +14,7 @@ import { useAuth } from "@/app/providers/auth-provider";
 import { useDialog } from "@/hooks/use-dialog";
 import { useNavigate } from "react-router-dom";
 import { ButtonVariant } from "@/enums";
+import ModelDetailUser from "./model-detail-user";
 
 const ModelDetailsInfo = ({
   data,
@@ -84,7 +85,7 @@ const ModelDetailsInfo = ({
       <ModelDetailsSection title="Details">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-9">
           <div className="flex flex-col gap-y-4">
-            <ModelDetailItem
+            <ModelDetailUser
               label={MODELS_CONTENT.models.modelsDetailsCard.createdBy}
               value={data?.user?.username}
             />
