@@ -1,11 +1,11 @@
 from django.contrib.gis.db import models as geomodels
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
-from login.models import OsmUser
 
-# Create your models here.
+from login.models import OsmUser
 
 
 class Dataset(models.Model):
@@ -22,6 +22,19 @@ class Dataset(models.Model):
     status = models.IntegerField(
         default=-1, choices=DatasetStatus.choices
     )  # 0 for active , 1 for archieved
+
+    offset = ArrayField(
+        base_field=models.FloatField(),
+        size=2,
+        default=[0.0, 0.0],
+        verbose_name="Imagery Offset [x, y]",
+    )
+
+    def clean(self):
+        if self.offset and len(self.offset) != 2:
+            raise ValidationError(
+                {"offset": "Offset must be a list of exactly two numbers."}
+            )
 
 
 class AOI(models.Model):

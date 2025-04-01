@@ -9,493 +9,365 @@ import tarfile
 import time
 
 from celery import shared_task
-from core.models import (
-    AOI,
-    Feedback,
-    FeedbackAOI,
-    FeedbackLabel,
-    Label,
-    Model,
-    Training,
-    UserNotification,
-)
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
+from core.models import AOI, FeedbackAOI, FeedbackLabel, Label, Model, Training
 from core.serializers import (
     AOISerializer,
     FeedbackAOISerializer,
-    FeedbackFileSerializer,
     FeedbackLabelFileSerializer,
     LabelFileSerializer,
 )
 from core.utils import bbox, is_dir_empty
-from django.conf import settings
-from django.contrib.gis.db.models.aggregates import Extent
-from django.contrib.gis.geos import GEOSGeometry
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
-
-from .utils import S3Uploader, send_notification
-
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-
-
-logger = logging.getLogger(__name__)
-logger.propagate = False
-
-
-# from core.serializers import LabelFileSerializer
-
+from contextlib import contextmanager
+from .utils import S3Uploader, send_notification, shift_labels_by_offset
 
 DEFAULT_TILE_SIZE = 256
 
 
-def upload_to_s3(
-    path,
-    parent=settings.PARENT_BUCKET_FOLDER,
-    bucket_name=settings.BUCKET_NAME,
-    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-):
-    uploader = S3Uploader(
-        bucket_name=bucket_name,
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        parent=parent,
-    )
-    return uploader.upload(path)
+@contextmanager
+def capture_output_to_file(log_path):
+    original_stdout, original_stderr = sys.stdout, sys.stderr
+    with open(log_path, 'a') as f:
+        sys.stdout = sys.stderr = f
+        try:
+            yield
+        finally:
+            sys.stdout, sys.stderr = original_stdout, original_stderr
 
 
-class print_time:
-    def __init__(self, name):
-        self.name = name
-
-    def __enter__(self):
-        self.start = time.perf_counter()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        print(f"{self.name} took {round(time.perf_counter() - self.start, 2)} seconds")
+# Utility helpers
+def safe_rmtree(path):
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 
-def xz_folder(folder_path, output_filename, remove_original=False):
-    """
-    Compresses a folder and its contents into a .tar.xz file and optionally removes the original folder.
+def safe_copytree(src, dst):
+    safe_rmtree(dst)
+    shutil.copytree(src, dst)
 
-    Parameters:
-    - folder_path: The path to the folder to compress.
-    - output_filename: The name of the output .tar.xz file.
-    - remove_original: If True, the original folder is removed after compression.
-    """
 
-    if not output_filename.endswith(".tar.xz"):
-        output_filename += ".tar.xz"
+def copyfile(src, dst):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copyfile(src, dst)
 
-    with tarfile.open(output_filename, "w:xz") as tar:
-        tar.add(folder_path, arcname=os.path.basename(folder_path))
 
-    if remove_original:
-        shutil.rmtree(folder_path)
+def write_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f)
 
 
 def get_file_count(path):
     try:
         return len(
-            [
-                entry
-                for entry in os.listdir(path)
-                if os.path.isfile(os.path.join(path, entry))
-            ]
+            [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         )
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.getLogger(__name__).error(f"Error counting files: {e}")
         return 0
 
 
-def prepare_data(training_instance, dataset_id, feedback, zoom_level, source_imagery):
-    from predictor import (  # # TODO: migrate this back to hotfaiutilities
-        download_imagery,
-        get_start_end_download_coords,
+class print_time:
+    def __init__(self, name):
+        self.name = name
+        self.logger = logging.getLogger(__name__)
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, *args):
+        self.logger.info(
+            f"{self.name} took {round(time.perf_counter() - self.start, 2)}s"
+        )
+
+
+class Trainer:
+    def __init__(self, model_type, *args):
+        self.model_type = model_type
+        self.args = args
+
+    def run(self):
+        return (
+            self._train_yolo()
+            if self.model_type.startswith("YOLO")
+            else self._train_ramp()
+        )
+
+    def _train_yolo(self):
+        from hot_fair_utilities import preprocess
+        from hot_fair_utilities.preprocessing.yolo_v8_v1.yolo_format import (
+            yolo_format as v1,
+        )
+        from hot_fair_utilities.preprocessing.yolo_v8_v2.yolo_format import (
+            yolo_format as v2,
+        )
+        from hot_fair_utilities.training.yolo_v8_v1.train import train as train_v1
+        from hot_fair_utilities.training.yolo_v8_v2.train import train as train_v2
+
+        (
+            inst,
+            dataset_id,
+            input_path,
+            labels,
+            aois,
+            epochs,
+            batch_size,
+            freeze_layers,
+            multimasks,
+            *_
+        ) = self.args
+        base = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id))
+        prep = f"/{base}/preprocessed"
+        model_dir = os.path.join(base, self.model_type)
+        yaml = os.path.join(model_dir, "yolo_dataset.yaml")
+        out = os.path.join(
+            pathlib.Path(input_path).parent, "output", f"training_{inst.id}"
+        )
+
+        safe_copytree(input_path, os.path.join(base, "input"))
+        preprocess(
+            input_path=os.path.join(base, "input"),
+            output_path=prep,
+            rasterize=True,
+            rasterize_options=["binary"],
+            georeference_images=True,
+            multimasks=(multimasks or self.model_type == "YOLO_V8_V1"),
+            epsg=4326 if self.model_type == "YOLO_V8_V2" else 3857,
+        )
+
+        inst.chips_length = get_file_count(os.path.join(prep, "chips"))
+        inst.save()
+
+
+        with print_time("YOLO format"):
+            if self.model_type == "YOLO_V8_V1":
+                v1(
+                    preprocessed_dirs=prep,
+                    yolo_dir=model_dir,
+                    multimask=True,
+                    p_val=0.05
+                )
+            else:
+                v2(
+                    input_path=prep,
+                    output_path=model_dir
+                )
+
+        train_fn = train_v1 if self.model_type == "YOLO_V8_V1" else train_v2
+        weights = (
+            "yolov8s_v1-seg-best.pt"
+            if self.model_type == "YOLO_V8_V1"
+            else "yolov8s_v2-seg.pt"
+        )
+
+        model_path, acc = train_fn(
+            data=base,
+            weights=os.path.join(settings.YOLO_HOME, weights),
+            epochs=epochs,
+            batch_size=batch_size,
+            pc=2.0,
+            output_path=model_dir,
+            dataset_yaml_path=yaml,
+        )
+
+        safe_rmtree(out)
+        os.makedirs(out)
+        copyfile(model_path, os.path.join(out, "checkpoint.pt"))
+        copyfile(
+            os.path.join(os.path.dirname(model_path), "best.onnx"),
+            os.path.join(out, "checkpoint.onnx"),
+        )
+        safe_copytree(prep, os.path.join(out, "preprocessed"))
+        safe_copytree(input_path, os.path.join(out, "preprocessed", "input"))
+
+        for k in ["images", "labels"]:
+            safe_copytree(
+                os.path.join(model_dir, k), os.path.join(out, self.model_type, k)
+            )
+
+        copyfile(yaml, os.path.join(out, self.model_type, "yolo_dataset.yaml"))
+        copyfile(
+            os.path.join(pathlib.Path(model_path).parent.parent, "iou_chart.png"),
+            os.path.join(out, "graphs", "training_accuracy.png"),
+        )
+
+        write_json(os.path.join(out, "labels.geojson"), labels)
+        write_json(os.path.join(out, "aois.geojson"), aois.data)
+
+        return {"accuracy": acc, "output_path": out, "preprocess_output": prep}
+
+    def _train_ramp(self):
+        import tensorflow as tf
+        from hot_fair_utilities import preprocess
+        from hot_fair_utilities.training.ramp import train
+
+        (
+            inst,
+            dataset_id,
+            input_path,
+            labels,
+            aois,
+            epochs,
+            batch_size,
+            freeze_layers,
+            multimasks,
+            spacing,
+            width,
+        ) = self.args
+        base = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id))
+        prep = f"/{base}/preprocessed"
+        out = os.path.join(
+            pathlib.Path(input_path).parent, "output", f"training_{inst.id}"
+        )
+
+        safe_copytree(input_path, os.path.join(base, "input"))
+        preprocess(
+            input_path=os.path.join(base, "input"),
+            output_path=prep,
+            rasterize=True,
+            rasterize_options=["binary"],
+            georeference_images=True,
+            multimasks=multimasks,
+            input_contact_spacing=spacing,
+            input_boundary_width=width,
+        )
+
+        inst.chips_length = get_file_count(os.path.join(prep, "chips"))
+        inst.save()
+
+        acc, model_path = train(
+            input_path=prep,
+            output_path=os.path.join(base, "train"),
+            epoch_size=epochs,
+            batch_size=batch_size,
+            model="ramp",
+            model_home=os.environ["RAMP_HOME"],
+            freeze_layers=freeze_layers,
+            multimasks=multimasks,
+        )
+
+        safe_rmtree(out)
+        os.makedirs(out)
+        safe_copytree(model_path, os.path.join(out, "checkpoint.tf"))
+        safe_copytree(prep, os.path.join(out, "preprocessed"))
+        safe_copytree(input_path, os.path.join(out, "preprocessed", "input"))
+        copyfile(
+            os.path.join(base, "train", "graphs", "training_accuracy.png"),
+            os.path.join(out, "graphs", "training_accuracy.png"),
+        )
+
+        model = tf.keras.models.load_model(os.path.join(out, "checkpoint.tf"))
+        model.save(os.path.join(out, "checkpoint.h5"))
+
+        tflite_model = tf.lite.TFLiteConverter.from_keras_model(model).convert()
+        with open(os.path.join(out, "checkpoint.tflite"), "wb") as f:
+            f.write(tflite_model)
+
+        write_json(os.path.join(out, "labels.geojson"), labels)
+        write_json(os.path.join(out, "aois.geojson"), aois.data)
+
+        return {"accuracy": acc, "output_path": out, "preprocess_output": prep}
+
+
+def upload_to_s3(path, parent=None):
+    return S3Uploader(
+        bucket_name=settings.BUCKET_NAME,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        parent=parent or settings.PARENT_BUCKET_FOLDER,
+    ).upload(path)
+
+
+def xz_folder(folder_path, output_filename, remove_original=False):
+    if not output_filename.endswith(".tar.xz"):
+        output_filename += ".tar.xz"
+    with tarfile.open(output_filename, "w:xz") as tar:
+        tar.add(folder_path, arcname=os.path.basename(folder_path))
+    if remove_original:
+        shutil.rmtree(folder_path)
+
+
+def prepare_data(inst, dataset_id, feedback, zoom_level, imagery):
+    from predictor import download_imagery, get_start_end_download_coords
+
+    base = os.path.join(settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}")
+    input_path = os.path.join(base, "input")
+    safe_rmtree(input_path)
+    os.makedirs(input_path)
+
+    aois = (
+        FeedbackAOI.objects.filter(training=feedback)
+        if feedback
+        else AOI.objects.filter(dataset=dataset_id)
     )
-
-    training_input_base_path = os.path.join(
-        settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}"
+    serializer = FeedbackAOISerializer if feedback else AOISerializer
+    label_qs = (
+        FeedbackLabel.objects.filter(feedback_aoi__in=aois)
+        if feedback
+        else Label.objects.filter(aoi__in=aois)
     )
-    training_input_image_source = os.path.join(training_input_base_path, "input")
-    if os.path.exists(training_input_image_source):
-        shutil.rmtree(training_input_image_source)
-    os.makedirs(training_input_image_source)
+    label_serializer = FeedbackLabelFileSerializer if feedback else LabelFileSerializer
 
-    if feedback:
-        aois = FeedbackAOI.objects.filter(training=feedback)
-        aoi_serializer = FeedbackAOISerializer(aois, many=True)
-    else:
-        aois = AOI.objects.filter(dataset=dataset_id)
-        aoi_serializer = AOISerializer(aois, many=True)
-
-    first_aoi_centroid = aois[0].geom.centroid
-    training_instance.centroid = first_aoi_centroid
-    training_instance.save()
+    inst.centroid = aois[0].geom.centroid
+    inst.save()
 
     for obj in aois:
-        bbox_coords = bbox(obj.geom.coords[0])
         for z in zoom_level:
-            zm_level = z
-            try:
-                tile_size = DEFAULT_TILE_SIZE
-                start, end = get_start_end_download_coords(
-                    bbox_coords, zm_level, tile_size
-                )
-                download_imagery(
-                    start,
-                    end,
-                    zm_level,
-                    base_path=training_input_image_source,
-                    source=source_imagery,
-                )
-            except Exception as ex:
-                raise ex
-        if is_dir_empty(training_input_image_source):
-            raise ValueError("No images found in the area")
-
-    if feedback:
-        label = FeedbackLabel.objects.filter(feedback_aoi__in=[r.id for r in aois])
-        serialized_field = FeedbackLabelFileSerializer(label, many=True)
-    else:
-        label = Label.objects.filter(aoi__in=[r.id for r in aois])
-        serialized_field = LabelFileSerializer(label, many=True)
-
-    with open(
-        os.path.join(training_input_image_source, "labels.geojson"),
-        "w",
-        encoding="utf-8",
-    ) as f:
-        f.write(json.dumps(serialized_field.data))
-
-    return training_input_image_source, aoi_serializer, serialized_field
-
-
-def ramp_model_training(
-    training_instance,
-    dataset_id,
-    training_input_image_source,
-    serialized_field,
-    aoi_serializer,
-    epochs,
-    batch_size,
-    freeze_layers,
-    multimasks,
-    input_contact_spacing,
-    input_boundary_width,
-):
-    import hot_fair_utilities
-    import ramp.utils
-    import tensorflow as tf
-    from hot_fair_utilities import preprocess
-    from hot_fair_utilities.training.ramp import run_feedback, train
-
-    base_path = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id))
-    if os.path.exists(base_path):
-        shutil.rmtree(base_path)
-    destination_image_input = os.path.join(base_path, "input")
-
-    if not os.path.exists(training_input_image_source):
-        raise ValueError(
-            "Training folder has not been created, Build the dataset first /dataset/build/"
-        )
-    if os.path.exists(destination_image_input):
-        shutil.rmtree(destination_image_input)
-    shutil.copytree(training_input_image_source, destination_image_input)
-
-    model_input_image_path = f"{base_path}/input"
-    preprocess_output = f"/{base_path}/preprocessed"
-
-    preprocess(
-        input_path=model_input_image_path,
-        output_path=preprocess_output,
-        rasterize=True,
-        rasterize_options=["binary"],
-        georeference_images=True,
-        multimasks=multimasks,
-        input_contact_spacing=input_contact_spacing,
-        input_boundary_width=input_boundary_width,
-    )
-    training_instance.chips_length = get_file_count(
-        os.path.join(preprocess_output, "chips")
-    )
-    training_instance.save()
-
-    train_output = f"{base_path}/train"
-    final_accuracy, final_model_path = train(
-        input_path=preprocess_output,
-        output_path=train_output,
-        epoch_size=epochs,
-        batch_size=batch_size,
-        model="ramp",
-        model_home=os.environ["RAMP_HOME"],
-        freeze_layers=freeze_layers,
-        multimasks=multimasks,
-    )
-
-    output_path = os.path.join(
-        pathlib.Path(training_input_image_source).parent,
-        "output",
-        f"training_{training_instance.id}",
-    )
-    if os.path.exists(output_path):
-        shutil.rmtree(output_path)
-    shutil.copytree(final_model_path, os.path.join(output_path, "checkpoint.tf"))
-
-    shutil.copytree(preprocess_output, os.path.join(output_path, "preprocessed"))
-    shutil.copytree(
-        model_input_image_path, os.path.join(output_path, "preprocessed", "input")
-    )
-
-    graph_output_path = f"{base_path}/train/graphs"
-    shutil.copytree(graph_output_path, os.path.join(output_path, "graphs"))
-
-    model = tf.keras.models.load_model(os.path.join(output_path, "checkpoint.tf"))
-
-    model.save(os.path.join(output_path, "checkpoint.h5"))
-
-    logger.info(model.inputs)
-    logger.info(model.outputs)
-
-    converter = tf.lite.TFLiteConverter.from_keras_model(model)
-    tflite_model = converter.convert()
-
-    with open(os.path.join(output_path, "checkpoint.tflite"), "wb") as f:
-        f.write(tflite_model)
-
-    with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(serialized_field.data))
-
-    with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(aoi_serializer.data))
-
-    tippecanoe_command = f"""tippecanoe -o {os.path.join(output_path,"meta.pmtiles")} -Z7 -z18 -L aois:{ os.path.join(output_path, "aois.geojson")} -L labels:{os.path.join(output_path, "labels.geojson")} --force --read-parallel -rg --drop-densest-as-needed"""
-    try:
-        result = subprocess.run(
-            tippecanoe_command, shell=True, check=True, capture_output=True
-        )
-        logging.info(result.stdout.decode("utf-8"))
-    except subprocess.CalledProcessError as ex:
-        logger.error(ex.output)
-        raise ex
-
-    shutil.copyfile(
-        os.path.join(output_path, "aois.geojson"),
-        os.path.join(preprocess_output, "aois.geojson"),
-    )
-    shutil.copyfile(
-        os.path.join(output_path, "labels.geojson"),
-        os.path.join(preprocess_output, "labels.geojson"),
-    )
-    xz_folder(
-        preprocess_output,
-        os.path.join(output_path, "preprocessed.tar.xz"),
-        remove_original=True,
-    )
-    shutil.rmtree(base_path)
-    dir_result = upload_to_s3(
-        output_path,
-        parent=f"{settings.PARENT_BUCKET_FOLDER}/training_{training_instance.id}",
-    )
-    print(f"Uploaded to s3:{dir_result}")
-    training_instance.accuracy = float(final_accuracy)
-    training_instance.finished_at = timezone.now()
-    training_instance.status = "FINISHED"
-    training_instance.save()
-    response = {
-        "accuracy": float(final_accuracy),
-        "tiles_path": os.path.join(output_path, "meta.pmtiles"),
-        "model_path": os.path.join(output_path, "checkpoint.h5"),
-        "graph_path": os.path.join(output_path, "graphs"),
-    }
-    return response
-
-
-def yolo_model_training(
-    training_instance,
-    dataset_id,
-    training_input_image_source,
-    serialized_field,
-    aoi_serializer,
-    epochs,
-    batch_size,
-    multimasks,
-    model="YOLO_V8_V1",
-):
-    from hot_fair_utilities import preprocess
-    from hot_fair_utilities.preprocessing.yolo_v8_v1.yolo_format import (
-        yolo_format as yolo_format_v1,
-    )
-    from hot_fair_utilities.preprocessing.yolo_v8_v2.yolo_format import (
-        yolo_format as yolo_format_v2,
-    )
-    from hot_fair_utilities.training.yolo_v8_v1.train import train as train_yolo_v1
-    from hot_fair_utilities.training.yolo_v8_v2.train import train as train_yolo_v2
-
-    base_path = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id))
-    if os.path.exists(base_path):
-        shutil.rmtree(base_path)
-    destination_image_input = os.path.join(base_path, "input")
-
-    if not os.path.exists(training_input_image_source):
-        raise ValueError(
-            "Training folder has not been created, Build the dataset first /dataset/build/"
-        )
-    if os.path.exists(destination_image_input):
-        shutil.rmtree(destination_image_input)
-    shutil.copytree(training_input_image_source, destination_image_input)
-
-    model_input_image_path = f"{base_path}/input"
-    preprocess_output = f"/{base_path}/preprocessed"
-    if model == "YOLO_V8_V1":
-        multimasks = True
-    preprocess(
-        input_path=model_input_image_path,
-        output_path=preprocess_output,
-        rasterize=True,
-        rasterize_options=["binary"],
-        georeference_images=True,
-        multimasks=multimasks,
-        epsg=4326 if model == "YOLO_V8_V2" else 3857,
-    )
-    training_instance.chips_length = get_file_count(
-        os.path.join(preprocess_output, "chips")
-    )
-    training_instance.save()
-
-    yolo_data_dir = os.path.join(base_path, model)
-    with print_time("yolo conversion"):
-        if model == "YOLO_V8_V1":
-            yolo_format_v1(
-                preprocessed_dirs=preprocess_output,
-                yolo_dir=yolo_data_dir,
-                multimask=True,
-                p_val=0.05,
+            start, end = get_start_end_download_coords(
+                bbox(obj.geom.coords[0]), z, DEFAULT_TILE_SIZE
             )
-        else:
-            yolo_format_v2(
-                input_path=preprocess_output,
-                output_path=yolo_data_dir,
-            )
-    if model == "YOLO_V8_V1":
-        output_model_path, final_accuracy = train_yolo_v1(
-            data=f"{base_path}",
-            weights=os.path.join(settings.YOLO_HOME, "yolov8s_v1-seg-best.pt"),
-            epochs=epochs,
-            batch_size=batch_size,
-            pc=2.0,
-            output_path=yolo_data_dir,
-            dataset_yaml_path=os.path.join(yolo_data_dir, "yolo_dataset.yaml"),
+            download_imagery(start, end, z, base_path=input_path, source=imagery)
+
+    if is_dir_empty(input_path):
+        raise ValueError("No images found in the area")
+
+    serialized = label_serializer(label_qs, many=True).data
+    label_path = os.path.join(input_path, "labels.geojson")
+    offset = inst.model.dataset.offset
+
+    if (
+        isinstance(offset, list)
+        and len(offset) == 2
+        and any(float(o) != 0 for o in offset)
+    ):
+        shift_labels_by_offset(serialized, offset).to_file(
+            label_path, driver="GeoJSON", encoding="utf-8"
         )
     else:
-        output_model_path, final_accuracy = train_yolo_v2(
-            data=f"{base_path}",
-            weights=os.path.join(settings.YOLO_HOME, "yolov8s_v2-seg.pt"),
-            epochs=epochs,
-            batch_size=batch_size,
-            pc=2.0,
-            output_path=yolo_data_dir,
-            dataset_yaml_path=os.path.join(yolo_data_dir, "yolo_dataset.yaml"),
-        )
+        write_json(label_path, serialized)
 
-    output_path = os.path.join(
-        pathlib.Path(training_input_image_source).parent,
-        "output",
-        f"training_{training_instance.id}",
-    )
-    if os.path.exists(output_path):
-        shutil.rmtree(output_path)
-    # print(output_path)
-    os.makedirs(output_path)
+    with open(label_path) as f:
+        return input_path, serializer(aois, many=True), json.load(f)
 
-    shutil.copyfile(output_model_path, os.path.join(output_path, "checkpoint.pt"))
-    shutil.copyfile(
-        os.path.join(os.path.dirname(output_model_path), "best.onnx"),
-        os.path.join(output_path, "checkpoint.onnx"),
-    )
 
-    shutil.copytree(preprocess_output, os.path.join(output_path, "preprocessed"))
-    shutil.copytree(
-        model_input_image_path, os.path.join(output_path, "preprocessed", "input")
-    )
-    os.makedirs(os.path.join(output_path, model), exist_ok=True)
-
-    shutil.copytree(
-        os.path.join(yolo_data_dir, "images"),
-        os.path.join(output_path, model, "images"),
-    )
-    shutil.copytree(
-        os.path.join(yolo_data_dir, "labels"),
-        os.path.join(output_path, model, "labels"),
-    )
-    shutil.copyfile(
-        os.path.join(yolo_data_dir, "yolo_dataset.yaml"),
-        os.path.join(output_path, model, "yolo_dataset.yaml"),
-    )
-
-    graph_output_path = os.path.join(
-        pathlib.Path(os.path.dirname(output_model_path)).parent, "iou_chart.png"
-    )
-    os.makedirs(os.path.join(output_path, "graphs"), exist_ok=True)
-    shutil.copyfile(
-        graph_output_path,
-        os.path.join(
-            output_path,
-            "graphs",
-            "training_accuracy.png",  ### TODO : replace this with actual graph that will be decided
-        ),
-    )
-
-    with open(os.path.join(output_path, "labels.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(serialized_field.data))
-
-    with open(os.path.join(output_path, "aois.geojson"), "w", encoding="utf-8") as f:
-        f.write(json.dumps(aoi_serializer.data))
-
-    tippecanoe_command = f"""tippecanoe -o {os.path.join(output_path,"meta.pmtiles")} -Z7 -z18 -L aois:{ os.path.join(output_path, "aois.geojson")} -L labels:{os.path.join(output_path, "labels.geojson")} --force --read-parallel -rg --drop-densest-as-needed"""
+def run_tippecanoe(out):
+    logger = logging.getLogger(__name__)
     try:
-        result = subprocess.run(
-            tippecanoe_command, shell=True, check=True, capture_output=True
+        subprocess.run(
+            f"tippecanoe -o {out}/meta.pmtiles -Z7 -z18 "
+            f"-L aois:{out}/aois.geojson -L labels:{out}/labels.geojson "
+            "--force --read-parallel -rg --drop-densest-as-needed",
+            shell=True,
+            check=True,
+            capture_output=True,
         )
-        logging.info(result.stdout.decode("utf-8"))
-    except subprocess.CalledProcessError as ex:
-        logger.error(ex.output)
-        raise ex
+    except subprocess.CalledProcessError as e:
+        logger.error("Tippecanoe failed: %s", e.stderr.decode())
+        raise
 
-    shutil.copyfile(
-        os.path.join(output_path, "aois.geojson"),
-        os.path.join(preprocess_output, "aois.geojson"),
-    )
-    shutil.copyfile(
-        os.path.join(output_path, "labels.geojson"),
-        os.path.join(preprocess_output, "labels.geojson"),
-    )
-    xz_folder(
-        preprocess_output,
-        os.path.join(output_path, "preprocessed.tar.xz"),
-        remove_original=True,
-    )
-    shutil.rmtree(base_path)
-    dir_result = upload_to_s3(
-        output_path,
-        parent=f"{settings.PARENT_BUCKET_FOLDER}/training_{training_instance.id}",
-    )
-    print(f"Uploaded to s3:{dir_result}")
-    training_instance.accuracy = float(final_accuracy)
-    training_instance.finished_at = timezone.now()
-    training_instance.status = "FINISHED"
-    training_instance.save()
-    response = {
-        "accuracy": float(final_accuracy),
-        "tiles_path": os.path.join(output_path, "meta.pmtiles"),
-        "model_path": os.path.join(output_path, "checkpoint.pt"),
-        "graph_path": os.path.join(output_path, "graphs"),
-    }
-    return response
+
+def finalize(inst, out, prep, acc):
+    for f in ["aois.geojson", "labels.geojson"]:
+        copyfile(os.path.join(out, f), os.path.join(prep, f))
+    xz_folder(prep, os.path.join(out, "preprocessed.tar.xz"), remove_original=True)
+    upload_to_s3(out, parent=f"{settings.PARENT_BUCKET_FOLDER}/training_{inst.id}")
+    inst.accuracy = float(acc)
+    inst.finished_at = timezone.now()
+    inst.status = "FINISHED"
+    inst.save()
 
 
 @shared_task
@@ -513,68 +385,60 @@ def train_model(
     input_boundary_width=3,
 ):
 
-    training_instance = get_object_or_404(Training, id=training_id)
-    model_instance = get_object_or_404(Model, id=training_instance.model.id)
+    inst = get_object_or_404(Training, id=training_id)
+    model = get_object_or_404(Model, id=inst.model.id)
+    inst.status, inst.started_at, inst.task_id = (
+        "RUNNING",
+        timezone.now(),
+        train_model.request.id,
+    )
+    inst.save()
+    send_notification(inst, "Started")
 
-    send_notification(training_instance, "Started")
-
-    training_instance.status = "RUNNING"
-    training_instance.started_at = timezone.now()
-    training_instance.task_id = train_model.request.id
-
-    training_instance.save()
+    log_file = os.path.join(settings.LOG_PATH, f"run_{inst.task_id}.log")
     os.makedirs(settings.LOG_PATH, exist_ok=True)
-    log_file = os.path.join(settings.LOG_PATH, f"run_{train_model.request.id}.log")
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
 
-    if model_instance.base_model == "YOLO_V8_V1" and settings.YOLO_HOME is None:
-        raise ValueError("YOLO Home is not configured")
-    elif model_instance.base_model != "YOLO_V8_V1" and settings.RAMP_HOME is None:
-        raise ValueError("Ramp Home is not configured")
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(
+        logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    )
+    logger.addHandler(file_handler)
 
     try:
-        with open(log_file, "a") as f:
-            # redirect stdout to the log file
-            sys.stdout = f
-            training_input_image_source, aoi_serializer, serialized_field = (
-                prepare_data(
-                    training_instance, dataset_id, feedback, zoom_level, source_imagery
-                )
+        logger.info("Starting model training task")
+        with capture_output_to_file(log_file):
+            input_path, aoi_ser, labels = prepare_data(
+                inst, dataset_id, feedback, zoom_level, source_imagery
             )
-
-            if model_instance.base_model in ("YOLO_V8_V1", "YOLO_V8_V2"):
-                response = yolo_model_training(
-                    training_instance,
-                    dataset_id,
-                    training_input_image_source,
-                    serialized_field,
-                    aoi_serializer,
-                    epochs,
-                    batch_size,
-                    multimasks,
-                    model=model_instance.base_model,
-                )
-            else:
-                response = ramp_model_training(
-                    training_instance,
-                    dataset_id,
-                    training_input_image_source,
-                    serialized_field,
-                    aoi_serializer,
-                    epochs,
-                    batch_size,
-                    freeze_layers,
-                    multimasks,
-                    input_contact_spacing,
-                    input_boundary_width,
-                )
-
-            logging.info(f"Training task {training_id} completed successfully")
-            send_notification(training_instance, "Completed")
-            return response
-
+            args = (
+                inst,
+                dataset_id,
+                input_path,
+                labels,
+                aoi_ser,
+                epochs,
+                batch_size,
+                freeze_layers,
+                multimasks,
+                input_contact_spacing,
+                input_boundary_width,
+            )
+            result = Trainer(model.base_model, *args).run()
+            run_tippecanoe(result["output_path"])
+            finalize(
+                inst, result["output_path"], result["preprocess_output"], result["accuracy"]
+            )
+        logger.info("Training completed successfully")
+        send_notification(inst, "Completed")
+        return result
     except Exception as ex:
-        training_instance.status = "FAILED"
-        training_instance.finished_at = timezone.now()
-        training_instance.save()
-        send_notification(training_instance, "Failed")
+        logger.exception("Training failed")
+        inst.status, inst.finished_at = "FAILED", timezone.now()
+        inst.save()
+        send_notification(inst, "Failed")
         raise ex
+    finally:
+        logger.removeHandler(file_handler)
+        file_handler.close()
