@@ -7,12 +7,9 @@ import subprocess
 import sys
 import tarfile
 import time
+from contextlib import contextmanager
 
 from celery import shared_task
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
-
 from core.models import AOI, FeedbackAOI, FeedbackLabel, Label, Model, Training
 from core.serializers import (
     AOISerializer,
@@ -21,7 +18,10 @@ from core.serializers import (
     LabelFileSerializer,
 )
 from core.utils import bbox, is_dir_empty
-from contextlib import contextmanager
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 from .utils import S3Uploader, send_notification, shift_labels_by_offset
 
 DEFAULT_TILE_SIZE = 256
@@ -30,7 +30,7 @@ DEFAULT_TILE_SIZE = 256
 @contextmanager
 def capture_output_to_file(log_path):
     original_stdout, original_stderr = sys.stdout, sys.stderr
-    with open(log_path, 'a') as f:
+    with open(log_path, "a", encoding="utf-8") as f:
         sys.stdout = sys.stderr = f
         try:
             yield
@@ -117,7 +117,7 @@ class Trainer:
             batch_size,
             freeze_layers,
             multimasks,
-            *_
+            *_,
         ) = self.args
         base = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id))
         prep = f"/{base}/preprocessed"
@@ -141,20 +141,16 @@ class Trainer:
         inst.chips_length = get_file_count(os.path.join(prep, "chips"))
         inst.save()
 
-
         with print_time("YOLO format"):
             if self.model_type == "YOLO_V8_V1":
                 v1(
                     preprocessed_dirs=prep,
                     yolo_dir=model_dir,
                     multimask=True,
-                    p_val=0.05
+                    p_val=0.05,
                 )
             else:
-                v2(
-                    input_path=prep,
-                    output_path=model_dir
-                )
+                v2(input_path=prep, output_path=model_dir)
 
         train_fn = train_v1 if self.model_type == "YOLO_V8_V1" else train_v2
         weights = (
@@ -400,7 +396,7 @@ def train_model(
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    file_handler = logging.FileHandler(log_file)
+    file_handler = logging.FileHandler(log_file, encoding="utf-8")
     file_handler.setFormatter(
         logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     )
@@ -428,7 +424,10 @@ def train_model(
             result = Trainer(model.base_model, *args).run()
             run_tippecanoe(result["output_path"])
             finalize(
-                inst, result["output_path"], result["preprocess_output"], result["accuracy"]
+                inst,
+                result["output_path"],
+                result["preprocess_output"],
+                result["accuracy"],
             )
         logger.info("Training completed successfully")
         send_notification(inst, "Completed")
