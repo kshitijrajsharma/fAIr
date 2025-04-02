@@ -501,7 +501,7 @@ def send_notification(training_instance, status):
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[training_instance.user.email],
-                fail_silently=False,
+                fail_silently=settings.FAIL_EMAIL_SILENTLY,
             )
 
 
