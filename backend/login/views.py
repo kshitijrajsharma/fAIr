@@ -125,8 +125,8 @@ class RequestEmailVerification(APIView):
 
 
 class VerifyEmail(APIView):
-    authentication_classes = [OsmAuthentication]
-    permission_classes = [IsOsmAuthenticated]
+    # authentication_classes = [OsmAuthentication]
+    # permission_classes = [IsOsmAuthenticated]
 
     def get(self, request, format=None):
         uidb64 = request.query_params.get("uid")
