@@ -15,7 +15,6 @@ const ModelDetailUser = ({
       href={`https://www.openstreetmap.org/user/${value}`}
       title={label}
       blank
-
     >
       {value}
     </Link>

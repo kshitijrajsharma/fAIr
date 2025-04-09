@@ -1,0 +1,20 @@
+sl-radio::part(control--checked) {
+    background-color: var(--hot-fair-color-dark);
+    border-color: var(--hot-fair-color-white);
+    /* padding: 8px; */
+}
+
+sl-radio::part(control) {
+    border-color: var(--hot-fair-color-dark);
+    outline: none;
+}
+
+/* sl-radio::part(checked-icon) {
+    padding:    0px;
+    border-radius: 10px;
+    width: 1px;
+    height: 1px;
+    border-color: var(--hot-fair-color-white);
+    background-color: var(--hot-fair-color-dark);
+}
+ */
