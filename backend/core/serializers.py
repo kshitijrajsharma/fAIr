@@ -1,11 +1,10 @@
 import mercantile
 from django.conf import settings
+from login.models import OsmUser
 from rest_framework import serializers
 from rest_framework_gis.serializers import (
     GeoFeatureModelSerializer,  # this will be used if we used to serialize as geojson
 )
-
-from login.models import OsmUser
 
 from .models import *
 
@@ -108,9 +107,7 @@ class ModelSerializer(serializers.ModelSerializer):
             if training.source_imagery:
                 aoi = AOI.objects.filter(dataset=obj.dataset).first()
                 if aoi and aoi.geom:
-                    centroid = (
-                        aoi.geom.centroid.coords
-                    )  ## Centroid can be stored in db table if required when project grows bigger
+                    centroid = aoi.geom.centroid.coords  ## Centroid can be stored in db table if required when project grows bigger
                     try:
                         tile = mercantile.tile(centroid[0], centroid[1], zoom=18)
                         return training.source_imagery.format(x=tile.x, y=tile.y, z=18)
@@ -479,6 +476,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "email",
             "date_joined",
             "last_login",
+            "email_verified",
             "img_url",
             "notifications_delivery_methods",
             "newsletter_subscription",
@@ -495,6 +493,7 @@ class UserStatsSerializer(serializers.ModelSerializer):
             "username",
             "date_joined",
             "img_url",
+            "email_verified",
             "models_count",
             "datasets_count",
             "feedbacks_count",
