@@ -40,6 +40,8 @@ import {
   HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY,
 } from "@/config";
 import { useLocalStorage } from "@/hooks/use-storage";
+import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
+import { PredictionImagerySource } from "@/enums/start-mapping";
 
 export type TDownloadOptions = {
   name: string;
@@ -62,10 +64,22 @@ export const StartMappingPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { map, mapContainerRef, currentZoom } = useMapInstance();
   const { isSmallViewport } = useScreenSize();
+
   const navigate = useNavigate();
+
+  const [predictionImagery, setPredictionImagery] = useState<
+    string | undefined
+  >(undefined);
+
+  const [predictionImagerySource, setPredictionImagerySource] =
+    useState<PredictionImagerySource>(PredictionImagerySource.ModelDefault);
 
   const [showModelDetailsPopup, setShowModelDetailsPopup] =
     useState<boolean>(false);
+
+  const [isImagerySelectorOpen, setImagerySelectorOpen] =
+    useState<boolean>(false);
+
   const { dropdownIsOpened, onDropdownHide, onDropdownShow } =
     useDropdownMenu();
 
@@ -78,10 +92,12 @@ export const StartMappingPage = () => {
 
   const tileJSONURL = useMemo(
     () =>
-      modelInfo?.dataset?.source_imagery
-        ? extractTileJSONURL(modelInfo?.dataset?.source_imagery)
-        : undefined,
-    [modelInfo?.dataset?.source_imagery],
+      predictionImagery
+        ? extractTileJSONURL(predictionImagery)
+        : modelInfo?.dataset?.source_imagery
+          ? extractTileJSONURL(modelInfo?.dataset?.source_imagery)
+          : undefined,
+    [predictionImagery, modelInfo?.dataset?.source_imagery],
   );
 
   const { data: oamTileJSON, isError: oamTileJSONIsError } = useGetTMSTileJSON(
@@ -89,6 +105,21 @@ export const StartMappingPage = () => {
     !!tileJSONURL,
   );
 
+  /**
+   * Set the prediction imagery to the model info's source imagery
+   * when the model info is available and the prediction imagery is not set.
+   * This is to ensure that the map is displayed with the correct imagery.
+   */
+  useEffect(() => {
+    if (modelInfo?.dataset?.source_imagery) {
+      setPredictionImagery(modelInfo.dataset.source_imagery);
+    }
+  }, [modelInfo?.dataset?.source_imagery]);
+
+  /**
+   * Navigate to the not found page if there is an error
+   * while fetching the model info.
+   */
   useEffect(() => {
     if (isError) {
       navigate(APPLICATION_ROUTES.NOTFOUND, {
@@ -168,6 +199,7 @@ export const StartMappingPage = () => {
     currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
 
   const popupAnchorId = "model-details";
+  const imagerySourceSelectorAnchorId = "imagery-source-selector";
 
   const mapLayers = useMemo(
     () => [
@@ -304,9 +336,15 @@ export const StartMappingPage = () => {
     setShowModelDetailsPopup((prev) => !prev);
   }, [setShowModelDetailsPopup]);
 
+  const handleImagerySourceSelectorTriggerButtonClick = useCallback(() => {
+    setImagerySelectorOpen((prev) => !prev);
+  }, [setImagerySelectorOpen]);
+
   const clearPredictions = useCallback(() => {
     setModelPredictions(emptyPredictionState);
   }, [setModelPredictions]);
+
+  console.log(predictionImagerySource);
 
   return (
     <>
@@ -329,7 +367,7 @@ export const StartMappingPage = () => {
           modelInfo={modelInfo}
         />
         <div className="sticky top-0 bg-white z-10 px-4 xl:px-large py-1 hidden md:block">
-          {/* Model Details Popup */}
+          {/* Model Details Popover */}
           {showModelDetailsPopup && (
             <ModelDetailsPopUp
               showPopup={showModelDetailsPopup}
@@ -339,6 +377,22 @@ export const StartMappingPage = () => {
               modelInfo={modelInfo}
               modelInfoRequestIsPending={modelInfoRequestIspending}
               modelInfoRequestIsError={isError}
+            />
+          )}
+
+          {/* Imagery Source Selector Popover */}
+          {isImagerySelectorOpen && (
+            <ImagerySourceSelector
+              showPopup={isImagerySelectorOpen}
+              handleImagerySourceSelectorTriggerButtonClick={
+                handleImagerySourceSelectorTriggerButtonClick
+              }
+              closeMobileDrawer={() => setImagerySelectorOpen(false)}
+              anchor={imagerySourceSelectorAnchorId}
+              predictionImagery={predictionImagery}
+              setPredictionImagery={setPredictionImagery}
+              predictionImagerySource={predictionImagerySource}
+              setPredictionImagerySource={setPredictionImagerySource}
             />
           )}
           {/* Web Header */}
@@ -354,11 +408,15 @@ export const StartMappingPage = () => {
             map={map}
             disablePrediction={disablePrediction}
             popupAnchorId={popupAnchorId}
+            imagerySourceSelectorAnchorId={imagerySourceSelectorAnchorId}
             modelDetailsPopupIsActive={showModelDetailsPopup}
             handleModelDetailsPopup={handleModelDetailsPopup}
             downloadOptions={downloadOptions}
             clearPredictions={clearPredictions}
             currentZoom={currentZoom}
+            handleImagerySourceSelectorTriggerButtonClick={
+              handleImagerySourceSelectorTriggerButtonClick
+            }
           />
         </div>
         <div className="col-span-12 h-[70vh] md:h-full md:border-8 md:border-off-white flex-grow relative map-elements-z-index">

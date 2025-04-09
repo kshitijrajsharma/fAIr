@@ -16,6 +16,7 @@ import { ToolTip } from "@/components/ui/tooltip";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { UserProfile } from "@/components/layouts";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { ImagerySourceSelectorTriggerButton } from "./replicable-models/imagery-source-selector-trigger-button";
 
 const StartMappingHeader = ({
   modelInfo,
@@ -34,6 +35,8 @@ const StartMappingHeader = ({
   downloadOptions,
   clearPredictions,
   currentZoom,
+  handleImagerySourceSelectorTriggerButtonClick,
+  imagerySourceSelectorAnchorId,
 }: {
   modelPredictionsExist: boolean;
   modelInfoRequestIsPending: boolean;
@@ -51,6 +54,8 @@ const StartMappingHeader = ({
   downloadOptions: TDownloadOptions;
   clearPredictions: () => void;
   currentZoom: number;
+  handleImagerySourceSelectorTriggerButtonClick: () => void;
+  imagerySourceSelectorAnchorId: string;
 }) => {
   const { onDropdownHide, onDropdownShow, dropdownIsOpened } =
     useDropdownMenu();
@@ -88,6 +93,12 @@ const StartMappingHeader = ({
           </div>
         </div>
         <div className="flex flex-row items-center gap-x-4">
+          <ImagerySourceSelectorTriggerButton
+            anchor={imagerySourceSelectorAnchorId}
+            handleImagerySourceSelectorTriggerButtonClick={
+              handleImagerySourceSelectorTriggerButtonClick
+            }
+          />
           <ModelSettings updateQuery={updateQuery} query={query} />
           <div className="flex flex-row items-center gap-y-3 gap-x-2">
             <ModelPredictionsTracker
