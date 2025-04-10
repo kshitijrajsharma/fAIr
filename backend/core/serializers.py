@@ -516,11 +516,11 @@ class UserStatsSerializer(serializers.ModelSerializer):
 
     def get_profile_completion_percentage(self, obj):
         profile_percentage = 25
-        if obj.email_verified is not None and obj.email_verified != "":
-            profile_percentage += 25
         if obj.img_url is not None and obj.img_url != "":
             profile_percentage += 25
         if obj.email is not None and obj.email != "":
+            profile_percentage += 25
+        if obj.email_verified:
             profile_percentage += 25
         return profile_percentage
 
