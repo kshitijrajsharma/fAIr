@@ -12,7 +12,7 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 import { ModelsProvider } from "@/app/providers/models-provider";
-import { EmailVerificationCallbackPage } from "./routes/verify-email";
+
 
 const router = createBrowserRouter([
   {
