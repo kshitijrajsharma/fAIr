@@ -48,6 +48,7 @@ export const APPLICATION_ROUTES = {
   START_MAPPING: "/start-mapping/:modelId",
   NOTFOUND: "/404",
   AUTH_CALLBACK: "/authenticate",
+  EMAIL_VERIFICATION_CALLBACK: "/verify-email",
   PRIVACY_POLICY: "/privacy",
   LEARN: "/learn",
   ABOUT: "/about",

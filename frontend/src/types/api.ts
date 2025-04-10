@@ -35,6 +35,7 @@ export type TUser = {
   notifications_delivery_methods: string[];
   account_deletion_requested: boolean;
   unread_notifications_count: number;
+  email_verified: boolean;
 };
 
 type TOSMUser = {

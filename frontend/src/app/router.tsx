@@ -13,6 +13,7 @@ import {
 } from "react-router-dom";
 import { ModelsProvider } from "@/app/providers/models-provider";
 
+
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -353,6 +354,22 @@ const router = createBrowserRouter([
       },
       /**
        * Auth route ends.
+       */
+
+      /**
+       * Email verification route starts.
+       */
+      {
+        path: APPLICATION_ROUTES.EMAIL_VERIFICATION_CALLBACK,
+        lazy: async () => {
+          const { EmailVerificationCallbackPage } = await import(
+            "@/app/routes/verify-email"
+          );
+          return { Component: EmailVerificationCallbackPage };
+        },
+      },
+      /**
+       * Email verification route ends.
        */
 
       /**

@@ -3,7 +3,7 @@ import {
   TerraDraw,
   ValidateNotSelfIntersecting,
   TerraDrawRectangleMode,
-  TerraDrawExtend
+  TerraDrawExtend,
 } from "terra-draw";
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 import {
@@ -51,18 +51,20 @@ export const setupTerraDraw = (map: maplibregl.Map) => {
             return ValidateNotSelfIntersecting(feature);
           }
           return {
-            valid: true
+            valid: true,
           };
         },
         styles: {
           // Fill colour (a string containing a 6 digit Hex color)
-          fillColor: TRAINING_AREAS_AOI_FILL_COLOR as TerraDrawExtend.HexColorStyling,
+          fillColor:
+            TRAINING_AREAS_AOI_FILL_COLOR as TerraDrawExtend.HexColorStyling,
 
           // Fill opacity (0 - 1)
           fillOpacity: TRAINING_AREAS_AOI_FILL_OPACITY,
 
           // Outline colour (Hex color)
-          outlineColor: TRAINING_AREAS_AOI_OUTLINE_COLOR as TerraDrawExtend.HexColorStyling,
+          outlineColor:
+            TRAINING_AREAS_AOI_OUTLINE_COLOR as TerraDrawExtend.HexColorStyling,
 
           //Outline width (Integer)
           outlineWidth: TRAINING_AREAS_AOI_OUTLINE_WIDTH,
