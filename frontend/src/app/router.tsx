@@ -13,7 +13,6 @@ import {
 } from "react-router-dom";
 import { ModelsProvider } from "@/app/providers/models-provider";
 
-
 const router = createBrowserRouter([
   {
     element: <RootLayout />,

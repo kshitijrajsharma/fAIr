@@ -160,20 +160,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const verifyUserEmail = async (uid: string, token: string) => {
     try {
       const data = await authService.verifyEmail(uid, token);
-      showSuccessToast(data.message);
+      if (data) {
+        showSuccessToast(data.message);
+        showSuccessToast("Redirecting you to your profile page...");
+      }
       /**
-       * Redirect the user to the profile page after 5 seconds.
+       * Redirect the user to the profile page after 3 seconds.
        */
       setTimeout(() => {
         window.location.href = APPLICATION_ROUTES.PROFILE_BASE;
-      }, 5000);
+      }, 3000);
     } catch (error) {
       showErrorToast(error);
-      // Delay for 5 seconds, incase it's the network speed.
+      // Delay for 3 seconds, incase it's the network speed.
       // Otherwise, redirect the user back to the home page.
       setTimeout(() => {
         window.location.href = APPLICATION_ROUTES.HOMEPAGE;
-      }, 5000);
+      }, 3000);
     }
   };
 
