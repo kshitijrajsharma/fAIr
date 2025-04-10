@@ -466,6 +466,7 @@ def train_model(
                 result["preprocess_output"],
                 result["accuracy"],
             )
+        safe_rmtree(input_path)
         logger.info("Training completed successfully")
         send_notification(inst, "Completed")
         return result
