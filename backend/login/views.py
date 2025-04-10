@@ -87,9 +87,15 @@ class GetMyData(APIView):
     def patch(self, request, format=None):
         user = request.user
 
+        original_email = user.email
+
         serializer = UserStatsSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            if "email" in request.data and request.data["email"] != original_email:
+                user.email_verified = False
+                user.save(update_fields=["email_verified"])
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
