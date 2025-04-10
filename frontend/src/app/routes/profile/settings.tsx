@@ -308,8 +308,14 @@ export const UserProfileSettingsPage = () => {
                       <Switch
                         disabled={
                           isNotificationPending ||
-                          !user.email_verified ||
-                          user.email.length === 0
+                          (!user.email_verified &&
+                            notification.key !==
+                              USER_PROFILE_PAGE_CONTENT.settings.notifications
+                                .notificationKeys.webTrainingNotification) ||
+                          (user.email.length === 0 &&
+                            notification.key !==
+                              USER_PROFILE_PAGE_CONTENT.settings.notifications
+                                .notificationKeys.webTrainingNotification)
                         }
                         checked={
                           notifications[
