@@ -4,7 +4,6 @@ from django.db import models
 
 
 class OsmUser(AbstractUser):
-
     NOTIFICATION_METHOD_CHOICES = [
         ("email", "Email"),
         ("web", "Web"),
@@ -24,3 +23,4 @@ class OsmUser(AbstractUser):
     )
     newsletter_subscription = models.BooleanField(default=False)
     account_deletion_requested = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)

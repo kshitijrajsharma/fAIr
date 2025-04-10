@@ -456,7 +456,6 @@ class S3Uploader:
 
 
 def get_email_message(training_instance, status):
-
     hostname = settings.FRONTEND_URL
     training_model_url = f"{hostname}/ai-models/{training_instance.model.id}"
 
@@ -494,7 +493,11 @@ def send_notification(training_instance, status):
             training=training_instance,
         )
     if "email" in training_instance.user.notifications_delivery_methods:
-        if training_instance.user.email and training_instance.user.email != "":
+        if (
+            training_instance.user.email
+            and training_instance.user.email != ""
+            and training_instance.user.email_verified
+        ):
             message, subject = get_email_message(training_instance, status)
             send_mail(
                 subject=subject,

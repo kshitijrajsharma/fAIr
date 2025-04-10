@@ -7,4 +7,10 @@ urlpatterns = [
     path("login/", views.login.as_view()),
     path("callback/", views.callback.as_view()),
     path("me/", views.GetMyData.as_view()),
+    path(
+        "me/request-email-verification/",
+        views.RequestEmailVerification.as_view(),
+        name="request-email-verification",
+    ),
+    path("me/verify-email/", views.VerifyEmail.as_view(), name="verify-email"),
 ]
