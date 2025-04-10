@@ -10,6 +10,10 @@ import time
 from contextlib import contextmanager
 
 from celery import shared_task
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 from core.models import AOI, FeedbackAOI, FeedbackLabel, Label, Model, Training
 from core.serializers import (
     AOISerializer,
@@ -18,9 +22,6 @@ from core.serializers import (
     LabelFileSerializer,
 )
 from core.utils import bbox, is_dir_empty
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
 from .utils import S3Uploader, send_notification, shift_labels_by_offset
 
@@ -40,8 +41,18 @@ def capture_output_to_file(log_path):
 
 # Utility helpers
 def safe_rmtree(path):
-    if os.path.exists(path):
-        shutil.rmtree(path)
+    try:
+        if os.path.exists(path):
+            shutil.rmtree(path)
+            print(f"Successfully deleted {path} with shutil.rmtree")
+    except Exception as e:
+        print(f"shutil.rmtree failed: {e}")
+        try:
+            subprocess.check_call(["rm", "-rf", path])
+            print(f"Fallback deletion succeeded for {path}")
+        except Exception as fallback_error:
+            print(f"Fallback deletion also failed: {fallback_error}")
+            raise
 
 
 def safe_copytree(src, dst):
@@ -120,6 +131,7 @@ class Trainer:
             *_,
         ) = self.args
         base = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id))
+        safe_rmtree(base)
         prep = f"/{base}/preprocessed"
         model_dir = os.path.join(base, self.model_type)
         yaml = os.path.join(model_dir, "yolo_dataset.yaml")
@@ -214,6 +226,7 @@ class Trainer:
             width,
         ) = self.args
         base = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id))
+        safe_rmtree(base)
         prep = f"/{base}/preprocessed"
         out = os.path.join(
             pathlib.Path(input_path).parent, "output", f"training_{inst.id}"
@@ -380,7 +393,6 @@ def train_model(
     input_contact_spacing=8,
     input_boundary_width=3,
 ):
-
     inst = get_object_or_404(Training, id=training_id)
     model = get_object_or_404(Model, id=inst.model.id)
     inst.status, inst.started_at, inst.task_id = (
