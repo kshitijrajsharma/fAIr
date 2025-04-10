@@ -250,7 +250,7 @@ export const UserProfileSettingsPage = () => {
                 >
                   {isEmailPending
                     ? USER_PROFILE_PAGE_CONTENT.settings.form
-                      .submissionInProgress
+                        .submissionInProgress
                     : USER_PROFILE_PAGE_CONTENT.settings.form.submitButton}
                 </Button>
               </div>
@@ -313,7 +313,7 @@ export const UserProfileSettingsPage = () => {
                         }
                         checked={
                           notifications[
-                          notification.key as keyof typeof notifications
+                            notification.key as keyof typeof notifications
                           ]
                         }
                         handleSwitchChange={(e) => {
@@ -370,7 +370,7 @@ export const UserProfileSettingsPage = () => {
                   {!user.account_deletion_requested
                     ? USER_PROFILE_PAGE_CONTENT.settings.account.description
                     : USER_PROFILE_PAGE_CONTENT.settings.account
-                      .deleteRequestPending}
+                        .deleteRequestPending}
                 </p>
               </div>
               <ButtonWithIcon
