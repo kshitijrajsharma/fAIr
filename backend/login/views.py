@@ -9,13 +9,12 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from login.authentication import OsmAuthentication
+from login.permissions import IsOsmAuthenticated
 from osm_login_python.core import Auth
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from login.authentication import OsmAuthentication
-from login.permissions import IsOsmAuthenticated
 
 from .models import OsmUser
 from .tokens import email_verification_token
@@ -150,6 +149,9 @@ class VerifyEmail(APIView):
             return Response({"message": "Email already verified."}, status=201)
 
         if email_verification_token.check_token(user, token):
+            if user.email_verified:
+                return Response({"message": "Email already verified."}, status=201)
+
             user.email_verified = True
             user.save()
             return Response({"message": "Email successfully verified."}, status=200)

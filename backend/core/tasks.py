@@ -10,10 +10,6 @@ import time
 from contextlib import contextmanager
 
 from celery import shared_task
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
-
 from core.models import AOI, FeedbackAOI, FeedbackLabel, Label, Model, Training
 from core.serializers import (
     AOISerializer,
@@ -22,6 +18,9 @@ from core.serializers import (
     LabelFileSerializer,
 )
 from core.utils import bbox, is_dir_empty
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from .utils import S3Uploader, send_notification, shift_labels_by_offset
 
@@ -31,12 +30,29 @@ DEFAULT_TILE_SIZE = 256
 @contextmanager
 def capture_output_to_file(log_path):
     original_stdout, original_stderr = sys.stdout, sys.stderr
+    
+    root_logger = logging.getLogger()
+    original_handlers = root_logger.handlers.copy()
+    original_levels = {handler: handler.level for handler in original_handlers}
+    
     with open(log_path, "a", encoding="utf-8") as f:
         sys.stdout = sys.stderr = f
+        
+        file_handler = logging.StreamHandler(f)
+        root_logger.addHandler(file_handler)
+        
+        for handler in original_handlers:
+            root_logger.removeHandler(handler)
+        
         try:
             yield
         finally:
             sys.stdout, sys.stderr = original_stdout, original_stderr
+            
+            root_logger.removeHandler(file_handler)
+            
+            for handler in original_handlers:
+                root_logger.addHandler(handler)
 
 
 # Utility helpers

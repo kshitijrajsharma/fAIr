@@ -483,10 +483,8 @@ def get_email_message(training_instance, status):
 
 
 def send_notification(training_instance, status):
-    if any(
-        method in training_instance.user.notifications_delivery_methods
-        for method in ["web", "email"]
-    ):
+
+    if "web" in training_instance.user.notifications_delivery_methods:
         UserNotification.objects.create(
             user=training_instance.user,
             message=f"Training {training_instance.id} has {status}.",
