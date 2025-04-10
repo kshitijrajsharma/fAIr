@@ -206,7 +206,6 @@ export const UserProfileSettingsPage = () => {
                   onClick={() => setShowForm(true)}
                   uppercase={false}
                   className="!w-fit"
-                  disabled={user.email_verified}
                   contentClassName="md:!p-0.5 text-body-4"
                   size="small"
                 >
