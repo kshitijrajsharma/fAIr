@@ -5,12 +5,16 @@ import { DeleteModal } from "@/components/shared/modals";
 import { Button, ButtonWithIcon } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input, Switch } from "@/components/ui/form";
-import { DeleteIcon } from "@/components/ui/icons";
+import { CheckIcon, DeleteIcon } from "@/components/ui/icons";
 import { Image } from "@/components/ui/image";
+import { ToolTip } from "@/components/ui/tooltip";
 import { USER_PROFILE_PAGE_CONTENT } from "@/constants/ui-contents/user-profile-content";
 import { ButtonVariant, INPUT_TYPES } from "@/enums";
 import { NotificationDeliveryMethod } from "@/enums/user-profile";
-import { useUpdateUserProfile } from "@/features/user-profile/hooks/use-user-profile";
+import {
+  useEmailVerification,
+  useUpdateUserProfile,
+} from "@/features/user-profile/hooks/use-user-profile";
 import { useDialog } from "@/hooks/use-dialog";
 import { showErrorToast, showSuccessToast, truncateString } from "@/utils";
 import { useState } from "react";
@@ -81,6 +85,22 @@ export const UserProfileSettingsPage = () => {
       },
       onError: (error) => {
         showErrorToast(error, "Account deletion request failed.");
+      },
+    },
+  });
+
+  const {
+    mutate: requestEmailVerification,
+    isPending: emailVerificationRequestIsPending,
+  } = useEmailVerification({
+    mutationConfig: {
+      onSuccess: () => {
+        showSuccessToast(
+          "Email verification instructions has been sent to your email address.",
+        );
+      },
+      onError: (error) => {
+        showErrorToast(error);
       },
     },
   });
@@ -158,22 +178,44 @@ export const UserProfileSettingsPage = () => {
       <div className="flex justify-center items-center">
         <div className="w-full md:max-w-[400px] flex flex-col gap-y-10">
           {!showForm && (
-            <div className="flex flex-col md:flex-row gap-y-2 md:gap-0 justify-between md:items-center">
-              <p className="text-body-3 md:text-body-2">
-                {truncateString(email)}
-              </p>
-              <Button
-                variant={ButtonVariant.TERTIARY}
-                onClick={() => setShowForm(true)}
-                uppercase={false}
-                className="!w-fit"
-                contentClassName="md:!p-0.5 text-body-4"
-                size="small"
-              >
-                {USER_PROFILE_PAGE_CONTENT.settings.form.editEmail}
-              </Button>
-            </div>
+            <>
+              <SectionHeader
+                sectionTitle={
+                  USER_PROFILE_PAGE_CONTENT.settings.form
+                    .emailAddressSectionHeading
+                }
+              />
+              <div className="flex flex-col md:flex-row gap-y-2 md:gap-0 justify-between md:items-center">
+                <p className="text-body-3 md:text-body-2 flex items-center gap-x-2">
+                  {truncateString(email)}
+                  {user.email_verified && (
+                    <ToolTip
+                      content={
+                        USER_PROFILE_PAGE_CONTENT.settings.form
+                          .emailVerifiedTooltip
+                      }
+                    >
+                      <span className="w-5 h-5 p-1 rounded-full bg-green-500 flex items-center justify-center">
+                        <CheckIcon className="icon text-white" />
+                      </span>
+                    </ToolTip>
+                  )}
+                </p>
+                <Button
+                  variant={ButtonVariant.TERTIARY}
+                  onClick={() => setShowForm(true)}
+                  uppercase={false}
+                  className="!w-fit"
+                  disabled={user.email_verified}
+                  contentClassName="md:!p-0.5 text-body-4"
+                  size="small"
+                >
+                  {USER_PROFILE_PAGE_CONTENT.settings.form.editEmail}
+                </Button>
+              </div>
+            </>
           )}
+
           {showForm && (
             <div className="flex flex-col gap-y-6">
               <SectionHeader
@@ -209,12 +251,40 @@ export const UserProfileSettingsPage = () => {
                 >
                   {isEmailPending
                     ? USER_PROFILE_PAGE_CONTENT.settings.form
-                        .submissionInProgress
+                      .submissionInProgress
                     : USER_PROFILE_PAGE_CONTENT.settings.form.submitButton}
                 </Button>
               </div>
             </div>
           )}
+
+          {!user.email_verified && user?.email.length > 0 && (
+            <div className="text-sm flex flex-col gap-y-6 h-full bg-off-white rounded-md p-4">
+              <p>
+                {
+                  USER_PROFILE_PAGE_CONTENT.settings.form
+                    .emailNotVerifiedMessage
+                }
+              </p>
+              <div className="flex justify-end">
+                <Button
+                  variant={ButtonVariant.PRIMARY}
+                  onClick={() => requestEmailVerification(undefined)}
+                  uppercase={false}
+                  disabled={emailVerificationRequestIsPending}
+                  className="!w-fit"
+                  contentClassName="md:!p-0.5 text-body-4"
+                  size="small"
+                >
+                  {
+                    USER_PROFILE_PAGE_CONTENT.settings.form
+                      .verifyEmailButtonText
+                  }
+                </Button>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-y-6">
             <SectionHeader
               sectionTitle={
@@ -237,10 +307,14 @@ export const UserProfileSettingsPage = () => {
                         </p>
                       </div>
                       <Switch
-                        disabled={isNotificationPending}
+                        disabled={
+                          isNotificationPending ||
+                          !user.email_verified ||
+                          user.email.length === 0
+                        }
                         checked={
                           notifications[
-                            notification.key as keyof typeof notifications
+                          notification.key as keyof typeof notifications
                           ]
                         }
                         handleSwitchChange={(e) => {
@@ -297,7 +371,7 @@ export const UserProfileSettingsPage = () => {
                   {!user.account_deletion_requested
                     ? USER_PROFILE_PAGE_CONTENT.settings.account.description
                     : USER_PROFILE_PAGE_CONTENT.settings.account
-                        .deleteRequestPending}
+                      .deleteRequestPending}
                 </p>
               </div>
               <ButtonWithIcon
@@ -324,7 +398,7 @@ export const UserProfileSettingsPage = () => {
 const SectionHeader = ({ sectionTitle }: { sectionTitle: string }) => {
   return (
     <div>
-      <h2 className="text-body-1 md:text-title-3 font-semibold">
+      <h2 className="text-body-1 md:text-title-4 font-semibold">
         {sectionTitle}
       </h2>
     </div>

@@ -88,6 +88,26 @@ class AuthService {
       throw new Error("Failed to authenticate user.");
     }
   }
+
+  /**
+   * Verifies the user's email using the provided state and code.
+   * @param uid The state token retrieved from the URL params.
+   * @param token The token retrieved from the URL params.
+   * @returns The email verification status from the backend.
+   */
+  async verifyEmail(uid: string, token: string): Promise<any> {
+    try {
+      const response = await apiClient.get(API_ENDPOINTS.VERIFY_EMAIL, {
+        params: {
+          uid,
+          token,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      showErrorToast(error);
+    }
+  }
 }
 
 export const authService = new AuthService();

@@ -577,7 +577,10 @@ export type TAuthPageAndModalContent = {
   instruction: string;
   buttonText: string;
   authInProgressText: string;
+  emailVerificationInProgressText: string;
+  emailVerificationPageTitle: string;
 };
+
 // Auth Page/Modal content ends.
 
 // About page content types starts.
@@ -721,11 +724,15 @@ export type TUserProfilePageContent = {
     pageTitle: string;
     form: {
       sectionHeading: string;
+      emailAddressSectionHeading: string;
       placeholder: string;
       formLabel: string;
       editEmail: string;
       submitButton: string;
       submissionInProgress: string;
+      emailVerifiedTooltip: string;
+      emailNotVerifiedMessage: string;
+      verifyEmailButtonText: string;
     };
     notifications: {
       sectionTitle: string;

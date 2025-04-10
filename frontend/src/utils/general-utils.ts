@@ -26,15 +26,17 @@ export const showErrorToast = (
     typeof error?.response?.data !== "object"
   ) {
     message = error?.response?.data;
-  } else if (error?.response?.data[0]) {
-    message = error?.response?.data[0];
+  } else if (error?.response?.data?.error) {
+    message = error.response.data.error;
   } else if (error?.response?.data?.message) {
     message = error.response.data.message;
   } else if (error?.response?.data?.detail) {
     message = error?.response?.data?.detail;
   } else if (error.response?.statusText) {
     message = error.response?.statusText;
-  } else if (error?.message) {
+  } else if (error?.response?.data[0]) {
+    message = error?.response?.data[0];
+  } else if (error.message) {
     message = error.message;
   }
 

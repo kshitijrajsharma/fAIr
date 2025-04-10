@@ -23,3 +23,11 @@ export const updateUserProfile = async ({
     })
   ).data;
 };
+
+export const requestEmailVerification = async (): Promise<{
+  message: string;
+}> => {
+  return await (
+    await apiClient.post(API_ENDPOINTS.REQUEST_EMAIL_VERIFICATION)
+  ).data;
+};

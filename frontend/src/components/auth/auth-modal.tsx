@@ -13,9 +13,11 @@ import { Spinner } from "@/components/ui/spinner";
 export const AuthenticationModal = ({
   callbackPage = false,
   isOpen = false,
+  emailVerification = false,
 }: {
   callbackPage?: boolean;
   isOpen?: boolean;
+  emailVerification?: boolean;
 }) => {
   const { closeDialog } = useDialog();
   const navigate = useNavigate();
@@ -37,10 +39,12 @@ export const AuthenticationModal = ({
           <p className="text-body-3  xl:text-body-2">
             {callbackPage
               ? AUTH_PAGE_AND_MODAL_CONTENT.authInProgressText
-              : AUTH_PAGE_AND_MODAL_CONTENT.instruction}
+              : emailVerification
+                ? AUTH_PAGE_AND_MODAL_CONTENT.emailVerificationInProgressText
+                : AUTH_PAGE_AND_MODAL_CONTENT.instruction}
           </p>
         </div>
-        {callbackPage ? (
+        {callbackPage || emailVerification ? (
           <Spinner />
         ) : (
           <Button

@@ -48,7 +48,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // For use across the application.
   const isAuthenticated = user !== null && token !== undefined;
 
-  // Set token globally to eliminate the need to rewrite it
+  /**
+   * Set token globally to eliminate the need to rewrite it.
+   */
   apiClient.defaults.headers.common["access-token"] = token ? `${token}` : null;
 
   const handleRedirection = () => {
@@ -63,8 +65,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // To show the login success after completing redirection if any.
-
+  /**
+   * To show the login success after completing redirection if any.
+   */
   useEffect(() => {
     const loginSuccessful = getSessionValue(
       HOT_FAIR_LOGIN_SUCCESSFUL_SESSION_KEY,
@@ -75,7 +78,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Proceed with the oauth flow when the state and code are in the url params.
+  /**
+   * Proceed with the oauth flow when the state and code are in the url params.
+   */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
@@ -84,6 +89,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       authenticateUser(state, code);
     }
   }, [user]);
+
+  /**
+   *  Proceed with the email verification flow when the uid and token are in the url params.
+   */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get("uid");
+    const token = params.get("token");
+    if (uid && token) {
+      verifyUserEmail(uid, token);
+    }
+  }, []);
 
   /**
    * Retrieve the user profile information from the backend.
@@ -127,6 +144,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.access_token);
     } catch (error) {
       showErrorToast(error, TOAST_NOTIFICATIONS.authenticationFailed);
+      // Delay for 5 seconds, incase it's the network speed.
+      // Otherwise, redirect the user back to the home page.
+      setTimeout(() => {
+        window.location.href = APPLICATION_ROUTES.HOMEPAGE;
+      }, 5000);
+    }
+  };
+
+  /**
+   * Complete the email verification flow by sending the uid and token to the backend.
+   * @param uid The uid from the email.
+   * @param token  The token from the email.
+   */
+  const verifyUserEmail = async (uid: string, token: string) => {
+    try {
+      const data = await authService.verifyEmail(uid, token);
+      showSuccessToast(data.message);
+      /**
+       * Redirect the user to the profile page after 5 seconds.
+       */
+      setTimeout(() => {
+        window.location.href = APPLICATION_ROUTES.PROFILE_BASE;
+      }, 5000);
+    } catch (error) {
+      showErrorToast(error);
       // Delay for 5 seconds, incase it's the network speed.
       // Otherwise, redirect the user back to the home page.
       setTimeout(() => {

@@ -28,11 +28,16 @@ export const USER_PROFILE_PAGE_CONTENT: TUserProfilePageContent = {
     pageTitle: "Profile Settings",
     form: {
       sectionHeading: "Enter email address",
+      emailAddressSectionHeading: "Email Address",
       placeholder: "Enter email address",
       formLabel: "Email",
       editEmail: "Change email",
       submitButton: "Submit",
       submissionInProgress: "Submitting...",
+      emailVerifiedTooltip: "Email verified",
+      emailNotVerifiedMessage:
+        "Please verify your email address to receive notifications.",
+      verifyEmailButtonText: "Verify Email",
     },
     notifications: {
       sectionTitle: "Notifications",

@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
   LOGIN: "auth/login/",
   AUTH_CALLBACK: "auth/callback/",
   USER: "auth/me/",
+  REQUEST_EMAIL_VERIFICATION: "auth/me/request-email-verification/",
+  VERIFY_EMAIL: "auth/me/verify-email/",
 
   // OSM Database
 
