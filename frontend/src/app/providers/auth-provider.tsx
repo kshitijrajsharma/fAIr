@@ -168,7 +168,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
        * Redirect the user to the profile page after 3 seconds.
        */
       setTimeout(() => {
-        window.location.href = APPLICATION_ROUTES.PROFILE_BASE;
+        window.location.href = APPLICATION_ROUTES.PROFILE_SETTINGS;
       }, 3000);
     } catch (error) {
       showErrorToast(error);
