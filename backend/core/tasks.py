@@ -35,7 +35,11 @@ def capture_output_to_file(log_path):
     original_handlers = root_logger.handlers.copy()
     original_levels = {handler: handler.level for handler in original_handlers}
     
-    with open(log_path, "a", encoding="utf-8") as f:
+    f = None
+    file_handler = None
+    
+    try:
+        f = open(log_path, "a", encoding="utf-8")
         sys.stdout = sys.stderr = f
         
         file_handler = logging.StreamHandler(f)
@@ -44,15 +48,25 @@ def capture_output_to_file(log_path):
         for handler in original_handlers:
             root_logger.removeHandler(handler)
         
-        try:
-            yield
-        finally:
-            sys.stdout, sys.stderr = original_stdout, original_stderr
-            
-            root_logger.removeHandler(file_handler)
-            
-            for handler in original_handlers:
-                root_logger.addHandler(handler)
+        yield
+    finally:
+        sys.stdout, sys.stderr = original_stdout, original_stderr
+        
+        if file_handler is not None and file_handler in root_logger.handlers:
+            try:
+                root_logger.removeHandler(file_handler)
+            except Exception:
+                pass  
+        
+        for handler in original_handlers:
+            if handler not in root_logger.handlers:
+                try:
+                    root_logger.addHandler(handler)
+                except Exception:
+                    pass
+        
+        if f is not None and not f.closed:
+            f.close()
 
 
 # Utility helpers
