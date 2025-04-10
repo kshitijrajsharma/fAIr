@@ -234,8 +234,8 @@ class Trainer:
 
         write_json(os.path.join(out, "labels.geojson"), labels)
         write_json(os.path.join(out, "aois.geojson"), aois.data)
-
-        return {"accuracy": acc, "output_path": out, "preprocess_output": prep}
+        safe_rmtree(base)
+        return {"accuracy": acc, "output_path": out, "preprocess_output": os.path.join(out, "preprocessed")}
 
     def _train_ramp(self):
         import tensorflow as tf
@@ -307,7 +307,7 @@ class Trainer:
 
         write_json(os.path.join(out, "labels.geojson"), labels)
         write_json(os.path.join(out, "aois.geojson"), aois.data)
-
+        safe_rmtree(base)
         return {"accuracy": acc, "output_path": out, "preprocess_output": prep}
 
 
