@@ -8,6 +8,7 @@ import sys
 import tarfile
 import time
 from contextlib import contextmanager
+from datetime import datetime
 
 from celery import shared_task
 from core.models import AOI, FeedbackAOI, FeedbackLabel, Label, Model, Training
@@ -130,14 +131,14 @@ class Trainer:
         self.model_type = model_type
         self.args = args
 
-    def run(self):
+    def run(self, output_path):
         return (
-            self._train_yolo()
+            self._train_yolo(output_path)
             if self.model_type.startswith("YOLO")
-            else self._train_ramp()
+            else self._train_ramp(output_path)
         )
 
-    def _train_yolo(self):
+    def _train_yolo(self, output_path):
         from hot_fair_utilities import preprocess
         from hot_fair_utilities.preprocessing.yolo_v8_v1.yolo_format import (
             yolo_format as v1,
@@ -160,15 +161,12 @@ class Trainer:
             multimasks,
             *_,
         ) = self.args
-        base = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id))
+        base = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id), datetime.now().strftime("%Y%m%dT%H%M"))
         safe_rmtree(base)
         prep = f"/{base}/preprocessed"
         model_dir = os.path.join(base, self.model_type)
         yaml = os.path.join(model_dir, "yolo_dataset.yaml")
-        out = os.path.join(
-            pathlib.Path(input_path).parent, "output", f"training_{inst.id}"
-        )
-
+        out = output_path
         safe_copytree(input_path, os.path.join(base, "input"))
         preprocess(
             input_path=os.path.join(base, "input"),
@@ -237,7 +235,7 @@ class Trainer:
         safe_rmtree(base)
         return {"accuracy": acc, "output_path": out, "preprocess_output": os.path.join(out, "preprocessed")}
 
-    def _train_ramp(self):
+    def _train_ramp(self, output_path):
         import tensorflow as tf
         from hot_fair_utilities import preprocess
         from hot_fair_utilities.training.ramp import train
@@ -255,13 +253,10 @@ class Trainer:
             spacing,
             width,
         ) = self.args
-        base = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id))
+        base = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id), datetime.now().strftime("%Y%m%dT%H%M"))
         safe_rmtree(base)
         prep = f"/{base}/preprocessed"
-        out = os.path.join(
-            pathlib.Path(input_path).parent, "output", f"training_{inst.id}"
-        )
-
+        out = output_path
         safe_copytree(input_path, os.path.join(base, "input"))
         preprocess(
             input_path=os.path.join(base, "input"),
@@ -329,11 +324,8 @@ def xz_folder(folder_path, output_filename, remove_original=False):
         shutil.rmtree(folder_path)
 
 
-def prepare_data(inst, dataset_id, feedback, zoom_level, imagery):
+def prepare_data(inst, dataset_id, feedback, zoom_level, imagery, input_path):
     from predictor import download_imagery, get_start_end_download_coords
-
-    base = os.path.join(settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}")
-    input_path = os.path.join(base, "input")
     safe_rmtree(input_path)
     os.makedirs(input_path)
 
@@ -447,9 +439,12 @@ def train_model(
     try:
         logger.info("Starting model training task")
         with capture_output_to_file(log_file):
+            input_path = os.path.join(settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}", "input", f"training_{training_id}")
+
             input_path, aoi_ser, labels = prepare_data(
-                inst, dataset_id, feedback, zoom_level, source_imagery
+                inst, dataset_id, feedback, zoom_level, source_imagery, input_path
             )
+            output_path = os.path.join(settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}", "output", f"training_{training_id}")
             args = (
                 inst,
                 dataset_id,
@@ -463,7 +458,7 @@ def train_model(
                 input_contact_spacing,
                 input_boundary_width,
             )
-            result = Trainer(model.base_model, *args).run()
+            result = Trainer(model.base_model, *args).run(output_path)
             run_tippecanoe(result["output_path"])
             finalize(
                 inst,
