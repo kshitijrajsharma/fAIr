@@ -45,7 +45,7 @@ export const ImagerySourceSelectorTriggerButton = ({
         triggerComponent={
           <ToolTip content={!isMobile ? "Prediction Imagery" : ""}>
             <div
-              className={` px-2 ${isMobile ? "bg-off-white" : "hover:bg-off-white"} flex items-center p-2 gap-x-2 rounded-md`}
+              className={` px-2 bg-off-white hover:bg-opacity-50 flex items-center p-2 gap-x-2 rounded-[6px]`}
             >
               <button
                 onClick={

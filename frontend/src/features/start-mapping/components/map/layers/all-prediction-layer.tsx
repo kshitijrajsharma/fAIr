@@ -58,6 +58,19 @@ export const AllPredictionsLayer = ({
         layout: { visibility: "visible" },
       });
     }
+
+    return () => {
+      if (!map || !map.getStyle()) return;
+      if (map.getLayer(ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID)) {
+        map.removeLayer(ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID);
+      }
+      if (map.getLayer(ALL_MODEL_PREDICTIONS_FILL_LAYER_ID)) {
+        map.removeLayer(ALL_MODEL_PREDICTIONS_FILL_LAYER_ID);
+      }
+      if (map.getSource(ALL_MODEL_PREDICTIONS_SOURCE_ID)) {
+        map.removeSource(ALL_MODEL_PREDICTIONS_SOURCE_ID);
+      }
+    };
   }, [map]);
 
   useEffect(() => {

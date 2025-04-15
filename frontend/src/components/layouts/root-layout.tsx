@@ -13,7 +13,6 @@ import {
   MATOMO_TRACKING_TIMEOUT_DURATION,
 } from "@/config";
 
-
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
   const { scrollToTop } = useScrollToTop();

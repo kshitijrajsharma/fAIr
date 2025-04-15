@@ -23,17 +23,17 @@ export const PredictionImageryLayer = ({
 }) => {
   useDynamicMapLayer(
     map,
-    PREDICTION_IMAGERY_SOURCE,
-    PREDICTION_IMAGERY_LAYER_ID,
+    `${PREDICTION_IMAGERY_SOURCE}-${predictionImagerySource}`,
+    `${PREDICTION_IMAGERY_LAYER_ID}-${predictionImagerySource}`,
     {
       type: "raster",
       tiles: [predictionImageryURL as string],
       tileSize: 256,
     },
     {
-      id: PREDICTION_IMAGERY_LAYER_ID,
+      id: `${PREDICTION_IMAGERY_LAYER_ID}-${predictionImagerySource}`,
       type: "raster",
-      source: PREDICTION_IMAGERY_SOURCE,
+      source: `${PREDICTION_IMAGERY_SOURCE}-${predictionImagerySource}`,
       layout: {
         visibility: "visible",
       },

@@ -54,34 +54,29 @@ export const useDynamicMapLayer = (
 
     const addOrUpdateLayer = async () => {
       const existingSource = map.getSource(sourceId);
-      if (existingSource) {
-        if (map.getLayer(layerId)) {
-          map.removeLayer(layerId);
-        }
-        map.removeSource(sourceId);
+      if (!existingSource) {
+        map.addSource(sourceId, sourceSpec);
       }
 
-      map.addSource(sourceId, sourceSpec);
-
-      belowLayerIds.forEach((id) => {
-        if (map.getLayer(id)) {
-          map.moveLayer(id);
-        }
-      });
-      const insertBeforeLayerId = belowLayerIds.find((id) => map.getLayer(id));
-      map.addLayer(layerSpec, insertBeforeLayerId || undefined);
+      if (!map.getLayer(layerId)) {
+        belowLayerIds.forEach((id) => {
+          if (map.getLayer(id)) {
+            map.moveLayer(id);
+          }
+        });
+        const insertBeforeLayerId = belowLayerIds.find((id) =>
+          map.getLayer(id),
+        );
+        map.addLayer(layerSpec, insertBeforeLayerId || undefined);
+      } else {
+        map.setLayoutProperty(layerId, "visibility", "visible");
+      }
     };
 
     addOrUpdateLayer();
-
     return () => {
-      if (map && map.getStyle()) {
-        if (map.getLayer(layerId)) {
-          map.removeLayer(layerId);
-        }
-        if (map.getSource(sourceId)) {
-          map.removeSource(sourceId);
-        }
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, "visibility", "none");
       }
     };
   }, [

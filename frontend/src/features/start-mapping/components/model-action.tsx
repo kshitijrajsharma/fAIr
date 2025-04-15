@@ -4,7 +4,6 @@ import { START_MAPPING_PAGE_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import {
   BBOX,
   TModelDetails,
-  TModelPredictions,
   TModelPredictionsConfig,
   TQueryParams,
 } from "@/types";
@@ -12,33 +11,36 @@ import { ToolTip } from "@/components/ui/tooltip";
 import { useCallback, useState } from "react";
 import { useGetModelPredictions } from "@/features/start-mapping/hooks/use-model-predictions";
 import { SEARCH_PARAMS } from "@/app/routes/start-mapping";
-import { PREDICTION_API_FILE_EXTENSIONS } from "@/config";
+import {
+  MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
+  PREDICTION_API_FILE_EXTENSIONS,
+} from "@/config";
 import { BASE_MODELS } from "@/enums";
 import { useParams } from "react-router-dom";
+import { useMapStore } from "@/store/map-store";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
 
 const ModelAction = ({
-  setModelPredictions,
-  modelPredictions,
   map,
-  disablePrediction,
   query,
-  currentZoom,
   modelInfo,
   predictionImageryURL,
 }: {
-  modelPredictions: TModelPredictions;
-  setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
   map: Map | null;
-  disablePrediction: boolean;
   query: TQueryParams;
-  currentZoom: number;
   modelInfo: TModelDetails;
   predictionImageryURL: string | undefined;
 }) => {
   const { modelId } = useParams();
+  const { modelPredictions, setModelPredictions } = useModelPredictionStore();
+
   const [predictionZoomLevel, setPredictionZoomLevel] = useState<number | null>(
     null,
   );
+  const currentZoom = useMapStore((state) => state.zoom);
+
+  const disablePrediction =
+    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
 
   const getTrainingConfig = useCallback((): TModelPredictionsConfig => {
     return {
