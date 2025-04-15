@@ -1,27 +1,32 @@
+# Standard Library
 import concurrent.futures
-import io
+import gc
+import glob
 import json
-import math
 import os
-import re
+import shutil
+import subprocess
+import tarfile
 import time
-import zipfile
 from datetime import datetime
 from uuid import uuid4
 from xml.dom import ValidationErr
 from zipfile import ZipFile
 
+# Third-party Libraries
 import boto3
 import geopandas as gpd
 import requests
 from botocore.exceptions import ClientError, NoCredentialsError
+
+# Django
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponseRedirect
 from gpxpy.gpx import GPX, GPXTrack, GPXTrackSegment, GPXWaypoint
 from shapely.affinity import translate
 from tqdm import tqdm
 
+# Local imports
 from .models import AOI, FeedbackAOI, FeedbackLabel, Label, UserNotification
 from .serializers import FeedbackLabelSerializer, LabelSerializer
 
@@ -483,7 +488,6 @@ def get_email_message(training_instance, status):
 
 
 def send_notification(training_instance, status):
-
     if "web" in training_instance.user.notifications_delivery_methods:
         UserNotification.objects.create(
             user=training_instance.user,
@@ -531,3 +535,95 @@ def shift_labels_by_offset(serialized_labels, offset):
     gdf_shifted = gdf_mercator.to_crs(epsg=4326)
 
     return gdf_shifted
+
+
+def safe_rmtree(path, sleep_time=2):
+    """
+    Safely delete a directory, handling EFS/NFS .nfs* lock files.
+    Tries shutil.rmtree once, retries, and falls back to rm -rf.
+    """
+
+    def has_nfs_files(p):
+        return bool(glob.glob(os.path.join(p, "**/.nfs*"), recursive=True))
+
+    if not os.path.exists(path):
+        return
+
+    # 1st try with shutil
+    try:
+        shutil.rmtree(path)
+        print(f"[safe_rmtree] Deleted with shutil: {path}")
+        return
+    except Exception as e:
+        print(f"[safe_rmtree] First shutil.rmtree failed: {e}")
+        gc.collect()
+        time.sleep(sleep_time)
+
+    # 2nd try with shutil
+    try:
+        shutil.rmtree(path)
+        print(f"[safe_rmtree] Deleted on second try with shutil: {path}")
+        return
+    except Exception as e:
+        print(f"[safe_rmtree] Second shutil.rmtree failed: {e}")
+        gc.collect()
+        time.sleep(sleep_time)
+
+    # Check if .nfs files exist
+    if has_nfs_files(path):
+        print(
+            f"[safe_rmtree] Warning: .nfs* files detected under {path}. Likely still in use."
+        )
+
+    # Fallback to rm -rf
+    try:
+        subprocess.check_call(["rm", "-rf", path])
+        print(f"[safe_rmtree] Deleted with fallback 'rm -rf': {path}")
+        return
+    except Exception as e:
+        print(f"[safe_rmtree] Fallback rm -rf failed: {e}")
+        gc.collect()
+        time.sleep(sleep_time)
+
+    # Final attempt with rm -rf
+    try:
+        subprocess.check_call(["rm", "-rf", path])
+        print(f"[safe_rmtree] Final retry with rm -rf succeeded: {path}")
+        return
+    except Exception as e:
+        print(f"[safe_rmtree] Final retry failed: {e}")
+        raise RuntimeError(f"safe_rmtree failed to remove {path}") from e
+
+
+def safe_copytree(src, dst):
+    safe_rmtree(dst)
+    shutil.copytree(src, dst)
+
+
+def copyfile(src, dst):
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copyfile(src, dst)
+
+
+def write_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f)
+
+
+def get_file_count(path):
+    try:
+        return len(
+            [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        )
+    except Exception as e:
+        logging.getLogger(__name__).error(f"Error counting files: {e}")
+        return 0
+
+
+def xz_folder(folder_path, output_filename, remove_original=False):
+    if not output_filename.endswith(".tar.xz"):
+        output_filename += ".tar.xz"
+    with tarfile.open(output_filename, "w:xz") as tar:
+        tar.add(folder_path, arcname=os.path.basename(folder_path))
+    if remove_original:
+        shutil.rmtree(folder_path)

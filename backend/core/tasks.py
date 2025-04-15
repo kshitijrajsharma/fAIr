@@ -11,6 +11,10 @@ from contextlib import contextmanager
 from datetime import datetime
 
 from celery import shared_task
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 from core.models import AOI, FeedbackAOI, FeedbackLabel, Label, Model, Training
 from core.serializers import (
     AOISerializer,
@@ -19,11 +23,18 @@ from core.serializers import (
     LabelFileSerializer,
 )
 from core.utils import bbox, is_dir_empty
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
-from .utils import S3Uploader, send_notification, shift_labels_by_offset
+from .utils import (
+    S3Uploader,
+    copyfile,
+    get_file_count,
+    safe_copytree,
+    safe_rmtree,
+    send_notification,
+    shift_labels_by_offset,
+    write_json,
+    xz_folder,
+)
 
 DEFAULT_TILE_SIZE = 256
 
@@ -31,84 +42,43 @@ DEFAULT_TILE_SIZE = 256
 @contextmanager
 def capture_output_to_file(log_path):
     original_stdout, original_stderr = sys.stdout, sys.stderr
-    
+
     root_logger = logging.getLogger()
     original_handlers = root_logger.handlers.copy()
     original_levels = {handler: handler.level for handler in original_handlers}
-    
+
     f = None
     file_handler = None
-    
+
     try:
         f = open(log_path, "a", encoding="utf-8")
         sys.stdout = sys.stderr = f
-        
+
         file_handler = logging.StreamHandler(f)
         root_logger.addHandler(file_handler)
-        
+
         for handler in original_handlers:
             root_logger.removeHandler(handler)
-        
+
         yield
     finally:
         sys.stdout, sys.stderr = original_stdout, original_stderr
-        
+
         if file_handler is not None and file_handler in root_logger.handlers:
             try:
                 root_logger.removeHandler(file_handler)
             except Exception:
-                pass  
-        
+                pass
+
         for handler in original_handlers:
             if handler not in root_logger.handlers:
                 try:
                     root_logger.addHandler(handler)
                 except Exception:
                     pass
-        
+
         if f is not None and not f.closed:
             f.close()
-
-
-# Utility helpers
-def safe_rmtree(path):
-    try:
-        if os.path.exists(path):
-            shutil.rmtree(path)
-            print(f"Successfully deleted {path} with shutil.rmtree")
-    except Exception as e:
-        print(f"shutil.rmtree failed: {e}")
-        try:
-            subprocess.check_call(["rm", "-rf", path])
-            print(f"Fallback deletion succeeded for {path}")
-        except Exception as fallback_error:
-            print(f"Fallback deletion also failed: {fallback_error}")
-            raise
-
-
-def safe_copytree(src, dst):
-    safe_rmtree(dst)
-    shutil.copytree(src, dst)
-
-
-def copyfile(src, dst):
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copyfile(src, dst)
-
-
-def write_json(path, data):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f)
-
-
-def get_file_count(path):
-    try:
-        return len(
-            [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-        )
-    except Exception as e:
-        logging.getLogger(__name__).error(f"Error counting files: {e}")
-        return 0
 
 
 class print_time:
@@ -161,7 +131,12 @@ class Trainer:
             multimasks,
             *_,
         ) = self.args
-        base = os.path.join(settings.YOLO_HOME, "yolo-data", str(dataset_id), datetime.now().strftime("%Y%m%dT%H%M"))
+        base = os.path.join(
+            settings.YOLO_HOME,
+            "yolo-data",
+            str(dataset_id),
+            datetime.now().strftime("%Y%m%dT%H%M"),
+        )
         safe_rmtree(base)
         prep = f"/{base}/preprocessed"
         model_dir = os.path.join(base, self.model_type)
@@ -233,7 +208,11 @@ class Trainer:
         write_json(os.path.join(out, "labels.geojson"), labels)
         write_json(os.path.join(out, "aois.geojson"), aois.data)
         safe_rmtree(base)
-        return {"accuracy": acc, "output_path": out, "preprocess_output": os.path.join(out, "preprocessed")}
+        return {
+            "accuracy": acc,
+            "output_path": out,
+            "preprocess_output": os.path.join(out, "preprocessed"),
+        }
 
     def _train_ramp(self, output_path):
         import tensorflow as tf
@@ -253,7 +232,12 @@ class Trainer:
             spacing,
             width,
         ) = self.args
-        base = os.path.join(settings.RAMP_HOME, "ramp-data", str(dataset_id), datetime.now().strftime("%Y%m%dT%H%M"))
+        base = os.path.join(
+            settings.RAMP_HOME,
+            "ramp-data",
+            str(dataset_id),
+            datetime.now().strftime("%Y%m%dT%H%M"),
+        )
         safe_rmtree(base)
         prep = f"/{base}/preprocessed"
         out = output_path
@@ -315,17 +299,9 @@ def upload_to_s3(path, parent=None):
     ).upload(path)
 
 
-def xz_folder(folder_path, output_filename, remove_original=False):
-    if not output_filename.endswith(".tar.xz"):
-        output_filename += ".tar.xz"
-    with tarfile.open(output_filename, "w:xz") as tar:
-        tar.add(folder_path, arcname=os.path.basename(folder_path))
-    if remove_original:
-        shutil.rmtree(folder_path)
-
-
 def prepare_data(inst, dataset_id, feedback, zoom_level, imagery, input_path):
     from predictor import download_imagery, get_start_end_download_coords
+
     safe_rmtree(input_path)
     os.makedirs(input_path)
 
@@ -439,12 +415,22 @@ def train_model(
     try:
         logger.info("Starting model training task")
         with capture_output_to_file(log_file):
-            input_path = os.path.join(settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}", "input", f"training_{training_id}")
+            input_path = os.path.join(
+                settings.TRAINING_WORKSPACE,
+                f"dataset_{dataset_id}",
+                "input",
+                f"training_{training_id}",
+            )
 
             input_path, aoi_ser, labels = prepare_data(
                 inst, dataset_id, feedback, zoom_level, source_imagery, input_path
             )
-            output_path = os.path.join(settings.TRAINING_WORKSPACE, f"dataset_{dataset_id}", "output", f"training_{training_id}")
+            output_path = os.path.join(
+                settings.TRAINING_WORKSPACE,
+                f"dataset_{dataset_id}",
+                "output",
+                f"training_{training_id}",
+            )
             args = (
                 inst,
                 dataset_id,
