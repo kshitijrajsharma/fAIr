@@ -10,7 +10,7 @@ export const OpenAerialMap = ({
   map: Map | null;
 }) => {
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.getStyle()) return;
     if (!map.getSource(TMS_SOURCE_ID)) {
       map.addSource(TMS_SOURCE_ID, {
         type: "raster",

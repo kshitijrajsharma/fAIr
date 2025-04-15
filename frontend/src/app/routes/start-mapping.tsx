@@ -43,6 +43,8 @@ import { PredictionImagerySource } from "@/enums/start-mapping";
 import { Dialog } from "@/components/ui/dialog";
 import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
 import { useDialog } from "@/hooks/use-dialog";
+import { useMapStore } from "@/store/map-store";
+import { PredictionPopupPortal } from "@/features/start-mapping/components/popup-portal";
 
 export type TDownloadOptions = {
   name: string;
@@ -63,7 +65,8 @@ export type TQueryParams = { [x: string]: string | number | boolean };
 export const StartMappingPage = () => {
   const { modelId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { map, mapContainerRef, currentZoom } = useMapInstance();
+  const { map, mapContainerRef } = useMapInstance();
+  const currentZoom = useMapStore((state) => state.zoom);
   const { isSmallViewport } = useScreenSize();
 
   const navigate = useNavigate();
@@ -206,42 +209,42 @@ export const StartMappingPage = () => {
     () => [
       ...(modelPredictions.accepted.length > 0
         ? [
-            {
-              value:
-                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                  .acceptedPredictions,
-              subLayers: [
-                ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-                ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-              ],
-            },
-          ]
+          {
+            value:
+              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                .acceptedPredictions,
+            subLayers: [
+              ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+              ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+            ],
+          },
+        ]
         : []),
       ...(modelPredictions.rejected.length > 0
         ? [
-            {
-              value:
-                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                  .rejectedPredictions,
-              subLayers: [
-                REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-                REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-              ],
-            },
-          ]
+          {
+            value:
+              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                .rejectedPredictions,
+            subLayers: [
+              REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+              REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+            ],
+          },
+        ]
         : []),
       ...(modelPredictions.all.length > 0
         ? [
-            {
-              value:
-                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                  .predictionResults,
-              subLayers: [
-                ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-                ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-              ],
-            },
-          ]
+          {
+            value:
+              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                .predictionResults,
+            subLayers: [
+              ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+              ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+            ],
+          },
+        ]
         : []),
     ],
     [modelPredictions],
@@ -351,6 +354,7 @@ export const StartMappingPage = () => {
 
   return (
     <>
+
       <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
       <div className="h-screen flex flex-col fullscreen">
         {/* Prediction Imagery Dialog */}

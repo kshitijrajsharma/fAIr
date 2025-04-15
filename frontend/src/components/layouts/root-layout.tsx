@@ -13,6 +13,7 @@ import {
   MATOMO_TRACKING_TIMEOUT_DURATION,
 } from "@/config";
 
+
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
   const { scrollToTop } = useScrollToTop();
@@ -75,6 +76,7 @@ export const RootLayout = () => {
   return (
     <>
       <HotTracking showTracking={showTracking} />
+
       {/* Show the auth modal when a `backgroundLocation` is set and when the user is not authenticated. */}
       <AuthenticationModal
         isOpen={state?.backgroundLocation && !isAuthenticated}
