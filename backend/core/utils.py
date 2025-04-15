@@ -587,7 +587,7 @@ def safe_rmtree(path, sleep_time=2):
 
     # Final attempt with rm -rf
     try:
-        subprocess.check_call(["rm", "-rf", path])
+        subprocess.check_call(["sudo", "rm", "-rf", path])
         print(f"[safe_rmtree] Final retry with rm -rf succeeded: {path}")
         return
     except Exception as e:
