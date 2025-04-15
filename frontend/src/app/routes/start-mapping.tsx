@@ -38,10 +38,13 @@ import {
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY,
+  PREDICTION_IMAGERY_SOURCE,
+  PREDICTION_IMAGERY_LAYER_ID,
 } from "@/config";
 import { useLocalStorage } from "@/hooks/use-storage";
 import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
 import { PredictionImagerySource } from "@/enums/start-mapping";
+import { useDynamicMapLayer } from "@/hooks/use-map-layer";
 
 export type TDownloadOptions = {
   name: string;
@@ -67,9 +70,14 @@ export const StartMappingPage = () => {
 
   const navigate = useNavigate();
 
-  const [predictionImagery, setPredictionImagery] = useState<
+  /**
+   * State to manage the tile server URL for the prediction imagery.
+   */
+  const [predictionImageryURL, setPredictionImageryURL] = useState<
     string | undefined
   >(undefined);
+
+  const [customTileServerURL, setCustomTileServerURL] = useState<string>("");
 
   const [predictionImagerySource, setPredictionImagerySource] =
     useState<PredictionImagerySource>(PredictionImagerySource.ModelDefault);
@@ -92,12 +100,10 @@ export const StartMappingPage = () => {
 
   const tileJSONURL = useMemo(
     () =>
-      predictionImagery
-        ? extractTileJSONURL(predictionImagery)
-        : modelInfo?.dataset?.source_imagery
-          ? extractTileJSONURL(modelInfo?.dataset?.source_imagery)
-          : undefined,
-    [predictionImagery, modelInfo?.dataset?.source_imagery],
+      modelInfo?.dataset?.source_imagery
+        ? extractTileJSONURL(modelInfo?.dataset?.source_imagery)
+        : undefined,
+    [modelInfo?.dataset?.source_imagery],
   );
 
   const { data: oamTileJSON, isError: oamTileJSONIsError } = useGetTMSTileJSON(
@@ -112,7 +118,7 @@ export const StartMappingPage = () => {
    */
   useEffect(() => {
     if (modelInfo?.dataset?.source_imagery) {
-      setPredictionImagery(modelInfo.dataset.source_imagery);
+      setPredictionImageryURL(modelInfo.dataset.source_imagery);
     }
   }, [modelInfo?.dataset?.source_imagery]);
 
@@ -344,7 +350,55 @@ export const StartMappingPage = () => {
     setModelPredictions(emptyPredictionState);
   }, [setModelPredictions]);
 
-  console.log(predictionImagerySource);
+  /**
+   * Dynamic layer for the prediction imagery.
+   */
+  useDynamicMapLayer(
+    map,
+    PREDICTION_IMAGERY_SOURCE,
+    PREDICTION_IMAGERY_LAYER_ID,
+    {
+      type: "raster",
+      tiles: [predictionImageryURL as string],
+      tileSize: 256,
+    },
+    {
+      id: PREDICTION_IMAGERY_LAYER_ID,
+      type: "raster",
+      source: PREDICTION_IMAGERY_SOURCE,
+      layout: {
+        visibility: "visible",
+      },
+    },
+    [predictionImageryURL, predictionImagerySource],
+    predictionImageryURL !== undefined &&
+      predictionImageryURL?.length > 0 &&
+      predictionImagerySource !== PredictionImagerySource.ModelDefault,
+  );
+
+  const memoizedPredictionImagerySource = useMemo(() => {
+    if (!isImagerySelectorOpen) return null;
+    return (
+      <ImagerySourceSelector
+        showPopup={isImagerySelectorOpen}
+        anchor={imagerySourceSelectorAnchorId}
+        setPredictionImageryURL={setPredictionImageryURL}
+        predictionImagerySource={predictionImagerySource}
+        setPredictionImagerySource={setPredictionImagerySource}
+        modelDefaultImageryURL={modelInfo?.dataset?.source_imagery}
+        customTileServerURL={customTileServerURL}
+        setCustomTileServerURL={setCustomTileServerURL}
+      />
+    );
+  }, [
+    isImagerySelectorOpen,
+    imagerySourceSelectorAnchorId,
+    setPredictionImageryURL,
+    predictionImagerySource,
+    setPredictionImagerySource,
+    customTileServerURL,
+    setCustomTileServerURL,
+  ]);
 
   return (
     <>
@@ -381,20 +435,7 @@ export const StartMappingPage = () => {
           )}
 
           {/* Imagery Source Selector Popover */}
-          {isImagerySelectorOpen && (
-            <ImagerySourceSelector
-              showPopup={isImagerySelectorOpen}
-              handleImagerySourceSelectorTriggerButtonClick={
-                handleImagerySourceSelectorTriggerButtonClick
-              }
-              closeMobileDrawer={() => setImagerySelectorOpen(false)}
-              anchor={imagerySourceSelectorAnchorId}
-              predictionImagery={predictionImagery}
-              setPredictionImagery={setPredictionImagery}
-              predictionImagerySource={predictionImagerySource}
-              setPredictionImagerySource={setPredictionImagerySource}
-            />
-          )}
+          {memoizedPredictionImagerySource}
           {/* Web Header */}
           <StartMappingHeader
             modelInfo={modelInfo}
@@ -417,6 +458,7 @@ export const StartMappingPage = () => {
             handleImagerySourceSelectorTriggerButtonClick={
               handleImagerySourceSelectorTriggerButtonClick
             }
+            isImagerySelectorOpen={isImagerySelectorOpen}
           />
         </div>
         <div className="col-span-12 h-[70vh] md:h-full md:border-8 md:border-off-white flex-grow relative map-elements-z-index">
@@ -461,6 +503,7 @@ export const StartMappingPage = () => {
             tmsBounds={oamTileJSON?.bounds as LngLatBoundsLike}
             trainingId={modelInfo?.published_training}
             modelInfoRequestIsPending={modelInfoRequestIspending}
+            predictionImagerySource={predictionImagerySource}
           />
         </div>
       </div>

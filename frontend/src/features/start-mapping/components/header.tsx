@@ -37,6 +37,7 @@ const StartMappingHeader = ({
   currentZoom,
   handleImagerySourceSelectorTriggerButtonClick,
   imagerySourceSelectorAnchorId,
+  isImagerySelectorOpen,
 }: {
   modelPredictionsExist: boolean;
   modelInfoRequestIsPending: boolean;
@@ -56,6 +57,7 @@ const StartMappingHeader = ({
   currentZoom: number;
   handleImagerySourceSelectorTriggerButtonClick: () => void;
   imagerySourceSelectorAnchorId: string;
+  isImagerySelectorOpen: boolean;
 }) => {
   const { onDropdownHide, onDropdownShow, dropdownIsOpened } =
     useDropdownMenu();
@@ -98,6 +100,7 @@ const StartMappingHeader = ({
             handleImagerySourceSelectorTriggerButtonClick={
               handleImagerySourceSelectorTriggerButtonClick
             }
+            isImagerySelectorOpen={isImagerySelectorOpen}
           />
           <ModelSettings updateQuery={updateQuery} query={query} />
           <div className="flex flex-row items-center gap-y-3 gap-x-2">

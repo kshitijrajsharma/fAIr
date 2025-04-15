@@ -1,5 +1,4 @@
-import { HelpText, Input } from "@/components/ui/form";
-import { INPUT_TYPES } from "@/enums";
+import { Input } from "@/components/ui/form";
 import { MODELS_CONTENT } from "@/constants";
 import { useEffect, useState } from "react";
 import {
@@ -13,6 +12,7 @@ import { extractTileJSONURL } from "@/utils";
 import { getTMSTileJSON } from "@/features/model-creation/api/get-tms-tilejson";
 import { MapComponent, OpenAerialMap } from "@/components/map";
 import { Spinner } from "@/components/ui/spinner";
+import { XYZTileServerInput } from "@/components/shared/form/xyz-tile-server-input";
 
 const PREVIEW_TMS_SOURCE_ID = "preview-tms-source";
 const PREVIEW_TMS_LAYER_ID = "preview-tms-layer";
@@ -122,54 +122,22 @@ const CreateNewTrainingDatasetForm = () => {
           }
         />
         <div>
-          <Input
-            value={formData.tmsURL}
-            labelWithTooltip
-            toolTipContent={
-              MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.toolTip
+          <XYZTileServerInput
+            isValid={formData.tmsURLValidation}
+            setTileServerURL={(e) =>
+              handleChange(MODEL_CREATION_FORM_NAME.TMS_URL, e)
             }
-            label={
-              MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL.label
-            }
-            placeholder={
-              MODELS_CONTENT.modelCreation.trainingDataset.form.tmsURL
-                .placeholder
-            }
-            showBorder
-            pattern={
-              FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.TMS_URL].pattern
-            }
-            handleInput={(e) =>
-              handleChange(MODEL_CREATION_FORM_NAME.TMS_URL, e.target.value)
-            }
-            type={INPUT_TYPES.URL}
+            tileServerURL={formData.tmsURL}
             validationStateUpdateCallback={(validationState) =>
               handleChange(
                 MODEL_CREATION_FORM_NAME.TMS_URL_VALIDITY,
                 validationState,
               )
             }
-            isValid={formData.tmsURLValidation.valid}
+            pattern={
+              FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.TMS_URL].pattern
+            }
           />
-          <HelpText>
-            {formData.tmsURLValidation.message.length > 0 ? (
-              formData.tmsURLValidation.message
-            ) : (
-              <span className="text-wrap">
-                The TMS imagery link should follow this format:
-                https://tiles.openaerialmap.org/****/*/***/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.
-                Ensure your imagery URL adheres to the{" "}
-                <a
-                  href="https://github.com/hotosm/fair?tab=readme-ov-file#imagery-license"
-                  target="_blank"
-                  className="text-primary underline"
-                >
-                  license requirements
-                </a>
-                .
-              </span>
-            )}
-          </HelpText>
         </div>
       </div>
       <div className="w-full md:w-1/2 border p-1 border-dashed relative h-80">

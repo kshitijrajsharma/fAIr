@@ -1,130 +1,162 @@
 import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { Popup } from "@/components/ui/popup";
 import { PredictionImagerySource } from "@/enums/start-mapping";
-import { useState } from "react";
-import { INPUT_TYPES, SHOELACE_SIZES } from "@/enums";
-import { HelpText, Input } from "@/components/ui/form";
-import { TMS_URL_REGEX_PATTERN } from "@/utils";
+import { useMemo, useState } from "react";
+import { SHOELACE_SIZES } from "@/enums";
 import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/form/radio-group/radio-group";
+import { XYZTileServerInput } from "@/components/shared/form/xyz-tile-server-input";
+import { showSuccessToast } from "@/utils";
 
-
-// Rename as background imagery
-// Check OpenStreetMap.
-// Other defaults. 
-// Esri Link - https://wayback.maptiles.arcgis.com/arcgis/rest/services/world_imagery/mapserver/tile/4756/{z}/{x}/{y}
-// Kontour https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}.png
-// Get links from OSM.
-// For custom, tell users to zoom to the area.
-// https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}.png
+const PredictionImagerySources: Array<{
+  value: PredictionImagerySource;
+  label: string;
+  url?: string;
+  tooltip: string;
+}> = [
+  {
+    value: PredictionImagerySource.ModelDefault,
+    label: "Model Default",
+    url: "",
+    tooltip: "Default imagery for the model.",
+  },
+  {
+    value: PredictionImagerySource.CustomImagery,
+    label: "Custom Imagery",
+    tooltip: "Use a custom XYZ/TMS tile server URL.",
+  },
+  {
+    value: PredictionImagerySource.EsriWorldImagery,
+    label: "Esri World Imagery",
+    url: "https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}?blankTile=false",
+    tooltip: "Esri World Imagery tiles.",
+  },
+  {
+    value: PredictionImagerySource.Kontour,
+    label: "OpenAerialMap Mosaic, by Kontur.io",
+    url: "https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}",
+    tooltip: "All OpenAerialMap images in one mosaic layer, by Kontur.io.",
+  },
+];
 
 export const ImagerySourceSelector = ({
-    showPopup,
-    anchor,
-    handleImagerySourceSelectorTriggerButtonClick,
-    predictionImagery,
-    setPredictionImagery,
-    closeMobileDrawer,
-    setPredictionImagerySource,
-    predictionImagerySource,
+  showPopup,
+  anchor,
+  setPredictionImageryURL,
+  setPredictionImagerySource,
+  predictionImagerySource,
+  modelDefaultImageryURL,
+  customTileServerURL,
+  setCustomTileServerURL,
 }: {
-    showPopup: boolean;
-    anchor: string;
-    handleImagerySourceSelectorTriggerButtonClick: () => void;
-    predictionImagery: string | undefined;
-    setPredictionImagery: React.Dispatch<
-        React.SetStateAction<string | undefined>
-    >;
-    closeMobileDrawer: () => void;
-    setPredictionImagerySource: React.Dispatch<
-        React.SetStateAction<PredictionImagerySource>
-    >;
-    predictionImagerySource: PredictionImagerySource;
+  showPopup: boolean;
+  anchor: string;
+  setPredictionImageryURL: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
+  setPredictionImagerySource: React.Dispatch<
+    React.SetStateAction<PredictionImagerySource>
+  >;
+  predictionImagerySource: PredictionImagerySource;
+  modelDefaultImageryURL: string | undefined;
+  customTileServerURL: string;
+  setCustomTileServerURL: React.Dispatch<React.SetStateAction<string>>;
 }) => {
-    return (
-        <Popup
-            active={showPopup}
-            anchor={anchor}
-            placement="bottom-start"
-            distance={ELEMENT_DISTANCE_FROM_NAVBAR}
-        >
-            <div className="border bg-white border-gray-border shadow-lg rounded-xl w-[350px] p-4 max-h-[400px] overflow-y-auto flex flex-col">
-                <RadioGroup
-                    options={Object.values(PredictionImagerySource).map((value) => ({
-                        value,
-                        label: value,
-                    }))}
-                    onChange={(e) => {
-                        setPredictionImagerySource(e as PredictionImagerySource);
-                    }}
-                    value={predictionImagerySource}
-                />
-                {predictionImagerySource ===
-                    PredictionImagerySource.CustomImagery && (
-                        <CustomImageryInput setPredictionImagery={setPredictionImagery} />
-                    )}
-            </div>
-        </Popup>
-    );
+  const PredictionImagerySourceURLS = useMemo(
+    () => ({
+      [PredictionImagerySource.CustomImagery]: customTileServerURL,
+      [PredictionImagerySource.ModelDefault]: modelDefaultImageryURL,
+      [PredictionImagerySource.Kontour]:
+        "https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}.png",
+      [PredictionImagerySource.EsriWorldImagery]:
+        "https://wayback.maptiles.arcgis.com/arcgis/rest/services/world_imagery/mapserver/tile/{z}/{y}/{x}",
+    }),
+    [customTileServerURL, modelDefaultImageryURL],
+  );
+
+  return (
+    <Popup
+      active={showPopup}
+      anchor={anchor}
+      placement="bottom-start"
+      distance={ELEMENT_DISTANCE_FROM_NAVBAR}
+    >
+      <div className="border bg-white border-gray-border shadow-lg rounded-xl w-[350px] p-4 max-h-[400px] gap-y-4 overflow-y-auto flex flex-col scrollable">
+        <RadioGroup
+          options={PredictionImagerySources}
+          onChange={(e) => {
+            setPredictionImagerySource(e as PredictionImagerySource);
+            setPredictionImageryURL(
+              (
+                PredictionImagerySourceURLS as Record<
+                  PredictionImagerySource,
+                  string | undefined
+                >
+              )[e as PredictionImagerySource],
+            );
+          }}
+          value={predictionImagerySource}
+          withTooltip
+        />
+        {predictionImagerySource === PredictionImagerySource.CustomImagery && (
+          <CustomImageryInput
+            setPredictionImageryURL={setPredictionImageryURL}
+            customTileServerURL={customTileServerURL}
+            setCustomTileServerURL={setCustomTileServerURL}
+          />
+        )}
+        {predictionImagerySource !== PredictionImagerySource.ModelDefault && (
+          <small>
+            ⚠️ You are trying to run the model on an image different from the
+            one it was trained with, the result might not be accurate.
+          </small>
+        )}
+      </div>
+    </Popup>
+  );
 };
 
 const CustomImageryInput = ({
-    setPredictionImagery,
+  setPredictionImageryURL,
+  customTileServerURL,
+  setCustomTileServerURL,
 }: {
-    setPredictionImagery: React.Dispatch<
-        React.SetStateAction<string | undefined>
-    >;
+  setPredictionImageryURL: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
+  customTileServerURL: string;
+  setCustomTileServerURL: React.Dispatch<React.SetStateAction<string>>;
 }) => {
-    const [tileServerURL, setTileServerURL] = useState<string>("");
-    const [isValid, setIsValid] = useState({
-        valid: false,
-        message: "",
-    });
-    return (
-        <div className="flex flex-col gap-y-2 mt-2">
-            <Input
-                label="Custom Imagery URL"
-                labelWithTooltip
-                value={tileServerURL}
-                toolTipContent={"Enter the TMS URL of your custom imagery"}
-                placeholder={"Enter the TMS URL of your custom imagery"}
-                showBorder
-                pattern={TMS_URL_REGEX_PATTERN}
-                handleInput={(e) => setTileServerURL(e.target.value)}
-                type={INPUT_TYPES.URL}
-                validationStateUpdateCallback={(validationState) =>
-                    setIsValid(validationState)
-                }
-                isValid={tileServerURL.length > 0 && isValid.valid}
-                size={SHOELACE_SIZES.SMALL}
-            />
-            <HelpText>
-                {isValid.message.length > 0 ? (
-                    isValid.message
-                ) : (
-                    <span className="text-wrap text-xs">
-                        The TMS imagery link should follow this format:
-                        https://tiles.openaerialmap.org/****/*/***/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.
-                        Ensure your imagery URL adheres to the{" "}
-                        <a
-                            href="https://github.com/hotosm/fair?tab=readme-ov-file#imagery-license"
-                            target="_blank"
-                            className="text-primary underline"
-                        >
-                            license requirements
-                        </a>
-                        .
-                    </span>
-                )}
-            </HelpText>
-            <Button
-                className="!w-fit"
-                size={SHOELACE_SIZES.SMALL}
-                uppercase={false}
-                disabled={tileServerURL.length === 0 || !isValid.valid}
-            >
-                Apply
-            </Button>
-        </div>
-    );
+  const [isValid, setIsValid] = useState({
+    valid: false,
+    message: "",
+  });
+
+  return (
+    <div className="flex flex-col gap-y-2 mt-2">
+      <XYZTileServerInput
+        isValid={isValid}
+        setTileServerURL={setCustomTileServerURL}
+        tileServerURL={customTileServerURL}
+        validationStateUpdateCallback={(validationState) =>
+          setIsValid(validationState)
+        }
+        size={SHOELACE_SIZES.SMALL}
+      />
+      <Button
+        className="!w-fit"
+        size={SHOELACE_SIZES.SMALL}
+        uppercase={false}
+        disabled={customTileServerURL.length === 0 || !isValid.valid}
+        onClick={() => {
+          setPredictionImageryURL(customTileServerURL);
+          showSuccessToast(
+            "Custom imagery URL applied successfully. Please zoom to the area to view the imagery.",
+          );
+        }}
+      >
+        Apply
+      </Button>
+    </div>
+  );
 };

@@ -286,7 +286,8 @@ export const REJECTED_MODEL_PREDICTIONS_SOURCE_ID: string =
 export const REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID: string = `${MAP_STYLES_PREFIX}-rejected-predictions-fill-layer`;
 export const REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID: string =
   "rejected-predictions-outline-layer";
-
+export const PREDICTION_IMAGERY_SOURCE: string = `${MAP_STYLES_PREFIX}-prediction-imagery-source`;
+export const PREDICTION_IMAGERY_LAYER_ID: string = `${MAP_STYLES_PREFIX}-prediction-imagery-layer`;
 // Training Areas
 export const TRAINING_AREAS_AOI_FILL_COLOR: string = parseStringEnv(
   ENVS.TRAINING_AREAS_AOI_FILL_COLOR,

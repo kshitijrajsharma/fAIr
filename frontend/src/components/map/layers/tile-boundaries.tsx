@@ -44,10 +44,14 @@ export const TileBoundaries = ({ map }: { map: Map | null }) => {
   }, [map]);
 
   useEffect(() => {
-    if (!map) return;
-    map.on("moveend", updateTileBoundary);
+    if (map && map.getStyle()) {
+      map.on("moveend", updateTileBoundary);
+    }
+
     return () => {
-      map.off("moveend", updateTileBoundary);
+      if (map && map.getStyle()) {
+        map.off("moveend", updateTileBoundary);
+      }
     };
   }, [map, updateTileBoundary]);
 
