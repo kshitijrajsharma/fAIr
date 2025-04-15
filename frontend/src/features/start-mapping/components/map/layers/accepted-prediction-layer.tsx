@@ -23,7 +23,7 @@ export const AcceptedPredictionsLayer = ({
   );
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.getStyle()) return;
     if (!map.getSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID)) {
       map.addSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID, {
         type: "geojson",
@@ -57,7 +57,7 @@ export const AcceptedPredictionsLayer = ({
   }, [map]);
 
   useEffect(() => {
-    if (!map || !features) return;
+    if (!map || !features || !map.getStyle()) return;
     const source = map.getSource(
       ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
     ) as GeoJSONSource;

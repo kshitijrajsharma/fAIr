@@ -23,7 +23,7 @@ export const RejectedPredictionsLayer = ({
   );
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.getStyle()) return;
 
     if (!map.getSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID)) {
       map.addSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID, {
@@ -59,7 +59,7 @@ export const RejectedPredictionsLayer = ({
   }, [map]);
 
   useEffect(() => {
-    if (!map || !features) return;
+    if (!map || !features || !map.getStyle()) return;
     const source = map.getSource(
       REJECTED_MODEL_PREDICTIONS_SOURCE_ID,
     ) as GeoJSONSource;
