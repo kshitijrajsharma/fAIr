@@ -143,3 +143,4 @@ fAIr also bundles portions of the following open source software.
 - [Maplibre GL JS (BSD-3-Clause)](https://github.com/maplibre/maplibre-gl-js).
 - [PMTiles (BSD-3-Clause)](https://github.com/protomaps/PMTiles).
 - [React Medium Image Zoom (BSD-3-Clause)](https://github.com/rpearce/react-medium-image-zoom).
+- Map fonts from [Maplibre Demo Tiles](https://github.com/maplibre/demotiles).
