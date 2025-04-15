@@ -24,6 +24,7 @@ const ModelAction = ({
   query,
   currentZoom,
   modelInfo,
+  predictionImageryURL,
 }: {
   modelPredictions: TModelPredictions;
   setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
@@ -32,6 +33,7 @@ const ModelAction = ({
   query: TQueryParams;
   currentZoom: number;
   modelInfo: TModelDetails;
+  predictionImageryURL: string | undefined;
 }) => {
   const { modelId } = useParams();
   const [predictionZoomLevel, setPredictionZoomLevel] = useState<number | null>(
@@ -48,7 +50,8 @@ const ModelAction = ({
       max_angle_change: 15,
       model_id: modelId as string,
       skew_tolerance: 15,
-      source: modelInfo?.dataset?.source_imagery as string,
+      source:
+        predictionImageryURL ?? (modelInfo?.dataset?.source_imagery as string),
       zoom_level: predictionZoomLevel ?? currentZoom,
       bbox: [
         map?.getBounds().getWest(),
@@ -97,7 +100,7 @@ const ModelAction = ({
           onClick={handlePrediction}
           className={`w-full text-nowrap bg-primary px-3 py-3 md:py-1.5 rounded-md text-white ${disablePrediction || modelPredictionMutation.isPending ? "opacity-50" : ""}`}
         >
-          <span className="capitalize text-sm">
+          <span className="capitalize text-body-4">
             {" "}
             {modelPredictionMutation.isPending
               ? START_MAPPING_PAGE_CONTENT.buttons.predictionInProgress

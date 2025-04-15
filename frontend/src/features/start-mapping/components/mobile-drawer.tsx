@@ -3,7 +3,7 @@ import { ChevronDownIcon, CloudDownloadIcon } from "@/components/ui/icons";
 import { Map } from "maplibre-gl";
 import { MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION } from "@/config";
 import { MobileDrawer } from "@/components/ui/drawer";
-import { ModelDetailsButton } from "@/features/start-mapping/components/model-details-button";
+import { ModelDetailsTriggerButton } from "@/features/start-mapping/components/model-details-button";
 import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
@@ -11,6 +11,8 @@ import { TModelDetails, TModelPredictions } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { ImagerySourceSelectorTriggerButton } from "./replicable-models/imagery-source-selector-trigger-button";
+import { PredictionImagerySource } from "@/enums/start-mapping";
 
 export const StartMappingMobileDrawer = ({
   isOpen,
@@ -18,28 +20,48 @@ export const StartMappingMobileDrawer = ({
   setModelPredictions,
   map,
   modelPredictions,
-  handleModelDetailsPopup,
   downloadOptions,
   query,
   updateQuery,
-  modelDetailsPopupIsActive,
   clearPredictions,
   currentZoom,
   modelInfo,
+  predictionImageryURL,
+  modelInfoRequestIsPending,
+  modelInfoRequestIsError,
+  setPredictionImageryURL,
+  predictionImagerySource,
+  setPredictionImagerySource,
+  modelDefaultImageryURL,
+  customTileServerURL,
+  setCustomTileServerURL,
+  openMobileDialog,
 }: {
   isOpen: boolean;
   disablePrediction: boolean;
   modelPredictions: TModelPredictions;
   setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
   map: Map | null;
-  handleModelDetailsPopup: () => void;
-  modelDetailsPopupIsActive: boolean;
   downloadOptions: TDownloadOptions;
   query: TQueryParams;
   updateQuery: (newParams: TQueryParams) => void;
   clearPredictions: () => void;
   currentZoom: number;
   modelInfo: TModelDetails;
+  predictionImageryURL: string | undefined;
+  modelInfoRequestIsPending: boolean;
+  modelInfoRequestIsError: boolean;
+  setPredictionImageryURL: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
+  predictionImagerySource: PredictionImagerySource;
+  setPredictionImagerySource: React.Dispatch<
+    React.SetStateAction<PredictionImagerySource>
+  >;
+  modelDefaultImageryURL: string;
+  customTileServerURL: string;
+  setCustomTileServerURL: React.Dispatch<React.SetStateAction<string>>;
+  openMobileDialog: () => void;
 }) => {
   const [showDownloadOptions, setShowDownloadOptions] =
     useState<boolean>(false);
@@ -62,14 +84,32 @@ export const StartMappingMobileDrawer = ({
               modelPredictions={modelPredictions}
               currentZoom={currentZoom}
               modelInfo={modelInfo}
+              predictionImageryURL={predictionImageryURL}
             />
           </div>
-          <div className="p-2 icon-interaction" id="anchor1">
-            <ModelDetailsButton
-              onClick={handleModelDetailsPopup}
-              modelDetailsPopupIsActive={modelDetailsPopupIsActive}
+          <div
+            className="p-1 flex items-center justify-center icon-interaction rounded-xl"
+            id="anchor1"
+          >
+            <ModelDetailsTriggerButton
+              modelInfo={modelInfo}
+              modelInfoRequestIsPending={modelInfoRequestIsPending}
+              modelInfoRequestIsError={modelInfoRequestIsError}
             />
           </div>
+        </div>
+        <div className="flex items-center gap-x-2 w-full justify-between">
+          <p className="text-body-3 text-nowrap">Prediction imagery</p>
+          <ImagerySourceSelectorTriggerButton
+            setPredictionImageryURL={setPredictionImageryURL}
+            predictionImagerySource={predictionImagerySource}
+            setPredictionImagerySource={setPredictionImagerySource}
+            modelDefaultImageryURL={modelDefaultImageryURL}
+            customTileServerURL={customTileServerURL}
+            setCustomTileServerURL={setCustomTileServerURL}
+            openMobileDialog={openMobileDialog}
+            isMobile
+          />
         </div>
         <div className="text-body-3 font-normal flex items-center gap-x-2">
           {START_MAPPING_PAGE_CONTENT.mapData.title} -{" "}

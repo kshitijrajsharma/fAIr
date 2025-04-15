@@ -27,7 +27,6 @@ export const useMapLayers = (
 
   return null;
 };
-
 /**
  * Custom hook to manage dynamic map layers.
  * @param map
@@ -36,6 +35,8 @@ export const useMapLayers = (
  * @param sourceSpec
  * @param layerSpec
  * @param dependencies
+ * @param enabled
+ * @param belowLayerIds
  * @returns
  */
 export const useDynamicMapLayer = (
@@ -46,6 +47,7 @@ export const useDynamicMapLayer = (
   layerSpec: LayerSpecification | null,
   dependencies: any[] = [],
   enabled: boolean = true,
+  belowLayerIds: string[] = [],
 ) => {
   useEffect(() => {
     if (!map || !sourceSpec || !layerSpec || !enabled) return;
@@ -57,14 +59,17 @@ export const useDynamicMapLayer = (
           map.removeLayer(layerId);
         }
         map.removeSource(sourceId);
-      } else {
-        map.addSource(sourceId, sourceSpec);
-        map.addLayer(layerSpec);
       }
 
-      if (sourceSpec.type === "raster" && "bounds" in sourceSpec) {
-        map.fitBounds(sourceSpec.bounds as [number, number, number, number]);
-      }
+      map.addSource(sourceId, sourceSpec);
+
+      belowLayerIds.forEach((id) => {
+        if (map.getLayer(id)) {
+          map.moveLayer(id);
+        }
+      });
+      const insertBeforeLayerId = belowLayerIds.find((id) => map.getLayer(id));
+      map.addLayer(layerSpec, insertBeforeLayerId || undefined);
     };
 
     addOrUpdateLayer();
@@ -79,5 +84,13 @@ export const useDynamicMapLayer = (
         }
       }
     };
-  }, [map, sourceId, layerId, sourceSpec, layerSpec, ...dependencies]);
+  }, [
+    map,
+    sourceId,
+    layerId,
+    sourceSpec,
+    layerSpec,
+    ...dependencies,
+    belowLayerIds,
+  ]);
 };

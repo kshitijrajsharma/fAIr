@@ -560,6 +560,10 @@ export type TStartMappingPageContent = {
       baseModel: string;
     };
   };
+  replicableModel: {
+    apply: string;
+    info: string;
+  };
 };
 
 // Start mapping page content types ends.

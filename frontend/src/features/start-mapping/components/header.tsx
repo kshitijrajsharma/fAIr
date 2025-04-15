@@ -6,7 +6,7 @@ import { DropDown } from "@/components/ui/dropdown";
 import { ButtonVariant, DropdownPlacement, SHOELACE_SIZES } from "@/enums";
 import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { Map } from "maplibre-gl";
-import { ModelDetailsButton } from "@/features/start-mapping/components/model-details-button";
+import { ModelDetailsTriggerButton } from "@/features/start-mapping/components/model-details-button";
 import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
@@ -17,6 +17,7 @@ import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { UserProfile } from "@/components/layouts";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { ImagerySourceSelectorTriggerButton } from "./replicable-models/imagery-source-selector-trigger-button";
+import { PredictionImagerySource } from "@/enums/start-mapping";
 
 const StartMappingHeader = ({
   modelInfo,
@@ -29,15 +30,16 @@ const StartMappingHeader = ({
   setModelPredictions,
   disablePrediction,
   map,
-  popupAnchorId,
-  handleModelDetailsPopup,
-  modelDetailsPopupIsActive,
   downloadOptions,
   clearPredictions,
   currentZoom,
-  handleImagerySourceSelectorTriggerButtonClick,
-  imagerySourceSelectorAnchorId,
-  isImagerySelectorOpen,
+  predictionImageryURL,
+  setPredictionImageryURL,
+  predictionImagerySource,
+  setPredictionImagerySource,
+  modelDefaultImageryURL,
+  customTileServerURL,
+  setCustomTileServerURL,
 }: {
   modelPredictionsExist: boolean;
   modelInfoRequestIsPending: boolean;
@@ -49,15 +51,20 @@ const StartMappingHeader = ({
   setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
   map: Map | null;
   disablePrediction: boolean;
-  popupAnchorId: string;
-  handleModelDetailsPopup: () => void;
-  modelDetailsPopupIsActive: boolean;
   downloadOptions: TDownloadOptions;
   clearPredictions: () => void;
   currentZoom: number;
-  handleImagerySourceSelectorTriggerButtonClick: () => void;
-  imagerySourceSelectorAnchorId: string;
-  isImagerySelectorOpen: boolean;
+  predictionImageryURL: string | undefined;
+  setPredictionImageryURL: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
+  predictionImagerySource: PredictionImagerySource;
+  setPredictionImagerySource: React.Dispatch<
+    React.SetStateAction<PredictionImagerySource>
+  >;
+  modelDefaultImageryURL: string;
+  customTileServerURL: string;
+  setCustomTileServerURL: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const { onDropdownHide, onDropdownShow, dropdownIsOpened } =
     useDropdownMenu();
@@ -74,34 +81,37 @@ const StartMappingHeader = ({
       skeletonClassName="h-10"
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center gap-x-0.5">
           <BrandLogoWithDropDown
             onClose={onFAIRLogoDropdownHide}
             onShow={onFAIRLogoDropdownShow}
             isOpened={FAIRLogoDropdownIsOpened}
           />
-          <div className="flex flex-col md:flex-row md:items-center gap-x-4 z-10">
+          <div className="flex flex-col md:flex-row md:items-center gap-x-2 z-10">
             <p
               title={modelInfo?.name}
-              className="text-dark text-body-2base text-nowrap truncate md:max-w-[20px] lg:max-w-[300px] xl:max-w-[400px]"
+              className="text-dark text-body-4 font-medium text-nowrap truncate md:max-w-[20px] lg:max-w-[300px] xl:max-w-[400px]"
             >
               {modelInfo?.name ?? "N/A"}
             </p>
-            <ModelDetailsButton
-              onClick={handleModelDetailsPopup}
-              modelDetailsPopupIsActive={modelDetailsPopupIsActive}
-              popupAnchorId={popupAnchorId}
+            <ModelDetailsTriggerButton
+              modelInfo={modelInfo}
+              modelInfoRequestIsError={modelInfoRequestIsError}
+              modelInfoRequestIsPending={modelInfoRequestIsPending}
             />
           </div>
         </div>
-        <div className="flex flex-row items-center gap-x-4">
+        <div>
           <ImagerySourceSelectorTriggerButton
-            anchor={imagerySourceSelectorAnchorId}
-            handleImagerySourceSelectorTriggerButtonClick={
-              handleImagerySourceSelectorTriggerButtonClick
-            }
-            isImagerySelectorOpen={isImagerySelectorOpen}
+            setPredictionImageryURL={setPredictionImageryURL}
+            predictionImagerySource={predictionImagerySource}
+            setPredictionImagerySource={setPredictionImagerySource}
+            modelDefaultImageryURL={modelDefaultImageryURL}
+            customTileServerURL={customTileServerURL}
+            setCustomTileServerURL={setCustomTileServerURL}
           />
+        </div>
+        <div className="flex flex-row items-center gap-x-2">
           <ModelSettings updateQuery={updateQuery} query={query} />
           <div className="flex flex-row items-center gap-y-3 gap-x-2">
             <ModelPredictionsTracker
@@ -132,12 +142,10 @@ const StartMappingHeader = ({
                     suffixIcon={ChevronDownIcon}
                     label={START_MAPPING_PAGE_CONTENT.buttons.download.label}
                     size={SHOELACE_SIZES.SMALL}
-                    textClassName="text-body-3"
+                    textClassName="text-body-4"
                     variant={ButtonVariant.SECONDARY}
                     disabled={!modelPredictionsExist}
-                    iconClassName={
-                      dropdownIsOpened ? "rotate-180 transition-all" : ""
-                    }
+                    iconClassName={`transition-all ${dropdownIsOpened && "rotate-180"} w-3 h-3`}
                   />
                 </ToolTip>
               }
@@ -151,6 +159,7 @@ const StartMappingHeader = ({
             query={query}
             currentZoom={currentZoom}
             modelInfo={modelInfo}
+            predictionImageryURL={predictionImageryURL}
           />
           <UserProfile hideFullName smallerSize />
         </div>
