@@ -119,11 +119,14 @@ export const ModelsMap: React.FC<ModelsMapProps> = ({
 }) => {
   const { map, currentZoom, mapContainerRef } = useMapInstance();
 
-  const handleClickOnModelID = useCallback((clickedModel: string) => {
-    updateQuery({
-      [SEARCH_PARAMS.id]: clickedModel,
-    });
-  }, []);
+  const handleClickOnModelID = useCallback(
+    (clickedModel: string) => {
+      updateQuery({
+        [SEARCH_PARAMS.id]: clickedModel,
+      });
+    },
+    [updateQuery],
+  );
 
   useEffect(() => {
     if (!map || !mapResults) return;
