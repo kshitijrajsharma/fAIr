@@ -117,7 +117,7 @@ export const ModelsMap: React.FC<ModelsMapProps> = ({
   mapResults,
   updateQuery,
 }) => {
-  const { map, currentZoom, mapContainerRef } = useMapInstance();
+  const { map, mapContainerRef } = useMapInstance();
 
   const handleClickOnModelID = useCallback((clickedModel: string) => {
     updateQuery({
@@ -149,7 +149,6 @@ export const ModelsMap: React.FC<ModelsMapProps> = ({
       <MapComponent
         geolocationControl
         map={map}
-        currentZoom={currentZoom}
         mapContainerRef={mapContainerRef}
         zoomControls
       />

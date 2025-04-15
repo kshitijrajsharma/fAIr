@@ -33,14 +33,8 @@ import { useAppTour } from "@/app/providers/tour-provider";
 
 const TrainingAreaForm = () => {
   const { formData } = useModelsContext();
-  const {
-    map,
-    mapContainerRef,
-    drawingMode,
-    setDrawingMode,
-    terraDraw,
-    currentZoom,
-  } = useMapInstance();
+  const { map, mapContainerRef, drawingMode, setDrawingMode, terraDraw } =
+    useMapInstance();
 
   const tileJSONURL = extractTileJSONURL(formData.tmsURL);
 
@@ -155,7 +149,6 @@ const TrainingAreaForm = () => {
               terraDraw={terraDraw}
               setDrawingMode={setDrawingMode}
               drawingMode={drawingMode}
-              currentZoom={currentZoom}
               trainingAreaIsPending={trainingAreaIsPending}
               OAMData={data as TileJSON}
             />

@@ -31,6 +31,7 @@ import {
   TrainingAreasLabelsLayers,
   MaskBoundsLayers,
 } from "@/features/model-creation/components/map-layers";
+import { useMapStore } from "@/store/map-store";
 
 // Debounce delay in milliseconds.
 const DEBOUNCE_DELAY: number = 300;
@@ -43,7 +44,6 @@ const TrainingAreaMap = ({
   map,
   drawingMode,
   setDrawingMode,
-  currentZoom,
   terraDraw,
   mapContainerRef,
   trainingAreaIsPending,
@@ -56,7 +56,6 @@ const TrainingAreaMap = ({
   map: Map | null;
   drawingMode: DrawingModes;
   setDrawingMode: (newMode: DrawingModes) => void;
-  currentZoom: number;
   terraDraw?: TerraDraw;
   mapContainerRef: RefObject<HTMLDivElement> | null;
   trainingAreaIsPending: boolean;
@@ -74,6 +73,7 @@ const TrainingAreaMap = ({
   const [mapBounds, setMapBounds] = useState<LngLatBounds | null>(null);
   const [tooltipIsVisible, setTooltipVisible] = useState<boolean>(false);
   const [bbox, setBbox] = useState<string>("");
+  const currentZoom = useMapStore((state) => state.zoom);
 
   const [featureArea, setFeatureArea] = useState<number>(0);
 
@@ -217,7 +217,6 @@ const TrainingAreaMap = ({
       drawingMode={drawingMode}
       setDrawingMode={setDrawingMode}
       mapContainerRef={mapContainerRef}
-      currentZoom={currentZoom}
       layerControlLayers={[
         ...(labels && labels?.features.length > 0
           ? [

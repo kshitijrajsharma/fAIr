@@ -39,7 +39,6 @@ type MapComponentProps = {
   mapContainerRef?: RefObject<HTMLDivElement> | null;
   map: Map | null;
   terraDraw?: TerraDraw | undefined;
-  currentZoom?: number;
   drawingMode?: DrawingModes;
   setDrawingMode?: (newMode: DrawingModes) => void;
   zoomControls?: boolean;
@@ -62,7 +61,6 @@ export const MapComponent: React.FC<MapComponentProps> = ({
   mapContainerRef,
   map,
   terraDraw,
-  currentZoom,
   drawingMode,
   zoomControls = true,
   setDrawingMode,
@@ -78,9 +76,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
                 : "left-3"
             } map-elements-z-index flex flex-col gap-y-[1px]`}
           >
-            {currentZoom && zoomControls ? (
-              <ZoomControls map={map} currentZoom={currentZoom} />
-            ) : null}
+            {zoomControls ? <ZoomControls map={map} /> : null}
             {geolocationControl && <GeolocationControl map={map} />}
             {drawControl && terraDraw && drawingMode && setDrawingMode && (
               <DrawControl
@@ -98,9 +94,7 @@ export const MapComponent: React.FC<MapComponentProps> = ({
           <div
             className={`absolute top-5 right-3 map-elements-z-index items-center flex gap-x-4`}
           >
-            {showCurrentZoom && currentZoom ? (
-              <ZoomLevel currentZoom={currentZoom} />
-            ) : null}
+            {showCurrentZoom ? <ZoomLevel /> : null}
             {layerControl && (
               <LayerControl
                 basemaps={basemaps}

@@ -11,7 +11,7 @@ import { ModelPredictionsTracker } from "@/features/start-mapping/components/mod
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
-import { TModelDetails, TModelPredictions } from "@/types";
+import { TModelDetails } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { UserProfile } from "@/components/layouts";
@@ -21,18 +21,13 @@ import { PredictionImagerySource } from "@/enums/start-mapping";
 
 const StartMappingHeader = ({
   modelInfo,
-  modelPredictions,
   modelPredictionsExist,
   modelInfoRequestIsPending,
   modelInfoRequestIsError,
   query,
   updateQuery,
-  setModelPredictions,
-  disablePrediction,
   map,
   downloadOptions,
-  clearPredictions,
-  currentZoom,
   predictionImageryURL,
   setPredictionImageryURL,
   predictionImagerySource,
@@ -45,15 +40,13 @@ const StartMappingHeader = ({
   modelInfoRequestIsPending: boolean;
   modelInfoRequestIsError: boolean;
   modelInfo: TModelDetails;
-  modelPredictions: TModelPredictions;
+
   query: TQueryParams;
   updateQuery: (newParams: TQueryParams) => void;
-  setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
+
   map: Map | null;
-  disablePrediction: boolean;
   downloadOptions: TDownloadOptions;
-  clearPredictions: () => void;
-  currentZoom: number;
+
   predictionImageryURL: string | undefined;
   setPredictionImageryURL: React.Dispatch<
     React.SetStateAction<string | undefined>
@@ -114,10 +107,7 @@ const StartMappingHeader = ({
         <div className="flex flex-row items-center gap-x-2">
           <ModelSettings updateQuery={updateQuery} query={query} />
           <div className="flex flex-row items-center gap-y-3 gap-x-2">
-            <ModelPredictionsTracker
-              modelPredictions={modelPredictions}
-              clearPredictions={clearPredictions}
-            />
+            <ModelPredictionsTracker />
             <DropDown
               placement={DropdownPlacement.TOP_END}
               disableCheveronIcon
@@ -152,12 +142,8 @@ const StartMappingHeader = ({
             />
           </div>
           <ModelAction
-            modelPredictions={modelPredictions}
-            setModelPredictions={setModelPredictions}
             map={map}
-            disablePrediction={disablePrediction}
             query={query}
-            currentZoom={currentZoom}
             modelInfo={modelInfo}
             predictionImageryURL={predictionImageryURL}
           />

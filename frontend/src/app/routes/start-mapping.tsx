@@ -14,7 +14,7 @@ import { useMapInstance } from "@/hooks/use-map-instance";
 import { useModelDetails } from "@/features/models/hooks/use-models";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { UserProfile } from "@/components/layouts";
-import { Feature, TileJSON, TModelPredictions } from "@/types";
+import { Feature, TileJSON } from "@/types";
 import {
   BrandLogoWithDropDown,
   Legend,
@@ -31,20 +31,17 @@ import {
 import {
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-  MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
   ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-  HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY,
 } from "@/config";
-import { useLocalStorage } from "@/hooks/use-storage";
+
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { Dialog } from "@/components/ui/dialog";
 import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
 import { useDialog } from "@/hooks/use-dialog";
-import { useMapStore } from "@/store/map-store";
-import { PredictionPopupPortal } from "@/features/start-mapping/components/popup-portal";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
 
 export type TDownloadOptions = {
   name: string;
@@ -66,8 +63,9 @@ export const StartMappingPage = () => {
   const { modelId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { map, mapContainerRef } = useMapInstance();
-  const currentZoom = useMapStore((state) => state.zoom);
   const { isSmallViewport } = useScreenSize();
+
+  const { modelPredictions } = useModelPredictionStore();
 
   const navigate = useNavigate();
   const [openMobileDrawer, setOpenMobileDrawer] =
@@ -150,30 +148,6 @@ export const StartMappingPage = () => {
       [SEARCH_PARAMS.area]: searchParams.get(SEARCH_PARAMS.area) || 3,
     };
   });
-  const { setValue, getValue } = useLocalStorage();
-
-  const emptyPredictionState = {
-    accepted: [],
-    rejected: [],
-    all: [],
-  };
-  const [modelPredictions, setModelPredictions] = useState<TModelPredictions>(
-    () => {
-      const savedPredictions = getValue(
-        HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY(modelId as string),
-      );
-      return savedPredictions
-        ? JSON.parse(savedPredictions)
-        : emptyPredictionState;
-    },
-  );
-
-  useEffect(() => {
-    setValue(
-      HOT_FAIR_MODEL_PREDICTIONS_LOCAL_STORAGE_KEY(modelId as string),
-      JSON.stringify(modelPredictions),
-    );
-  }, [modelPredictions, modelId]);
 
   const modelPredictionsExist = useMemo(() => {
     return (
@@ -202,49 +176,46 @@ export const StartMappingPage = () => {
     [searchParams, setSearchParams],
   );
 
-  const disablePrediction =
-    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
-
   const mapLayers = useMemo(
     () => [
       ...(modelPredictions.accepted.length > 0
         ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .acceptedPredictions,
-            subLayers: [
-              ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .acceptedPredictions,
+              subLayers: [
+                ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
         : []),
       ...(modelPredictions.rejected.length > 0
         ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .rejectedPredictions,
-            subLayers: [
-              REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .rejectedPredictions,
+              subLayers: [
+                REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
         : []),
       ...(modelPredictions.all.length > 0
         ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .predictionResults,
-            subLayers: [
-              ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .predictionResults,
+              subLayers: [
+                ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
         : []),
     ],
     [modelPredictions],
@@ -336,10 +307,6 @@ export const StartMappingPage = () => {
     },
   ];
 
-  const clearPredictions = useCallback(() => {
-    setModelPredictions(emptyPredictionState);
-  }, [setModelPredictions]);
-
   const { openDialog, isOpened, closeDialog } = useDialog();
 
   const handlePredictionImageryDialogOpen = useCallback(() => {
@@ -354,7 +321,6 @@ export const StartMappingPage = () => {
 
   return (
     <>
-
       <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
       <div className="h-screen flex flex-col fullscreen">
         {/* Prediction Imagery Dialog */}
@@ -376,15 +342,10 @@ export const StartMappingPage = () => {
         {/* Mobile drawer */}
         <StartMappingMobileDrawer
           isOpen={openMobileDrawer}
-          disablePrediction={disablePrediction}
-          setModelPredictions={setModelPredictions}
-          modelPredictions={modelPredictions}
           map={map}
           downloadOptions={downloadOptions}
           query={query}
           updateQuery={updateQuery}
-          clearPredictions={clearPredictions}
-          currentZoom={currentZoom}
           modelInfo={modelInfo}
           predictionImageryURL={predictionImageryURL}
           modelInfoRequestIsPending={modelInfoRequestIspending}
@@ -404,15 +365,10 @@ export const StartMappingPage = () => {
             modelInfoRequestIsPending={modelInfoRequestIspending}
             modelPredictionsExist={modelPredictionsExist}
             modelInfoRequestIsError={isError}
-            modelPredictions={modelPredictions}
             query={query}
             updateQuery={updateQuery}
-            setModelPredictions={setModelPredictions}
             map={map}
-            disablePrediction={disablePrediction}
             downloadOptions={downloadOptions}
-            clearPredictions={clearPredictions}
-            currentZoom={currentZoom}
             predictionImageryURL={predictionImageryURL}
             setPredictionImageryURL={setPredictionImageryURL}
             predictionImagerySource={predictionImagerySource}
@@ -436,7 +392,7 @@ export const StartMappingPage = () => {
               />
             </div>
             <div className="absolute top-[10vh] right-4 z-[2] flex flex-col gap-y-4 items-end">
-              <ZoomLevel currentZoom={currentZoom} />
+              <ZoomLevel />
               <LayerControl
                 layers={mapLayers}
                 map={map}
@@ -452,14 +408,10 @@ export const StartMappingPage = () => {
           {/* Map Component */}
           <StartMappingMapComponent
             trainingDataset={modelInfo?.dataset}
-            modelPredictions={modelPredictions}
-            setModelPredictions={setModelPredictions}
             oamTileJSONIsError={oamTileJSONIsError}
             oamTileJSON={oamTileJSON as TileJSON}
-            modelPredictionsExist={modelPredictionsExist}
             mapContainerRef={mapContainerRef}
             map={map}
-            currentZoom={currentZoom}
             layers={mapLayers}
             tmsBounds={oamTileJSON?.bounds as LngLatBoundsLike}
             trainingId={modelInfo?.published_training}

@@ -56,6 +56,19 @@ export const RejectedPredictionsLayer = ({
         layout: { visibility: "visible" },
       });
     }
+
+    return () => {
+      if (!map || !map.getStyle()) return;
+      if (map.getLayer(REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID)) {
+        map.removeLayer(REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID);
+      }
+      if (map.getLayer(REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID)) {
+        map.removeLayer(REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID);
+      }
+      if (map.getSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID)) {
+        map.removeSource(REJECTED_MODEL_PREDICTIONS_SOURCE_ID);
+      }
+    };
   }, [map]);
 
   useEffect(() => {

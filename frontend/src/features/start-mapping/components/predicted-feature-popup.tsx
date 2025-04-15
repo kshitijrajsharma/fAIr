@@ -1,17 +1,13 @@
 import maplibregl, { Map } from "maplibre-gl";
 import { CheckIcon } from "@/components/ui/icons";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { geojsonToWKT } from "@terraformer/wkt";
 import { Input } from "@/components/ui/form";
 import { SHOELACE_SIZES } from "@/enums";
 import { showErrorToast } from "@/utils";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
-import {
-  GeoJSONType,
-  TModelPredictionFeature,
-  TModelPredictions,
-} from "@/types";
+import { GeoJSONType } from "@/types";
 
 import {
   useCreateApprovedModelPrediction,
@@ -19,33 +15,29 @@ import {
   useDeleteApprovedModelPrediction,
   useDeleteModelPredictionFeedback,
 } from "@/features/start-mapping/hooks/use-feedbacks";
-import { ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID, ALL_MODEL_PREDICTIONS_FILL_LAYER_ID, REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID } from "@/config";
+import {
+  ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+  ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+  REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+} from "@/config";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
 
 const PredictedFeatureActionPopup = ({
-  setModelPredictions,
-  modelPredictions,
   trainingId,
   source_imagery,
   map,
 }: {
-  modelPredictions: TModelPredictions;
-  setModelPredictions: Dispatch<
-    SetStateAction<{
-      all: TModelPredictionFeature[];
-      accepted: TModelPredictionFeature[];
-      rejected: TModelPredictionFeature[];
-    }>
-  >;
   source_imagery: string;
   trainingId: number;
   map: Map | null;
 }) => {
-
   const { user } = useAuth();
   const selectedFeatureRef = useRef<any>(null);
   const selectedEventRef = useRef<any>(null);
   const [showComment, setShowComment] = useState<boolean>(false);
   const [comment, setComment] = useState<string>("");
+  const { modelPredictions, moveFeatureBetweenBuckets } =
+    useModelPredictionStore();
 
   const popupContainerRef = useRef<HTMLDivElement>(null);
   const popupInstanceRef = useRef<maplibregl.Popup | null>(null);
@@ -53,14 +45,13 @@ const PredictedFeatureActionPopup = ({
   const { accepted, rejected, all } = modelPredictions;
   const [featureId, setFeatureId] = useState<number | null>(null);
 
-
   const alreadyAccepted = useMemo(
     () => accepted.some((f) => f.properties.id === featureId),
-    [accepted, featureId]
+    [accepted, featureId],
   );
   const alreadyRejected = useMemo(
     () => rejected.some((f) => f.properties.id === featureId),
-    [rejected, featureId]
+    [rejected, featureId],
   );
 
   useEffect(() => {
@@ -115,7 +106,6 @@ const PredictedFeatureActionPopup = ({
     };
   }, [map]);
 
-
   // if already accepted, it means it's in accepted array
   // if it's already rejected, it means it's in the rejected array
   // if it's not in accepted or rejected, then it's in the all array
@@ -126,28 +116,6 @@ const PredictedFeatureActionPopup = ({
       all.find((f) => f.properties.id === featureId)
     );
   }, [featureId, accepted, rejected, all]);
-
-  const moveFeature = (
-    source: TModelPredictionFeature[],
-    target: TModelPredictionFeature[],
-    id: number,
-    additionalProperties: Partial<TModelPredictionFeature["properties"]> = {},
-  ) => {
-    const movedFeatures = source
-      .filter((feature) => feature.properties.id === id)
-      .map((feature) => ({
-        ...feature,
-        properties: {
-          ...feature.properties,
-          ...additionalProperties,
-        },
-      }));
-
-    return {
-      updatedSource: source.filter((feature) => feature.properties.id !== id),
-      updatedTarget: [...target, ...movedFeatures],
-    };
-  };
 
   const closePopup = () => {
     popupInstanceRef.current?.remove();
@@ -165,24 +133,17 @@ const PredictedFeatureActionPopup = ({
     useCreateApprovedModelPrediction({
       mutationConfig: {
         onSuccess: (data) => {
-          const { updatedSource, updatedTarget } = alreadyRejected
-            ? moveFeature(rejected, accepted, featureId, {
-              _id: data.id,
-              ...data.properties,
-            })
-            : moveFeature(all, accepted, featureId, {
+          const from = alreadyRejected ? "rejected" : "all";
+          if (featureId !== null) {
+            moveFeatureBetweenBuckets(from, "accepted", featureId, {
               _id: data.id,
               ...data.properties,
             });
+          }
 
-          setModelPredictions((prev) => ({
-            ...prev,
-            rejected: alreadyRejected ? updatedSource : prev.rejected,
-            all: alreadyRejected ? prev.all : updatedSource,
-            accepted: updatedTarget,
-          }));
           closePopup();
         },
+
         onError: (error) => {
           showErrorToast(error);
         },
@@ -195,19 +156,9 @@ const PredictedFeatureActionPopup = ({
         if (variables.approvePrediction) {
           submitApprovedPrediction();
         } else {
-          const { updatedSource: updatedRejected } = moveFeature(
-            rejected,
-            all,
-            featureId,
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            all: [
-              ...all,
-              ...rejected.filter((f) => f.properties.id === featureId),
-            ],
-            rejected: updatedRejected,
-          }));
+          if (featureId !== null) {
+            moveFeatureBetweenBuckets("rejected", "all", featureId);
+          }
         }
       },
       onError: (error) => {
@@ -229,19 +180,22 @@ const PredictedFeatureActionPopup = ({
             training: trainingId,
           });
         } else {
-          const { updatedSource: updatedAccepted } = moveFeature(
-            accepted,
-            all,
-            featureId,
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            all: [
-              ...all,
-              ...accepted.filter((f) => f.properties.id === featureId),
-            ],
-            accepted: updatedAccepted,
-          }));
+          if (featureId !== null) {
+            moveFeatureBetweenBuckets("accepted", "all", featureId);
+          }
+          // const { updatedSource: updatedAccepted } = moveFeature(
+          //   accepted,
+          //   all,
+          //   featureId,
+          // );
+          // setModelPredictions((prev) => ({
+          //   ...prev,
+          //   all: [
+          //     ...all,
+          //     ...accepted.filter((f) => f.properties.id === featureId),
+          //   ],
+          //   accepted: updatedAccepted,
+          // }));
         }
       },
       onError: (error) => {
@@ -272,32 +226,11 @@ const PredictedFeatureActionPopup = ({
   const createModelFeedbackMutation = useCreateModelFeedback({
     mutationConfig: {
       onSuccess: (data) => {
-        if (alreadyAccepted) {
-          const { updatedSource, updatedTarget } = moveFeature(
-            accepted,
-            rejected,
-            featureId,
-            // update the feature with the returned id from the backend as `_id`.
-            { _id: data.id },
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            accepted: updatedSource,
-            rejected: updatedTarget,
-          }));
-        } else {
-          const { updatedSource, updatedTarget } = moveFeature(
-            all,
-            rejected,
-            featureId,
-            // update the feature with the returned id from the backend as `_id`.
-            { _id: data.id },
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            all: updatedSource,
-            rejected: updatedTarget,
-          }));
+        const source = alreadyAccepted ? "accepted" : "all";
+        if (featureId !== null) {
+          moveFeatureBetweenBuckets(source, "rejected", featureId, {
+            _id: data.id,
+          });
         }
         closePopup();
       },
@@ -351,46 +284,45 @@ const PredictedFeatureActionPopup = ({
 
   const primaryButton = alreadyAccepted
     ? {
-      label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
-      action: handleRejection,
-      className: "bg-primary",
-      icon: RejectIcon,
-    }
+        label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
+        action: handleRejection,
+        className: "bg-primary",
+        icon: RejectIcon,
+      }
     : alreadyRejected
       ? {
+          label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
+          action: handleResolve,
+          className: "bg-black",
+          icon: ResolveIcon,
+        }
+      : {
+          label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
+          action: handleAcceptance,
+          className: "bg-green-primary",
+          icon: AcceptIcon,
+        };
+
+  const secondaryButton = alreadyAccepted
+    ? {
         label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
         action: handleResolve,
         className: "bg-black",
         icon: ResolveIcon,
       }
-      : {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
-        action: handleAcceptance,
-        className: "bg-green-primary",
-        icon: AcceptIcon,
-      };
-
-  const secondaryButton = alreadyAccepted
-    ? {
-      label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
-      action: handleResolve,
-      className: "bg-black",
-      icon: ResolveIcon,
-    }
     : alreadyRejected
       ? {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
-        action: handleAcceptance,
-        className: "bg-green-primary",
-        icon: AcceptIcon,
-      }
+          label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
+          action: handleAcceptance,
+          className: "bg-green-primary",
+          icon: AcceptIcon,
+        }
       : {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
-        action: handleRejection,
-        className: "bg-primary",
-        icon: RejectIcon,
-      };
-
+          label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
+          action: handleRejection,
+          className: "bg-primary",
+          icon: RejectIcon,
+        };
 
   return (
     <div

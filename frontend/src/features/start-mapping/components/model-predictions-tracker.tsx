@@ -1,13 +1,9 @@
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
-import { TModelPredictions } from "@/types";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
 
-export const ModelPredictionsTracker = ({
-  modelPredictions,
-  clearPredictions,
-}: {
-  modelPredictions: TModelPredictions;
-  clearPredictions: () => void;
-}) => {
+export const ModelPredictionsTracker = () => {
+  const { modelPredictions, resetModelPredictions } = useModelPredictionStore();
+
   return (
     <div className="flex items-center gap-x-2">
       <p className="text-dark text-body-4 font-medium text-nowrap">
@@ -21,7 +17,7 @@ export const ModelPredictionsTracker = ({
       modelPredictions.all.length > 0 ? (
         <button
           className="text-body-4 px-3 py-0.5 md:py-1 bg-grey text-white rounded-md"
-          onClick={clearPredictions}
+          onClick={resetModelPredictions}
         >
           Clear
         </button>
