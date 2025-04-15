@@ -52,12 +52,6 @@ export type TModelsContent = {
           placeholder: string;
           toolTip: string;
         };
-        tmsURL: {
-          label: string;
-          toolTip: string;
-          helpText: string;
-          placeholder: string;
-        };
         existingTrainingDatasetSectionDescription: string;
 
         searchBar: {

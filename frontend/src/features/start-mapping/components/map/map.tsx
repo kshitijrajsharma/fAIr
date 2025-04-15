@@ -6,12 +6,12 @@ import { LngLatBoundsLike, Map } from "maplibre-gl";
 import { Legend } from "@/features/start-mapping/components";
 import { MapComponent, MapCursorToolTip } from "@/components/map";
 import { TOAST_NOTIFICATIONS } from "@/constants";
-import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
 import {
   Dispatch,
   RefObject,
   SetStateAction,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -34,6 +34,7 @@ import {
   RejectedPredictionsLayer,
   AllPredictionsLayer,
 } from "@/features/start-mapping/components/map/layers";
+import { PredictionImagerySource } from "@/enums/start-mapping";
 
 export const StartMappingMapComponent = ({
   trainingDataset,
@@ -49,6 +50,7 @@ export const StartMappingMapComponent = ({
   tmsBounds,
   trainingId,
   modelInfoRequestIsPending,
+  predictionImagerySource,
 }: {
   trainingId: number;
   trainingDataset?: TTrainingDataset;
@@ -74,6 +76,7 @@ export const StartMappingMapComponent = ({
   }[];
   tmsBounds: LngLatBoundsLike;
   modelInfoRequestIsPending: boolean;
+  predictionImagerySource: PredictionImagerySource;
 }) => {
   const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -81,17 +84,22 @@ export const StartMappingMapComponent = ({
   const [selectedFeature, setSelectedFeature] = useState(null);
   const { isSmallViewport } = useScreenSize();
 
-  const { tooltipPosition, tooltipVisible } = useToolTipVisibility(map, [
-    currentZoom,
-  ]);
-
   useEffect(() => {
     if (!oamTileJSONIsError) return;
     showErrorToast(undefined, TOAST_NOTIFICATIONS.trainingDataset.error);
   }, [oamTileJSONIsError]);
 
   useEffect(() => {
-    if (!map || !tmsBounds || oamTileJSONIsError || modelInfoRequestIsPending)
+    if (
+      !map ||
+      !tmsBounds ||
+      oamTileJSONIsError ||
+      modelInfoRequestIsPending ||
+      /**
+       * Zoom to the bounds of the tileJSON if the user has not selected the default model imagery.
+       */
+      predictionImagerySource !== PredictionImagerySource.ModelDefault
+    )
       return;
 
     // if there are predictions that the user hasn't interacted with, zoom to them.
@@ -112,6 +120,7 @@ export const StartMappingMapComponent = ({
     oamTileJSONIsError,
     oamTileJSON,
     modelInfoRequestIsPending,
+    predictionImagerySource,
   ]);
 
   useEffect(() => {
@@ -148,9 +157,23 @@ export const StartMappingMapComponent = ({
       });
     };
   }, [map]);
+  const shouldShowTooltip =
+    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
 
-  const showTooltip =
-    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION && tooltipVisible;
+  const memoizedToolTip = useMemo(() => {
+    if (!map) return null;
+
+    return (
+      <MapCursorToolTip
+        color="bg-primary"
+        map={map}
+        currentZoom={currentZoom}
+        showTooltip={shouldShowTooltip}
+      >
+        {MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION}
+      </MapCursorToolTip>
+    );
+  }, [map, currentZoom]);
 
   return (
     <MapComponent
@@ -169,7 +192,7 @@ export const StartMappingMapComponent = ({
       openAerialMap={!modelInfoRequestIsPending}
       oamTileJSONURL={tileJSONURL}
     >
-      {!modelInfoRequestIsPending && (
+      {!modelInfoRequestIsPending && map && (
         <>
           <AcceptedPredictionsLayer
             map={map}
@@ -183,7 +206,7 @@ export const StartMappingMapComponent = ({
         </>
       )}
 
-      {showPopup && (
+      {showPopup && map && (
         <PredictedFeatureActionPopup
           event={selectedEvent}
           selectedFeature={selectedFeature}
@@ -194,13 +217,7 @@ export const StartMappingMapComponent = ({
           map={map}
         />
       )}
-      <MapCursorToolTip
-        tooltipVisible={showTooltip && !isSmallViewport}
-        color={"bg-primary"}
-        tooltipPosition={tooltipPosition}
-      >
-        {MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION}
-      </MapCursorToolTip>
+      {memoizedToolTip}
       {map && modelPredictionsExist && !isSmallViewport && <Legend map={map} />}
     </MapComponent>
   );

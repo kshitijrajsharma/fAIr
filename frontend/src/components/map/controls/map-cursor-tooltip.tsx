@@ -1,15 +1,25 @@
+import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
+import { Map } from "maplibre-gl";
+
 export const MapCursorToolTip = ({
   color = "bg-black",
-  tooltipVisible = true,
-  tooltipPosition,
+  map,
+  currentZoom,
+  showTooltip,
   children,
+  dependencies,
 }: {
   color?: string;
-  tooltipPosition: Record<string, number>;
-  tooltipVisible?: boolean;
+  map: Map | null;
+  currentZoom: number;
+  showTooltip: boolean;
   children: React.ReactNode;
+  dependencies?: any[];
 }) => {
-  if (!tooltipVisible) return null;
+  const { tooltipPosition, tooltipVisible } = useToolTipVisibility(map, [
+    currentZoom,
+    ...(dependencies || []),
+  ]);
 
   return (
     <div
@@ -19,7 +29,7 @@ export const MapCursorToolTip = ({
         top: `${tooltipPosition.y}px`,
       }}
     >
-      {children}
+      {showTooltip && tooltipVisible && children}
     </div>
   );
 };

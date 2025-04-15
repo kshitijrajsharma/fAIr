@@ -22,7 +22,7 @@ import {
 import {
   showErrorToast,
   showSuccessToast,
-  TMS_URL_REGEX_PATTERN,
+  XYZ_TILESERVER_URL_REGEX_PATTERN,
 } from "@/utils";
 import React, {
   createContext,
@@ -76,7 +76,7 @@ export const FORM_VALIDATION_CONFIG = {
     minLength: 10,
   },
   [MODEL_CREATION_FORM_NAME.TMS_URL]: {
-    pattern: TMS_URL_REGEX_PATTERN.source,
+    pattern: XYZ_TILESERVER_URL_REGEX_PATTERN.source,
   },
   [MODEL_CREATION_FORM_NAME.MODEL_DESCRIPTION]: {
     maxLength: 500,
