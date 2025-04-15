@@ -537,10 +537,16 @@ def shift_labels_by_offset(serialized_labels, offset):
     return gdf_shifted
 
 
-def safe_rmtree(path, sleep_time=2):
+def safe_rmtree(path, sleep_time=5, max_rmtree_retries=3, use_sudo=False):
     """
     Safely delete a directory, handling EFS/NFS .nfs* lock files.
-    Tries shutil.rmtree once, retries, and falls back to rm -rf.
+    Retries `shutil.rmtree` and falls back to `rm -rf`.
+
+    Args:
+        path (str): Path to remove.
+        sleep_time (int): Seconds to wait between retries.
+        max_rmtree_retries (int): How many times to retry `shutil.rmtree`.
+        use_sudo (bool): Whether to use `sudo` in fallback `rm -rf`.
     """
 
     def has_nfs_files(p):
@@ -549,50 +555,40 @@ def safe_rmtree(path, sleep_time=2):
     if not os.path.exists(path):
         return
 
-    # 1st try with shutil
-    try:
-        shutil.rmtree(path)
-        print(f"[safe_rmtree] Deleted with shutil: {path}")
-        return
-    except Exception as e:
-        print(f"[safe_rmtree] First shutil.rmtree failed: {e}")
-        gc.collect()
-        time.sleep(sleep_time)
+    # Retry shutil.rmtree
+    for attempt in range(max_rmtree_retries):
+        try:
+            shutil.rmtree(path)
+            print(
+                f"[safe_rmtree] Deleted with shutil.rmtree on attempt {attempt + 1}: {path}"
+            )
+            return
+        except Exception as e:
+            print(f"[safe_rmtree] Attempt {attempt + 1} failed: {e}")
+            gc.collect()
+            time.sleep(sleep_time)
 
-    # 2nd try with shutil
-    try:
-        shutil.rmtree(path)
-        print(f"[safe_rmtree] Deleted on second try with shutil: {path}")
-        return
-    except Exception as e:
-        print(f"[safe_rmtree] Second shutil.rmtree failed: {e}")
-        gc.collect()
-        time.sleep(sleep_time)
-
-    # Check if .nfs files exist
     if has_nfs_files(path):
         print(
-            f"[safe_rmtree] Warning: .nfs* files detected under {path}. Likely still in use."
+            f"[safe_rmtree] Warning: .nfs* files detected in {path}. Possibly still held open."
         )
 
-    # Fallback to rm -rf
-    try:
-        subprocess.check_call(["rm", "-rf", path])
-        print(f"[safe_rmtree] Deleted with fallback 'rm -rf': {path}")
-        return
-    except Exception as e:
-        print(f"[safe_rmtree] Fallback rm -rf failed: {e}")
-        gc.collect()
-        time.sleep(sleep_time)
+    # Fallback to rm -rf (with optional sudo)
+    rm_command = ["sudo", "rm", "-rf", path] if use_sudo else ["rm", "-rf", path]
 
-    # Final attempt with rm -rf
-    try:
-        subprocess.check_call(["sudo", "rm", "-rf", path])
-        print(f"[safe_rmtree] Final retry with rm -rf succeeded: {path}")
-        return
-    except Exception as e:
-        print(f"[safe_rmtree] Final retry failed: {e}")
-        raise RuntimeError(f"safe_rmtree failed to remove {path}") from e
+    for attempt in range(2):
+        try:
+            subprocess.check_call(rm_command)
+            print(
+                f"[safe_rmtree] Deleted with fallback {' '.join(rm_command)} on attempt {attempt + 1}: {path}"
+            )
+            return
+        except Exception as e:
+            print(f"[safe_rmtree] Fallback attempt {attempt + 1} failed: {e}")
+            gc.collect()
+            time.sleep(sleep_time)
+
+    raise RuntimeError(f"[safe_rmtree] Failed to remove: {path}")
 
 
 def safe_copytree(src, dst):
