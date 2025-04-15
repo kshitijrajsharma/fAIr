@@ -537,7 +537,7 @@ def shift_labels_by_offset(serialized_labels, offset):
     return gdf_shifted
 
 
-def safe_rmtree(path, sleep_time=5, max_rmtree_retries=3, use_sudo=False):
+def safe_rmtree(path):
     """
     Safely delete a directory, handling EFS/NFS .nfs* lock files.
     Retries `shutil.rmtree` and falls back to `rm -rf`.
@@ -548,47 +548,7 @@ def safe_rmtree(path, sleep_time=5, max_rmtree_retries=3, use_sudo=False):
         max_rmtree_retries (int): How many times to retry `shutil.rmtree`.
         use_sudo (bool): Whether to use `sudo` in fallback `rm -rf`.
     """
-
-    def has_nfs_files(p):
-        return bool(glob.glob(os.path.join(p, "**/.nfs*"), recursive=True))
-
-    if not os.path.exists(path):
-        return
-
-    # Retry shutil.rmtree
-    for attempt in range(max_rmtree_retries):
-        try:
-            shutil.rmtree(path)
-            print(
-                f"[safe_rmtree] Deleted with shutil.rmtree on attempt {attempt + 1}: {path}"
-            )
-            return
-        except Exception as e:
-            print(f"[safe_rmtree] Attempt {attempt + 1} failed: {e}")
-            gc.collect()
-            time.sleep(sleep_time)
-
-    if has_nfs_files(path):
-        print(
-            f"[safe_rmtree] Warning: .nfs* files detected in {path}. Possibly still held open."
-        )
-
-    # Fallback to rm -rf (with optional sudo)
-    rm_command = ["sudo", "rm", "-rf", path] if use_sudo else ["rm", "-rf", path]
-
-    for attempt in range(2):
-        try:
-            subprocess.check_call(rm_command)
-            print(
-                f"[safe_rmtree] Deleted with fallback {' '.join(rm_command)} on attempt {attempt + 1}: {path}"
-            )
-            return
-        except Exception as e:
-            print(f"[safe_rmtree] Fallback attempt {attempt + 1} failed: {e}")
-            gc.collect()
-            time.sleep(sleep_time)
-
-    raise RuntimeError(f"[safe_rmtree] Failed to remove: {path}")
+    shutil.rmtree(path, ignore_errors=True)
 
 
 def safe_copytree(src, dst):
