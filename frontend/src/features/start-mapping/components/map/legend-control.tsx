@@ -30,13 +30,13 @@ export const Legend = ({ map }: { map: Map | null }) => {
   const activeFillLayers =
     map
       ?.getStyle()
-      .layers?.filter(
+      ?.layers?.filter(
         (layer) =>
           layer.id.includes(MAP_STYLES_PREFIX) &&
           layer.layout?.visibility === "visible" &&
           layer.type === "fill",
       )
-      .reverse() || [];
+      .reverse() ?? [];
 
   const handleToggleExpand = useCallback(() => {
     setExpandLegend((prev) => !prev);

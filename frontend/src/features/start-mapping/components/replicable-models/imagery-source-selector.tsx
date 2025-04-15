@@ -1,5 +1,3 @@
-import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
-import { Popup } from "@/components/ui/popup";
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { useMemo, useState } from "react";
 import { SHOELACE_SIZES } from "@/enums";
@@ -7,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/form/radio-group/radio-group";
 import { XYZTileServerInput } from "@/components/shared/form/xyz-tile-server-input";
 import { showSuccessToast } from "@/utils";
+import { START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { FormLabel } from "@/components/ui/form";
 
 const PredictionImagerySources: Array<{
   value: PredictionImagerySource;
@@ -40,17 +40,14 @@ const PredictionImagerySources: Array<{
 ];
 
 export const ImagerySourceSelector = ({
-  showPopup,
-  anchor,
   setPredictionImageryURL,
   setPredictionImagerySource,
   predictionImagerySource,
   modelDefaultImageryURL,
   customTileServerURL,
   setCustomTileServerURL,
+  isMobile,
 }: {
-  showPopup: boolean;
-  anchor: string;
   setPredictionImageryURL: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
@@ -61,6 +58,7 @@ export const ImagerySourceSelector = ({
   modelDefaultImageryURL: string | undefined;
   customTileServerURL: string;
   setCustomTileServerURL: React.Dispatch<React.SetStateAction<string>>;
+  isMobile?: boolean;
 }) => {
   const PredictionImagerySourceURLS = useMemo(
     () => ({
@@ -75,44 +73,43 @@ export const ImagerySourceSelector = ({
   );
 
   return (
-    <Popup
-      active={showPopup}
-      anchor={anchor}
-      placement="bottom-start"
-      distance={ELEMENT_DISTANCE_FROM_NAVBAR}
+    <div
+      className={` bg-white ${isMobile ? "w-full" : "w-[350px]  shadow-lg rounded-xl border border-gray-border "} p-4 max-h-[400px] gap-y-4 overflow-y-auto flex flex-col scrollable`}
     >
-      <div className="border bg-white border-gray-border shadow-lg rounded-xl w-[350px] p-4 max-h-[400px] gap-y-4 overflow-y-auto flex flex-col scrollable">
-        <RadioGroup
-          options={PredictionImagerySources}
-          onChange={(e) => {
-            setPredictionImagerySource(e as PredictionImagerySource);
-            setPredictionImageryURL(
-              (
-                PredictionImagerySourceURLS as Record<
-                  PredictionImagerySource,
-                  string | undefined
-                >
-              )[e as PredictionImagerySource],
-            );
-          }}
-          value={predictionImagerySource}
+      {!isMobile && (
+        <FormLabel
           withTooltip
+          label="Prediction Imagery"
+          toolTipContent="Select the imagery source to be used for predictions."
         />
-        {predictionImagerySource === PredictionImagerySource.CustomImagery && (
-          <CustomImageryInput
-            setPredictionImageryURL={setPredictionImageryURL}
-            customTileServerURL={customTileServerURL}
-            setCustomTileServerURL={setCustomTileServerURL}
-          />
-        )}
-        {predictionImagerySource !== PredictionImagerySource.ModelDefault && (
-          <small>
-            ⚠️ You are trying to run the model on an image different from the
-            one it was trained with, the result might not be accurate.
-          </small>
-        )}
-      </div>
-    </Popup>
+      )}
+      <RadioGroup
+        options={PredictionImagerySources}
+        onChange={(e) => {
+          setPredictionImagerySource(e as PredictionImagerySource);
+          setPredictionImageryURL(
+            (
+              PredictionImagerySourceURLS as Record<
+                PredictionImagerySource,
+                string | undefined
+              >
+            )[e as PredictionImagerySource],
+          );
+        }}
+        value={predictionImagerySource}
+        withTooltip
+      />
+      {predictionImagerySource === PredictionImagerySource.CustomImagery && (
+        <CustomImageryInput
+          setPredictionImageryURL={setPredictionImageryURL}
+          customTileServerURL={customTileServerURL}
+          setCustomTileServerURL={setCustomTileServerURL}
+        />
+      )}
+      {predictionImagerySource !== PredictionImagerySource.ModelDefault && (
+        <small>{START_MAPPING_PAGE_CONTENT.replicableModel.info}</small>
+      )}
+    </div>
   );
 };
 
@@ -155,7 +152,7 @@ const CustomImageryInput = ({
           );
         }}
       >
-        Apply
+        {START_MAPPING_PAGE_CONTENT.replicableModel.apply}
       </Button>
     </div>
   );

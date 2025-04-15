@@ -35,6 +35,7 @@ import {
   AllPredictionsLayer,
 } from "@/features/start-mapping/components/map/layers";
 import { PredictionImagerySource } from "@/enums/start-mapping";
+import { PredictionImageryLayer } from "./layers/prediction-imagery-layer";
 
 export const StartMappingMapComponent = ({
   trainingDataset,
@@ -51,6 +52,7 @@ export const StartMappingMapComponent = ({
   trainingId,
   modelInfoRequestIsPending,
   predictionImagerySource,
+  predictionImageryURL,
 }: {
   trainingId: number;
   trainingDataset?: TTrainingDataset;
@@ -77,6 +79,7 @@ export const StartMappingMapComponent = ({
   tmsBounds: LngLatBoundsLike;
   modelInfoRequestIsPending: boolean;
   predictionImagerySource: PredictionImagerySource;
+  predictionImageryURL: string | undefined;
 }) => {
   const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -192,6 +195,13 @@ export const StartMappingMapComponent = ({
       openAerialMap={!modelInfoRequestIsPending}
       oamTileJSONURL={tileJSONURL}
     >
+      {map && predictionImageryURL && (
+        <PredictionImageryLayer
+          map={map}
+          predictionImagerySource={predictionImagerySource}
+          predictionImageryURL={predictionImageryURL}
+        />
+      )}
       {!modelInfoRequestIsPending && map && (
         <>
           <AcceptedPredictionsLayer

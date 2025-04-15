@@ -3,7 +3,7 @@ import {
   SlRadio,
 } from "@shoelace-style/shoelace/dist/react/index.js";
 import "./radio-group.css";
-import { ToolTip } from "../../tooltip";
+import { ToolTip } from "@/components/ui/tooltip";
 
 type RadioGroupProps = {
   label?: string;
@@ -35,9 +35,11 @@ export const RadioGroup = ({
         {options.map((option) => (
           <SlRadio key={option.value} value={option.value}>
             <span>{option.label}</span>
-            {withTooltip && option.tooltip && (
-              <ToolTip content={option.tooltip} />
-            )}
+            <span className="ml-1">
+              {withTooltip && option.tooltip && (
+                <ToolTip content={option.tooltip} />
+              )}
+            </span>
           </SlRadio>
         ))}
       </div>

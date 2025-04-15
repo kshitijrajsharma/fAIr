@@ -180,10 +180,10 @@ export const ModelSettings = ({
         triggerComponent={
           <ToolTip content={START_MAPPING_PAGE_CONTENT.settings.tooltip}>
             <button
-              className={`p-1.5 flex items-center hover:icon-interaction ${dropdownIsOpened && "icon-interaction"}`}
+              className={`p-1 flex items-center hover:icon-interaction ${dropdownIsOpened && "icon-interaction"}`}
               onClick={toggleDropDown}
             >
-              <SettingsIcon className="icon md:icon-lg text-dark" />
+              <SettingsIcon className="w-5 h-5 text-dark" />
             </button>
           </ToolTip>
         }

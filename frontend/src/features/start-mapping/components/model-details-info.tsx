@@ -1,35 +1,30 @@
 import useScreenSize from "@/hooks/use-screen-size";
-import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { extractDatePart, roundNumber, truncateString } from "@/utils";
 import { MobileDrawer } from "@/components/ui/drawer";
-import { Popup } from "@/components/ui/popup";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
 import { TModelDetails } from "@/types";
 import { useTrainingDetails } from "@/features/models/hooks/use-training";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 
-const ModelDetailsPopUp = ({
-  showPopup,
-  anchor,
-  handlePopup,
+export const ModelDetailsInfo = ({
   modelInfo,
   modelInfoRequestIsError,
   modelInfoRequestIsPending,
-  closeMobileDrawer,
+  showMobileDrawer,
+  setShowMobileDrawer,
 }: {
-  showPopup: boolean;
-  anchor: string;
-  handlePopup: () => void;
   modelInfo?: TModelDetails;
   modelInfoRequestIsPending?: boolean;
   modelInfoRequestIsError?: boolean;
-  closeMobileDrawer: () => void;
+  showMobileDrawer: boolean;
+  setShowMobileDrawer: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const {
     data: trainingDetails,
     isPending: trainingDetailsIsPending,
     isError: trainingDetailsError,
   } = useTrainingDetails(modelInfo?.published_training as number);
+
   const { isSmallViewport } = useScreenSize();
 
   const popupContent = (
@@ -108,9 +103,9 @@ const ModelDetailsPopUp = ({
   if (isSmallViewport) {
     return (
       <MobileDrawer
-        open={showPopup}
+        open={showMobileDrawer}
         dialogTitle="Model Details"
-        closeDrawer={closeMobileDrawer}
+        closeDrawer={() => setShowMobileDrawer(false)}
         snapPoints={[0.5, 1]}
         canClose
       >
@@ -131,39 +126,21 @@ const ModelDetailsPopUp = ({
   }
 
   return (
-    <Popup
-      active={showPopup}
-      anchor={anchor}
-      placement="bottom-start"
-      distance={ELEMENT_DISTANCE_FROM_NAVBAR}
+    <div
+      className={`border bg-white border-gray-border shadown-sm rounded-xl w-[350px] scrollable p-5 max-h-[400px] overflow-y-auto flex flex-col`}
     >
-      <div
-        className={`border bg-white border-gray-border shadown-sm rounded-xl w-[350px] scrollable p-5 max-h-[400px] overflow-y-auto flex flex-col`}
-      >
-        {!modelInfo && modelInfoRequestIsError ? (
-          <div>{START_MAPPING_PAGE_CONTENT.modelDetails.error}</div>
-        ) : (
-          <div className="flex flex-col gap-y-4 text-dark">
-            <div>
-              <div className="flex justify-between flex-row-reverse items-center">
-                <button
-                  className="text-dark text-lg self-end"
-                  onClick={handlePopup}
-                  title="Close"
-                >
-                  &#x2715;
-                </button>
-                <p className="font-semibold">
-                  {START_MAPPING_PAGE_CONTENT.modelDetails.label}
-                </p>
-              </div>
-            </div>
-            {popupContent}
+      {!modelInfo && modelInfoRequestIsError ? (
+        <div>{START_MAPPING_PAGE_CONTENT.modelDetails.error}</div>
+      ) : (
+        <div className="flex flex-col gap-y-4 text-dark">
+          <div>
+            <p className="text-body-3 font-semibold">
+              {START_MAPPING_PAGE_CONTENT.modelDetails.label}
+            </p>
           </div>
-        )}
-      </div>
-    </Popup>
+          {popupContent}
+        </div>
+      )}
+    </div>
   );
 };
-
-export default ModelDetailsPopUp;
