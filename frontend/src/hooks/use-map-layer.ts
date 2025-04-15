@@ -75,6 +75,7 @@ export const useDynamicMapLayer = (
 
     addOrUpdateLayer();
     return () => {
+      if (!map || !map.getStyle()) return;
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, "visibility", "none");
       }
