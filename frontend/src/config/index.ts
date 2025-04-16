@@ -235,7 +235,8 @@ export const MAP_STYLES: Record<string, string | StyleSpecification> = {
   OSM: {
     version: 8,
     // "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
-    glyphs: "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
+    //https://fonts.openmaptiles.org/{fontstack}/{range}.pbf
+    glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
     sources: {
       "raster-tiles": {
         type: "raster",

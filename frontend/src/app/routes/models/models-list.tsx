@@ -32,6 +32,7 @@ import {
   useScrollToElement,
   useScrollToTop,
 } from "@/hooks/use-scroll-to-element";
+import { Spinner } from "@/components/ui/spinner";
 
 export const SEARCH_PARAMS = {
   startDate: "start_date",
@@ -93,8 +94,12 @@ export const ModelsPage = () => {
             />
           </div>
           <div className="row-start-1" id={mapViewElementId}>
-            {modelsMapDataIsPending || modelsMapDataIsError || !mapData ? (
-              <div className="w-full h-full animate-pulse bg-light-gray"></div>
+            {modelsMapDataIsPending ||
+            modelsMapDataIsError ||
+            mapData.features.length === 0 ? (
+              <div className="w-full h-full animate-pulse bg-light-gray flex items-center justify-center">
+                <Spinner />
+              </div>
             ) : (
               <ModelsMap
                 mapResults={mapData as FeatureCollection}
