@@ -197,10 +197,10 @@ export type Feature = {
   type: "Feature";
   geometry: Geometry;
   properties:
-    | {
-        mid: string;
-      }
-    | GeoJsonProperties;
+  | {
+    mid: string;
+  }
+  | GeoJsonProperties;
 };
 
 export type FeatureCollection = {
@@ -220,6 +220,7 @@ export type TModelPredictionsConfig = {
   tolerance: number;
   use_josm_q: boolean;
   zoom_level: number;
+
 };
 
 export type TModelPredictionFeature = {

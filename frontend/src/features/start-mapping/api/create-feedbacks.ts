@@ -39,6 +39,7 @@ export type TCreateApprovedPredictionPayload = {
     zoom_level: number;
     confidence: number;
     tolerance: number;
+    source_imagery: string;
   };
   geom: string;
   training: number;

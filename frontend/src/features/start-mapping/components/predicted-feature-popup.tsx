@@ -176,7 +176,7 @@ const PredictedFeatureActionPopup = ({
             comments: comment,
             geom: geojsonToWKT(feature?.geometry as GeoJSONType),
             feedback_type: "TN",
-            source_imagery: source_imagery,
+            source_imagery: feature?.properties.config.source as string,
             training: trainingId,
           });
         } else {
@@ -217,6 +217,7 @@ const PredictedFeatureActionPopup = ({
         skew_tolerance: feature?.properties.config.skew_tolerance as number,
         tolerance: feature?.properties.config.tolerance as number,
         zoom_level: feature?.properties.config.zoom_level as number,
+        source_imagery: feature?.properties.config.source as string,
       },
       user: user.osm_id,
     });
@@ -284,45 +285,45 @@ const PredictedFeatureActionPopup = ({
 
   const primaryButton = alreadyAccepted
     ? {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
-        action: handleRejection,
-        className: "bg-primary",
-        icon: RejectIcon,
-      }
+      label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
+      action: handleRejection,
+      className: "bg-primary",
+      icon: RejectIcon,
+    }
     : alreadyRejected
       ? {
-          label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
-          action: handleResolve,
-          className: "bg-black",
-          icon: ResolveIcon,
-        }
-      : {
-          label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
-          action: handleAcceptance,
-          className: "bg-green-primary",
-          icon: AcceptIcon,
-        };
-
-  const secondaryButton = alreadyAccepted
-    ? {
         label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
         action: handleResolve,
         className: "bg-black",
         icon: ResolveIcon,
       }
+      : {
+        label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
+        action: handleAcceptance,
+        className: "bg-green-primary",
+        icon: AcceptIcon,
+      };
+
+  const secondaryButton = alreadyAccepted
+    ? {
+      label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
+      action: handleResolve,
+      className: "bg-black",
+      icon: ResolveIcon,
+    }
     : alreadyRejected
       ? {
-          label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
-          action: handleAcceptance,
-          className: "bg-green-primary",
-          icon: AcceptIcon,
-        }
+        label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
+        action: handleAcceptance,
+        className: "bg-green-primary",
+        icon: AcceptIcon,
+      }
       : {
-          label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
-          action: handleRejection,
-          className: "bg-primary",
-          icon: RejectIcon,
-        };
+        label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
+        action: handleRejection,
+        className: "bg-primary",
+        icon: RejectIcon,
+      };
 
   return (
     <div
