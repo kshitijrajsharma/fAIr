@@ -149,7 +149,7 @@ export const StartMappingMapComponent = ({
       )}
       {map && (
         <PredictedFeatureActionPopup
-          source_imagery={trainingDataset?.source_imagery as string}
+          source_imagery={predictionImageryURL ?? trainingDataset?.source_imagery as string}
           trainingId={trainingId}
           map={map}
         />
