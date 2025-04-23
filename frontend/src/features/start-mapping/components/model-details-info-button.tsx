@@ -37,7 +37,6 @@ export const ModelDetailsInfoButton = ({
     }
   }, [isSmallViewport, modelDetailsDropDownIsOpened, onModelDetailsDropdownHide, onModelDetailsDropdownShow]);
 
-  console.log(modelDetailsDropDownIsOpened)
   return (
     <DropDown
       placement={DropdownPlacement.BOTTOM_START}

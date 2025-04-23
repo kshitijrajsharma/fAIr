@@ -8,12 +8,10 @@ import { DropdownPlacement } from "@/enums";
 import { TModelDetails } from "@/types";
 import { PredictionModel } from "@/enums/start-mapping";
 import { ModelSelector } from "@/features/start-mapping/components/replicable-models/model-selector";
-import { ModelDetailsInfoButton } from "@/features/start-mapping/components/model-details-info-button";
+
 
 export const ModelSelectorTriggerButton = ({
   modelInfo,
-  modelInfoRequestIsPending,
-  modelInfoRequestIsError,
   openMobileDialog,
   predictionModel,
   setPredictionModel,
@@ -23,8 +21,6 @@ export const ModelSelectorTriggerButton = ({
   setCustomPredictionModelCheckpointPath,
 }: {
   modelInfo?: TModelDetails;
-  modelInfoRequestIsPending?: boolean;
-  modelInfoRequestIsError?: boolean;
   openMobileDialog?: () => void;
   predictionModel: string;
   setPredictionModel: React.Dispatch<React.SetStateAction<string>>;
@@ -91,14 +87,6 @@ export const ModelSelectorTriggerButton = ({
           }
         />
       </DropDown>
-      <div className="hidden lg:inline-block">
-        <ModelDetailsInfoButton
-          modelInfo={modelInfo}
-          modelInfoRequestIsPending={modelInfoRequestIsPending}
-          modelInfoRequestIsError={modelInfoRequestIsError}
-          predictionModel={predictionModel}
-        />
-      </div>
     </div>
   );
 };

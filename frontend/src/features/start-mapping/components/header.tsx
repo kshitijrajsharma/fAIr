@@ -18,6 +18,7 @@ import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { ImagerySourceSelectorTriggerButton } from "@/features/start-mapping/components/replicable-models/imagery-source-selector-trigger-button";
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { ModelSelectorTriggerButton } from "@/features/start-mapping/components/replicable-models/model-selector-trigger-button";
+import { ModelDetailsInfoButton } from "./model-details-info-button";
 
 const StartMappingHeader = ({
   modelInfo,
@@ -95,11 +96,9 @@ const StartMappingHeader = ({
               isOpened={FAIRLogoDropdownIsOpened}
             />
           </div>
-          <div>
+          <div className="flex gap-x-1 items-center">
             <ModelSelectorTriggerButton
               modelInfo={modelInfo}
-              modelInfoRequestIsError={modelInfoRequestIsError}
-              modelInfoRequestIsPending={modelInfoRequestIsPending}
               setPredictionModel={setPredictionModel}
               setPredictionModelCheckpoint={setPredictionModelCheckpoint}
               predictionModel={predictionModel}
@@ -111,6 +110,14 @@ const StartMappingHeader = ({
                 setCustomPredictionModelCheckpointPath
               }
             />
+            <div className="hidden lg:inline-block">
+              <ModelDetailsInfoButton
+                modelInfo={modelInfo}
+                modelInfoRequestIsPending={modelInfoRequestIsPending}
+                modelInfoRequestIsError={modelInfoRequestIsError}
+                predictionModel={predictionModel}
+              />
+            </div>
           </div>
         </div>
         <div>
@@ -140,8 +147,8 @@ const StartMappingHeader = ({
                   content={
                     !modelPredictionsExist
                       ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                          "see actions",
-                        )
+                        "see actions",
+                      )
                       : null
                   }
                 >
