@@ -375,20 +375,23 @@ export const StartMappingPage = () => {
           isOpened={isModelSelectionDialogOpened}
           closeDialog={handlePredictionModelDialogClose}
         >
-          <ModelSelector
-            predictionModel={predictionModel}
-            setPredictionModel={setPredictionModel}
-            predictionModelCheckpoint={predictionModelCheckpoint}
-            setPredictionModelCheckpoint={setPredictionModelCheckpoint}
-            customPredictionModelCheckpointPath={
-              customPredictionModelCheckpointPath
-            }
-            setCustomPredictionModelCheckpointPath={
-              setCustomPredictionModelCheckpointPath
-            }
-            defaultPredictionModel={modelInfo?.name}
-            isMobile
-          />
+          {modelInfo && (
+            <ModelSelector
+              modelInfo={modelInfo}
+              predictionModel={predictionModel}
+              setPredictionModel={setPredictionModel}
+              predictionModelCheckpoint={predictionModelCheckpoint}
+              setPredictionModelCheckpoint={setPredictionModelCheckpoint}
+              customPredictionModelCheckpointPath={
+                customPredictionModelCheckpointPath
+              }
+              setCustomPredictionModelCheckpointPath={
+                setCustomPredictionModelCheckpointPath
+              }
+              defaultPredictionModel={modelInfo?.name}
+              isMobile
+            />
+          )}
         </Dialog>
         {/* Prediction Imagery Dialog */}
         <Dialog

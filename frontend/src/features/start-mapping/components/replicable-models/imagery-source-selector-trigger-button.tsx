@@ -34,7 +34,7 @@ export const ImagerySourceSelectorTriggerButton = ({
   const { isSmallViewport } = useScreenSize();
   return (
     <div className="flex items-center gap-x-1 w-fit">
-      <p className="text-body-4 hidden xl:inline-block">Imagery:</p>
+      <p className="text-body-4 hidden lg:inline-block">Imagery:</p>
       <DropDown
         placement={DropdownPlacement.TOP_END}
         disableCheveronIcon

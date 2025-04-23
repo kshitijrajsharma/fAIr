@@ -1,5 +1,7 @@
-import { PREDICTION_API_FILE_EXTENSIONS } from "@/config";
-import { ENVS } from "@/config/env";
+import {
+  FAIR_MODELS_BASE_PATH,
+  PREDICTION_API_FILE_EXTENSIONS,
+} from "@/config";
 import { BASE_MODELS } from "@/enums";
 import { useToastNotification } from "@/hooks/use-toast-notification";
 import { TModelDetails } from "@/types";
@@ -97,5 +99,5 @@ export const constructModelCheckpointPath = (
     );
   }
   // move to environment variable - /mnt/efsmount/data/trainings
-  return `${ENVS.FAIR_MODELS_BASE_PATH}dataset_${datasetId}/output/training_${trainingId}/checkpoint${fileExtension}`;
+  return `${FAIR_MODELS_BASE_PATH}dataset_${datasetId}/output/training_${trainingId}/checkpoint${fileExtension}`;
 };

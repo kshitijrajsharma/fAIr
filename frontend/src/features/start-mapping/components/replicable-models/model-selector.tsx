@@ -5,7 +5,12 @@ import { FormLabel, HelpText, Input } from "@/components/ui/form";
 import { MODELS_CONTENT } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { INPUT_TYPES, SHOELACE_SIZES } from "@/enums";
-import { showSuccessToast, VALID_MODEL_CHECKPOINT_PATH } from "@/utils";
+import {
+  constructModelCheckpointPath,
+  showSuccessToast,
+  VALID_MODEL_CHECKPOINT_PATH,
+} from "@/utils";
+import { TModelDetails } from "@/types";
 
 export const ModelSelector = ({
   predictionModel,
@@ -16,6 +21,7 @@ export const ModelSelector = ({
   defaultPredictionModel,
   setCustomPredictionModelCheckpointPath,
   customPredictionModelCheckpointPath,
+  modelInfo,
 }: {
   predictionModel: string;
   setPredictionModel: React.Dispatch<React.SetStateAction<string>>;
@@ -28,6 +34,7 @@ export const ModelSelector = ({
   setCustomPredictionModelCheckpointPath: React.Dispatch<
     React.SetStateAction<string>
   >;
+  modelInfo: TModelDetails;
 }) => {
   const PredictionModels = useMemo(
     () => [
@@ -71,13 +78,19 @@ export const ModelSelector = ({
 
   const PredictionModelsCheckpoints = useMemo(
     () => ({
-      [PredictionModel.DEFAULT]: predictionModelCheckpoint,
+      [PredictionModel.DEFAULT]: constructModelCheckpointPath(
+        modelInfo ?? {
+          dataset: { id: "" },
+          published_training: "",
+          base_model: "",
+        },
+      ),
       [PredictionModel.RAMP]: "https:ranmchecpoint.com",
       [PredictionModel.YOLOV8_V1]: "https:ranmchecpoint.comyolo",
       [PredictionModel.YOLOV8_V2]: "https:ranmchecpoint.comyolov2",
-      [PredictionModel.CUSTOM]: customPredictionModelCheckpointPath,
+      [PredictionModel.CUSTOM]: predictionModelCheckpoint,
     }),
-    [predictionModelCheckpoint, customPredictionModelCheckpointPath],
+    [predictionModelCheckpoint, modelInfo],
   );
 
   return (
@@ -95,9 +108,11 @@ export const ModelSelector = ({
         options={PredictionModels}
         onChange={(e: string) => {
           setPredictionModel(e);
-          setPredictionModelCheckpoint(
-            PredictionModelsCheckpoints[e as keyof typeof PredictionModel],
-          );
+          if (e !== PredictionModel.CUSTOM) {
+            setPredictionModelCheckpoint(
+              PredictionModelsCheckpoints[e as keyof typeof PredictionModel],
+            );
+          }
         }}
         value={predictionModel}
         withTooltip

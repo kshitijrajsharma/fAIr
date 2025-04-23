@@ -33,9 +33,16 @@ export const ModelDetailsInfoButton = ({
     if (isSmallViewport) {
       setShowDrawer(true);
     } else {
-      modelDetailsDropDownIsOpened ? onModelDetailsDropdownHide() : onModelDetailsDropdownShow();
+      modelDetailsDropDownIsOpened
+        ? onModelDetailsDropdownHide()
+        : onModelDetailsDropdownShow();
     }
-  }, [isSmallViewport, modelDetailsDropDownIsOpened, onModelDetailsDropdownHide, onModelDetailsDropdownShow]);
+  }, [
+    isSmallViewport,
+    modelDetailsDropDownIsOpened,
+    onModelDetailsDropdownHide,
+    onModelDetailsDropdownShow,
+  ]);
 
   return (
     <DropDown
