@@ -107,7 +107,7 @@ export const ModelDetailsInfo = ({
         <p className="text-dark font-normal text-body-3">
           {
             MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-            predictionModel as keyof typeof PredictionModel
+              predictionModel as keyof typeof PredictionModel
             ]
           }
         </p>

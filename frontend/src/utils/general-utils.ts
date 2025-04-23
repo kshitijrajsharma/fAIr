@@ -1,4 +1,5 @@
 import { PREDICTION_API_FILE_EXTENSIONS } from "@/config";
+import { ENVS } from "@/config/env";
 import { BASE_MODELS } from "@/enums";
 import { useToastNotification } from "@/hooks/use-toast-notification";
 import { TModelDetails } from "@/types";
@@ -95,6 +96,6 @@ export const constructModelCheckpointPath = (
       "Invalid modelInfo provided. Ensure dataset ID, training ID, and base model are defined.",
     );
   }
-
-  return `/mnt/efsmount/data/trainings/dataset_${datasetId}/output/training_${trainingId}/checkpoint${fileExtension}`;
+  // move to environment variable - /mnt/efsmount/data/trainings
+  return `${ENVS.FAIR_MODELS_BASE_PATH}dataset_${datasetId}/output/training_${trainingId}/checkpoint${fileExtension}`;
 };

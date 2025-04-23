@@ -43,7 +43,6 @@ export const ImagerySourceSelectorTriggerButton = ({
         onDropdownHide={onDropdownHide}
         onDropdownShow={onDropdownShow}
         distance={ELEMENT_DISTANCE_FROM_NAVBAR}
-
         triggerComponent={
           <ToolTip content={!isSmallViewport ? "Prediction Imagery" : ""}>
             <div
