@@ -184,7 +184,7 @@ const TrainingSettingsForm = () => {
             className="self-start"
           >
             <ChevronDownIcon
-              className={`icon text-dark ${showAdvancedSettings && "rotate-180"}`}
+              className={`icon text-dark transition-all ${showAdvancedSettings && "rotate-180"}`}
             />
           </button>
         </div>
