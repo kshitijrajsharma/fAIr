@@ -4,7 +4,8 @@ import { MobileDrawer } from "@/components/ui/drawer";
 import { SkeletonWrapper } from "@/components/ui/skeleton";
 import { TModelDetails } from "@/types";
 import { useTrainingDetails } from "@/features/models/hooks/use-training";
-import { START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { MODELS_CONTENT, START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { PredictionModel } from "@/enums/start-mapping";
 
 export const ModelDetailsInfo = ({
   modelInfo,
@@ -12,12 +13,14 @@ export const ModelDetailsInfo = ({
   modelInfoRequestIsPending,
   showMobileDrawer,
   setShowMobileDrawer,
+  predictionModel,
 }: {
   modelInfo?: TModelDetails;
   modelInfoRequestIsPending?: boolean;
   modelInfoRequestIsError?: boolean;
   showMobileDrawer: boolean;
   setShowMobileDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+  predictionModel: string;
 }) => {
   const {
     data: trainingDetails,
@@ -32,71 +35,83 @@ export const ModelDetailsInfo = ({
       showSkeleton={modelInfoRequestIsPending}
       skeletonClassName="h-40"
     >
-      <div className="flex flex-col gap-y-3 text-dark font-normal text-body-3">
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.modelId}:{" "}
-          <span className="font-medium">{modelInfo?.id}</span>
-        </p>
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.description}:{" "}
-          <span className="font-medium">{modelInfo?.description}</span>
-        </p>
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.lastModified}:{" "}
-          <span className="font-medium">
-            {extractDatePart(modelInfo?.last_modified as string)}
-          </span>
-        </p>
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.trainingId}:{" "}
-          <span className="font-medium">{modelInfo?.published_training}</span>
-        </p>
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.datasetId}:{" "}
-          <span className="font-medium">{modelInfo?.dataset.id}</span>
-        </p>
-        <p className="flex items-center gap-x-1 text-nowrap flex-wrap">
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.datasetName}:{" "}
-          <SkeletonWrapper
-            showSkeleton={modelInfoRequestIsPending}
-            skeletonClassName="w-20 h-4"
-          >
-            <span
-              className="text-dark font-medium text-wrap"
-              title={modelInfo?.dataset?.name}
+      {predictionModel === PredictionModel.DEFAULT ? (
+        <div className="flex flex-col gap-y-3 text-dark font-normal text-body-3">
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.modelId}:{" "}
+            <span className="font-medium">{modelInfo?.id}</span>
+          </p>
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.description}:{" "}
+            <span className="font-medium">{modelInfo?.description}</span>
+          </p>
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.lastModified}:{" "}
+            <span className="font-medium">
+              {extractDatePart(modelInfo?.last_modified as string)}
+            </span>
+          </p>
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.trainingId}:{" "}
+            <span className="font-medium">{modelInfo?.published_training}</span>
+          </p>
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.datasetId}:{" "}
+            <span className="font-medium">{modelInfo?.dataset.id}</span>
+          </p>
+          <p className="flex items-center gap-x-1 text-nowrap flex-wrap">
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.datasetName}:{" "}
+            <SkeletonWrapper
+              showSkeleton={modelInfoRequestIsPending}
+              skeletonClassName="w-20 h-4"
             >
-              {modelInfoRequestIsError
-                ? "N/A"
-                : truncateString(modelInfo?.dataset?.name, 40)}{" "}
-            </span>
-          </SkeletonWrapper>
-        </p>
+              <span
+                className="text-dark font-medium text-wrap"
+                title={modelInfo?.dataset?.name}
+              >
+                {modelInfoRequestIsError
+                  ? "N/A"
+                  : truncateString(modelInfo?.dataset?.name, 40)}{" "}
+              </span>
+            </SkeletonWrapper>
+          </p>
 
-        <p className="flex items-center gap-x-1 text-nowrap flex-wrap">
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.zoomLevel}:{" "}
-          <SkeletonWrapper
-            showSkeleton={trainingDetailsIsPending}
-            skeletonClassName="w-20 h-4"
-          >
-            <span className="text-dark font-medium">
-              {trainingDetailsError
-                ? "N/A"
-                : trainingDetails?.zoom_level?.reverse().join(", ")}{" "}
-            </span>
-          </SkeletonWrapper>
-        </p>
+          <p className="flex items-center gap-x-1 text-nowrap flex-wrap">
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.zoomLevel}:{" "}
+            <SkeletonWrapper
+              showSkeleton={trainingDetailsIsPending}
+              skeletonClassName="w-20 h-4"
+            >
+              <span className="text-dark font-medium">
+                {trainingDetailsError
+                  ? "N/A"
+                  : trainingDetails?.zoom_level?.reverse().join(", ")}{" "}
+              </span>
+            </SkeletonWrapper>
+          </p>
 
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.accuracy}:{" "}
-          <span className="font-medium">
-            {roundNumber(modelInfo?.accuracy as number, 2)}%
-          </span>
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.accuracy}:{" "}
+            <span className="font-medium">
+              {roundNumber(modelInfo?.accuracy as number, 2)}%
+            </span>
+          </p>
+          <p>
+            {START_MAPPING_PAGE_CONTENT.modelDetails.popover.baseModel}:{" "}
+            <span className="font-medium">{modelInfo?.base_model}</span>
+          </p>
+        </div>
+      ) : predictionModel === PredictionModel.CUSTOM ? (
+        <p>Custom model for generating predictions.</p>
+      ) : (
+        <p className="text-dark font-normal text-body-3">
+          {
+            MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
+            predictionModel as keyof typeof PredictionModel
+            ]
+          }
         </p>
-        <p>
-          {START_MAPPING_PAGE_CONTENT.modelDetails.popover.baseModel}:{" "}
-          <span className="font-medium">{modelInfo?.base_model}</span>
-        </p>
-      </div>
+      )}
     </SkeletonWrapper>
   );
 
@@ -114,8 +129,10 @@ export const ModelDetailsInfo = ({
             <div>{START_MAPPING_PAGE_CONTENT.modelDetails.error}</div>
           ) : (
             <div className="flex flex-col gap-y-4 text-dark">
-              <p className="font-semibold">
-                {START_MAPPING_PAGE_CONTENT.modelDetails.label}
+              <p className="text-body-3 font-semibold">
+                {predictionModel === PredictionModel.DEFAULT
+                  ? START_MAPPING_PAGE_CONTENT.modelDetails.label
+                  : `${predictionModel} Details`}
               </p>
               {popupContent}
             </div>
@@ -135,7 +152,9 @@ export const ModelDetailsInfo = ({
         <div className="flex flex-col gap-y-4 text-dark">
           <div>
             <p className="text-body-3 font-semibold">
-              {START_MAPPING_PAGE_CONTENT.modelDetails.label}
+              {predictionModel === PredictionModel.DEFAULT
+                ? START_MAPPING_PAGE_CONTENT.modelDetails.label
+                : `${predictionModel} Details`}
             </p>
           </div>
           {popupContent}

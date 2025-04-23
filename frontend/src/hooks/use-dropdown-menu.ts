@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
  * - `dropdownIsOpened: boolean`: A memoized boolean that represents whether the dropdown is currently opened.
  */
 export const useDropdownMenu = () => {
-  const [isOpened, setIsOpened] = useState(false);
+  const [isOpened, setIsOpened] = useState<boolean>(false);
   const onDropdownShow = useCallback(() => {
     setIsOpened(true);
   }, []);
