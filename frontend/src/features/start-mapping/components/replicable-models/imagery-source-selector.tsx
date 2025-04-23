@@ -66,7 +66,7 @@ export const ImagerySourceSelector = ({
 
   return (
     <div
-      className={` bg-white ${isMobile ? "w-full" : "w-[350px]  shadow-lg rounded-xl border border-gray-border "} p-4 max-h-[400px] gap-y-4 overflow-y-auto flex flex-col scrollable`}
+      className={`bg-white ${isMobile ? "w-full" : "w-[350px] shadow-lg rounded-xl border border-gray-border "} p-4 max-h-[400px] gap-y-4 overflow-y-auto flex flex-col scrollable`}
     >
       {!isMobile && (
         <FormLabel

@@ -13,6 +13,15 @@ import { PredictionImagerySource } from "@/enums/start-mapping";
 import { useDynamicMapLayer } from "@/hooks/use-map-layer";
 import { Map } from "maplibre-gl";
 
+const extractSchemeFromURL = (url: string): "tms" | "xyz" => {
+  if (url.includes("{z}/{x}/{y}")) {
+    return "xyz";
+  } else if (url.includes("{z}/{y}/{x}")) {
+    return "tms";
+  }
+  throw new Error("Unknown tile scheme in URL");
+};
+
 export const PredictionImageryLayer = ({
   map,
   predictionImageryURL,
@@ -22,6 +31,10 @@ export const PredictionImageryLayer = ({
   predictionImageryURL: string | undefined;
   predictionImagerySource: PredictionImagerySource;
 }) => {
+  const scheme = predictionImageryURL
+    ? extractSchemeFromURL(predictionImageryURL)
+    : "tms";
+
   useDynamicMapLayer(
     map,
     `${PREDICTION_IMAGERY_SOURCE}-${predictionImagerySource}`,
@@ -29,6 +42,7 @@ export const PredictionImageryLayer = ({
     {
       type: "raster",
       tiles: [predictionImageryURL as string],
+      scheme: scheme,
       tileSize: 256,
     },
     {
