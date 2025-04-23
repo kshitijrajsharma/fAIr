@@ -143,7 +143,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
       disabled ||
       uploadInProgress ||
       acceptedFiles.length ===
-        MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS ||
+      MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREA_LABELS ||
       acceptedFiles.length === MAX_GEOJSON_FILE_UPLOAD_FOR_TRAINING_AREAS,
   });
 
