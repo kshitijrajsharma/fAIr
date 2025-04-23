@@ -21,13 +21,12 @@ import {
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
 } from "@/config";
 import { useModelPredictionStore } from "@/store/model-prediction-store";
+import { Spinner } from "@/components/ui/spinner";
 
 const PredictedFeatureActionPopup = ({
   trainingId,
-  source_imagery,
   map,
 }: {
-  source_imagery: string;
   trainingId: number;
   map: Map | null;
 }) => {
@@ -127,8 +126,9 @@ const PredictedFeatureActionPopup = ({
     setShowComment(true);
   };
 
-  // Approved prediction is accept
-
+  /**
+   * This mutation is used to create an approved model prediction.
+   */
   const createApprovedModelPredictionMutation =
     useCreateApprovedModelPrediction({
       mutationConfig: {
@@ -150,6 +150,9 @@ const PredictedFeatureActionPopup = ({
       },
     });
 
+  /**
+   * This mutation is used to delete a model prediction feedback.
+   */
   const deleteModelFeedbackMutation = useDeleteModelPredictionFeedback({
     mutationConfig: {
       onSuccess: (_, variables) => {
@@ -167,6 +170,9 @@ const PredictedFeatureActionPopup = ({
     },
   });
 
+  /**
+   * This mutation is used to delete an approved model prediction.
+   */
   const deleteApprovedModelPrediction = useDeleteApprovedModelPrediction({
     mutationConfig: {
       onSuccess: async (_, variables) => {
@@ -176,26 +182,20 @@ const PredictedFeatureActionPopup = ({
             comments: comment,
             geom: geojsonToWKT(feature?.geometry as GeoJSONType),
             feedback_type: "TN",
-            source_imagery: feature?.properties.config.source as string,
+            /**
+             * Use the configuration when the prediction was made.
+             * If it doesn't exist, it means the feature has been interacted with before.
+             * In that case, we can use the source_imagery from the properties.
+             */
+            source_imagery:
+              (feature?.properties.config.source as string) ??
+              (feature?.properties.config.source_imagery as string),
             training: trainingId,
           });
         } else {
           if (featureId !== null) {
             moveFeatureBetweenBuckets("accepted", "all", featureId);
           }
-          // const { updatedSource: updatedAccepted } = moveFeature(
-          //   accepted,
-          //   all,
-          //   featureId,
-          // );
-          // setModelPredictions((prev) => ({
-          //   ...prev,
-          //   all: [
-          //     ...all,
-          //     ...accepted.filter((f) => f.properties.id === featureId),
-          //   ],
-          //   accepted: updatedAccepted,
-          // }));
         }
       },
       onError: (error) => {
@@ -217,7 +217,14 @@ const PredictedFeatureActionPopup = ({
         skew_tolerance: feature?.properties.config.skew_tolerance as number,
         tolerance: feature?.properties.config.tolerance as number,
         zoom_level: feature?.properties.config.zoom_level as number,
-        source_imagery: feature?.properties.config.source as string,
+        /**
+         * Use the configuration when the prediction was made.
+         * If it doesn't exist, it means the feature has been interacted with before.
+         * In that case, we can use the source_imagery from the properties.
+         */
+        source_imagery:
+          (feature?.properties.config.source as string) ??
+          (feature?.properties.config.source_imagery as string),
       },
       user: user.osm_id,
     });
@@ -253,7 +260,14 @@ const PredictedFeatureActionPopup = ({
         comments: comment,
         geom: geojsonToWKT(feature?.geometry as GeoJSONType),
         feedback_type: "TN",
-        source_imagery: source_imagery,
+        /**
+         * Use the configuration when the prediction was made.
+         * If it doesn't exist, it means the feature has been interacted with before.
+         * In that case, we can use the source_imagery from the properties.
+         */
+        source_imagery:
+          (feature?.properties.config.source as string) ??
+          (feature?.properties.config.source_imagery as string),
         training: trainingId,
       });
     }
@@ -289,6 +303,7 @@ const PredictedFeatureActionPopup = ({
       action: handleRejection,
       className: "bg-primary",
       icon: RejectIcon,
+      disabled: false,
     }
     : alreadyRejected
       ? {
@@ -296,12 +311,14 @@ const PredictedFeatureActionPopup = ({
         action: handleResolve,
         className: "bg-black",
         icon: ResolveIcon,
+        disabled: deleteModelFeedbackMutation.isPending,
       }
       : {
         label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
         action: handleAcceptance,
         className: "bg-green-primary",
         icon: AcceptIcon,
+        disabled: createApprovedModelPredictionMutation.isPending,
       };
 
   const secondaryButton = alreadyAccepted
@@ -310,6 +327,7 @@ const PredictedFeatureActionPopup = ({
       action: handleResolve,
       className: "bg-black",
       icon: ResolveIcon,
+      disabled: deleteApprovedModelPrediction.isPending,
     }
     : alreadyRejected
       ? {
@@ -317,13 +335,21 @@ const PredictedFeatureActionPopup = ({
         action: handleAcceptance,
         className: "bg-green-primary",
         icon: AcceptIcon,
+        disabled: deleteModelFeedbackMutation.isPending,
       }
       : {
         label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
         action: handleRejection,
         className: "bg-primary",
         icon: RejectIcon,
+        disabled: false,
       };
+
+  /**
+   * Early return if no feature is selected.
+   * This is to prevent the popup from showing when there is no feature selected.
+   */
+  if (!feature) return null;
 
   return (
     <div
@@ -375,16 +401,20 @@ const PredictedFeatureActionPopup = ({
           <button
             className={`w-full ${primaryButton.className} text-white rounded-lg p-2 text-body-4 md:text-body-3 text-nowrap flex gap-x-3 justify-between items-center`}
             onClick={primaryButton.action}
+            disabled={primaryButton.disabled}
           >
             {primaryButton.label}
             <primaryButton.icon />
+            {primaryButton.disabled && <Spinner />}
           </button>
           <button
             className={`w-full ${secondaryButton.className} text-white rounded-lg p-2 text-body-4 md:text-body-3 text-nowrap flex justify-between items-center gap-x-3`}
             onClick={secondaryButton.action}
+            disabled={secondaryButton.disabled}
           >
             {secondaryButton.label}
             <secondaryButton.icon />
+            {secondaryButton.disabled && <Spinner />}
           </button>
         </div>
       )}

@@ -20,9 +20,9 @@ import {
   AcceptedPredictionsLayer,
   RejectedPredictionsLayer,
   AllPredictionsLayer,
+  PredictionImageryLayer,
 } from "@/features/start-mapping/components/map/layers";
 import { PredictionImagerySource } from "@/enums/start-mapping";
-import { PredictionImageryLayer } from "./layers/prediction-imagery-layer";
 import { useMapStore } from "@/store/map-store";
 import { useModelPredictionStore } from "@/store/model-prediction-store";
 
@@ -147,13 +147,7 @@ export const StartMappingMapComponent = ({
           predictionImageryURL={predictionImageryURL}
         />
       )}
-      {map && (
-        <PredictedFeatureActionPopup
-          source_imagery={predictionImageryURL ?? trainingDataset?.source_imagery as string}
-          trainingId={trainingId}
-          map={map}
-        />
-      )}
+      {map && <PredictedFeatureActionPopup trainingId={trainingId} map={map} />}
 
       {!modelInfoRequestIsPending && map && <PredictionLayers map={map} />}
       {memoizedToolTip}
