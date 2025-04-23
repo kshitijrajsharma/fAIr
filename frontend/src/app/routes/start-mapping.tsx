@@ -40,7 +40,6 @@ import {
 
 import {
   PredictionImagerySource,
-  PredictionModel,
 } from "@/enums/start-mapping";
 import { Dialog } from "@/components/ui/dialog";
 import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
