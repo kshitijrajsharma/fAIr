@@ -69,9 +69,7 @@ export const StartMappingMobileDrawer = ({
   predictionModel: string;
   setPredictionModel: React.Dispatch<React.SetStateAction<string>>;
   predictionModelCheckpoint: string;
-  setPredictionModelCheckpoint: React.Dispatch<
-    React.SetStateAction<string>
-  >;
+  setPredictionModelCheckpoint: React.Dispatch<React.SetStateAction<string>>;
   customPredictionModelCheckpointPath: string;
   setCustomPredictionModelCheckpointPath: React.Dispatch<
     React.SetStateAction<string>
@@ -116,7 +114,7 @@ export const StartMappingMobileDrawer = ({
                 predictionModel={predictionModel}
               />
             </div>
-          </div >
+          </div>
           <div className="flex items-center gap-x-2 w-full justify-between">
             <p className="text-body-3 text-nowrap">Model:</p>
             <ModelSelectorTriggerButton
@@ -168,8 +166,8 @@ export const StartMappingMobileDrawer = ({
                 content={
                   disablePrediction
                     ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                      "see download options",
-                    )
+                        "see download options",
+                      )
                     : null
                 }
               >

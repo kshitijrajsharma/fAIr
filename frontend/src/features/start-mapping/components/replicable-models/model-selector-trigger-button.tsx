@@ -7,8 +7,8 @@ import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { DropdownPlacement } from "@/enums";
 import { TModelDetails } from "@/types";
 import { PredictionModel } from "@/enums/start-mapping";
-import { ModelSelector } from "./model-selector";
-import { ModelDetailsInfoButton } from "../model-details-info-button";
+import { ModelSelector } from "@/features/start-mapping/components/replicable-models/model-selector";
+import { ModelDetailsInfoButton } from "@/features/start-mapping/components/model-details-info-button";
 
 export const ModelSelectorTriggerButton = ({
   modelInfo,
@@ -61,7 +61,8 @@ export const ModelSelectorTriggerButton = ({
                     ? openMobileDialog
                     : dropdownIsOpened
                       ? onDropdownHide
-                      : onDropdownShow}
+                      : onDropdownShow
+                }
                 className={` ${isSmallViewport ? "w-fit max-w-[100px] text-body-4" : "max-w-[50px]  lg:max-w-[200px] text-body-4 "} overflow-hidden text-ellipsis whitespace-nowrap`}
               >
                 {predictionModel === PredictionModel.DEFAULT

@@ -19,7 +19,6 @@ import { ImagerySourceSelectorTriggerButton } from "@/features/start-mapping/com
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { ModelSelectorTriggerButton } from "@/features/start-mapping/components/replicable-models/model-selector-trigger-button";
 
-
 const StartMappingHeader = ({
   modelInfo,
   modelPredictionsExist,
@@ -141,8 +140,8 @@ const StartMappingHeader = ({
                   content={
                     !modelPredictionsExist
                       ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                        "see actions",
-                      )
+                          "see actions",
+                        )
                       : null
                   }
                 >

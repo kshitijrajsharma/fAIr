@@ -38,9 +38,7 @@ import {
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
 } from "@/config";
 
-import {
-  PredictionImagerySource,
-} from "@/enums/start-mapping";
+import { PredictionImagerySource } from "@/enums/start-mapping";
 import { Dialog } from "@/components/ui/dialog";
 import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
 import { useDialog } from "@/hooks/use-dialog";
@@ -99,7 +97,11 @@ export const StartMappingPage = () => {
   const { dropdownIsOpened, onDropdownHide, onDropdownShow } =
     useDropdownMenu();
   const { openDialog, isOpened, closeDialog } = useDialog();
-  const { openDialog: openModelSelectionDialog, isOpened: isModelSelectionDialogOpened, closeDialog: closeModelSelectionDialog } = useDialog();
+  const {
+    openDialog: openModelSelectionDialog,
+    isOpened: isModelSelectionDialogOpened,
+    closeDialog: closeModelSelectionDialog,
+  } = useDialog();
 
   const {
     isError,
@@ -210,42 +212,42 @@ export const StartMappingPage = () => {
     () => [
       ...(modelPredictions.accepted.length > 0
         ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .acceptedPredictions,
-            subLayers: [
-              ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .acceptedPredictions,
+              subLayers: [
+                ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
         : []),
       ...(modelPredictions.rejected.length > 0
         ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .rejectedPredictions,
-            subLayers: [
-              REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .rejectedPredictions,
+              subLayers: [
+                REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
         : []),
       ...(modelPredictions.all.length > 0
         ? [
-          {
-            value:
-              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                .predictionResults,
-            subLayers: [
-              ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-              ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-            ],
-          },
-        ]
+            {
+              value:
+                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                  .predictionResults,
+              subLayers: [
+                ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+                ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+              ],
+            },
+          ]
         : []),
     ],
     [modelPredictions],
@@ -337,7 +339,6 @@ export const StartMappingPage = () => {
     },
   ];
 
-
   const handlePredictionImageryDialogOpen = useCallback(() => {
     /**
      * Close the mobile drawer when the prediction imagery dialog is opened to prevent focus trapping issues.
@@ -350,7 +351,6 @@ export const StartMappingPage = () => {
     setOpenMobileDrawer(true);
     closeDialog();
   }, [closeDialog, onDropdownShow]);
-
 
   const handlePredictionModelDialogOpen = useCallback(() => {
     /**
