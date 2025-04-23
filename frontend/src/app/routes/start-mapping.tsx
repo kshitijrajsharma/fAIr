@@ -23,6 +23,7 @@ import {
   StartMappingMobileDrawer,
 } from "@/features/start-mapping/components";
 import {
+  constructModelCheckpointPath,
   extractTileJSONURL,
   geoJSONDowloader,
   openInJOSM,
@@ -37,11 +38,15 @@ import {
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
 } from "@/config";
 
-import { PredictionImagerySource } from "@/enums/start-mapping";
+import {
+  PredictionImagerySource,
+  PredictionModel,
+} from "@/enums/start-mapping";
 import { Dialog } from "@/components/ui/dialog";
 import { ImagerySourceSelector } from "@/features/start-mapping/components/replicable-models/imagery-source-selector";
 import { useDialog } from "@/hooks/use-dialog";
 import { useModelPredictionStore } from "@/store/model-prediction-store";
+import { ModelSelector } from "@/features/start-mapping/components/replicable-models/model-selector";
 
 export type TDownloadOptions = {
   name: string;
@@ -84,11 +89,18 @@ export const StartMappingPage = () => {
 
   const [customTileServerURL, setCustomTileServerURL] = useState<string>("");
 
+  const [
+    customPredictionModelCheckpointPath,
+    setCustomPredictionModelCheckpointPath,
+  ] = useState<string>("");
+
   const [predictionImagerySource, setPredictionImagerySource] =
     useState<PredictionImagerySource>(PredictionImagerySource.ModelDefault);
 
   const { dropdownIsOpened, onDropdownHide, onDropdownShow } =
     useDropdownMenu();
+  const { openDialog, isOpened, closeDialog } = useDialog();
+  const { openDialog: openModelSelectionDialog, isOpened: isModelSelectionDialogOpened, closeDialog: closeModelSelectionDialog } = useDialog();
 
   const {
     isError,
@@ -96,6 +108,14 @@ export const StartMappingPage = () => {
     data: modelInfo,
     error,
   } = useModelDetails(modelId as string, !!modelId);
+
+  /**
+   * State to manage the prediction model ID.
+   */
+  const [predictionModelCheckpoint, setPredictionModelCheckpoint] =
+    useState<string>("");
+
+  const [predictionModel, setPredictionModel] = useState<string>("Default");
 
   const tileJSONURL = useMemo(
     () =>
@@ -109,6 +129,17 @@ export const StartMappingPage = () => {
     tileJSONURL as string,
     !!tileJSONURL,
   );
+
+  /**
+   * Set the prediction imagery to the model info's source imagery
+   * when the model info is available and the prediction imagery is not set.
+   * This is to ensure that the map is displayed with the correct imagery.
+   */
+  useEffect(() => {
+    if (modelInfo) {
+      setPredictionModelCheckpoint(constructModelCheckpointPath(modelInfo));
+    }
+  }, [modelInfo]);
 
   /**
    * Set the prediction imagery to the model info's source imagery
@@ -180,42 +211,42 @@ export const StartMappingPage = () => {
     () => [
       ...(modelPredictions.accepted.length > 0
         ? [
-            {
-              value:
-                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                  .acceptedPredictions,
-              subLayers: [
-                ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-                ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-              ],
-            },
-          ]
+          {
+            value:
+              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                .acceptedPredictions,
+            subLayers: [
+              ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+              ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+            ],
+          },
+        ]
         : []),
       ...(modelPredictions.rejected.length > 0
         ? [
-            {
-              value:
-                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                  .rejectedPredictions,
-              subLayers: [
-                REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-                REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-              ],
-            },
-          ]
+          {
+            value:
+              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                .rejectedPredictions,
+            subLayers: [
+              REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+              REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+            ],
+          },
+        ]
         : []),
       ...(modelPredictions.all.length > 0
         ? [
-            {
-              value:
-                START_MAPPING_PAGE_CONTENT.map.controls.legendControl
-                  .predictionResults,
-              subLayers: [
-                ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-                ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-              ],
-            },
-          ]
+          {
+            value:
+              START_MAPPING_PAGE_CONTENT.map.controls.legendControl
+                .predictionResults,
+            subLayers: [
+              ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+              ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+            ],
+          },
+        ]
         : []),
     ],
     [modelPredictions],
@@ -307,21 +338,64 @@ export const StartMappingPage = () => {
     },
   ];
 
-  const { openDialog, isOpened, closeDialog } = useDialog();
 
   const handlePredictionImageryDialogOpen = useCallback(() => {
+    /**
+     * Close the mobile drawer when the prediction imagery dialog is opened to prevent focus trapping issues.
+     */
+    setOpenMobileDrawer(false);
     openDialog();
   }, [openDialog, onDropdownShow]);
+
+  const handlePredictionImageryDialogClose = useCallback(() => {
+    setOpenMobileDrawer(true);
+    closeDialog();
+  }, [closeDialog, onDropdownShow]);
+
+
+  const handlePredictionModelDialogOpen = useCallback(() => {
+    /**
+     * Close the mobile drawer when the prediction imagery dialog is opened to prevent focus trapping issues.
+     */
+    setOpenMobileDrawer(false);
+    openModelSelectionDialog();
+  }, [openModelSelectionDialog, onDropdownShow]);
+
+  const handlePredictionModelDialogClose = useCallback(() => {
+    setOpenMobileDrawer(true);
+    closeModelSelectionDialog();
+  }, [closeModelSelectionDialog, onDropdownShow]);
 
   return (
     <>
       <Head title={START_MAPPING_PAGE_CONTENT.pageTitle(modelInfo?.name)} />
       <div className="h-screen flex flex-col fullscreen">
+        {/* Base model dialog */}
+        <Dialog
+          label="Model"
+          isOpened={isModelSelectionDialogOpened}
+          closeDialog={handlePredictionModelDialogClose}
+        >
+          <ModelSelector
+            predictionModel={predictionModel}
+            setPredictionModel={setPredictionModel}
+            predictionModelCheckpoint={predictionModelCheckpoint}
+            setPredictionModelCheckpoint={setPredictionModelCheckpoint}
+            customPredictionModelCheckpointPath={
+              customPredictionModelCheckpointPath
+            }
+            setCustomPredictionModelCheckpointPath={
+              setCustomPredictionModelCheckpointPath
+            }
+            defaultPredictionModel={modelInfo?.name}
+            isMobile
+          />
+        </Dialog>
         {/* Prediction Imagery Dialog */}
         <Dialog
           label="Prediction imagery"
           isOpened={isOpened}
-          closeDialog={closeDialog}
+          closeDialog={handlePredictionImageryDialogClose}
         >
           <ImagerySourceSelector
             setPredictionImageryURL={setPredictionImageryURL}
@@ -351,6 +425,17 @@ export const StartMappingPage = () => {
           customTileServerURL={customTileServerURL}
           setCustomTileServerURL={setCustomTileServerURL}
           openMobileDialog={handlePredictionImageryDialogOpen}
+          predictionModel={predictionModel}
+          setPredictionModel={setPredictionModel}
+          predictionModelCheckpoint={predictionModelCheckpoint}
+          setPredictionModelCheckpoint={setPredictionModelCheckpoint}
+          customPredictionModelCheckpointPath={
+            customPredictionModelCheckpointPath
+          }
+          setCustomPredictionModelCheckpointPath={
+            setCustomPredictionModelCheckpointPath
+          }
+          openModelSelectionDialog={handlePredictionModelDialogOpen}
         />
         <div className="sticky top-0 bg-white z-10 px-4 xl:px-large py-1 hidden md:block">
           {/* Web Header */}
@@ -370,6 +455,16 @@ export const StartMappingPage = () => {
             modelDefaultImageryURL={modelInfo?.dataset?.source_imagery}
             customTileServerURL={customTileServerURL}
             setCustomTileServerURL={setCustomTileServerURL}
+            predictionModel={predictionModel}
+            setPredictionModel={setPredictionModel}
+            predictionModelCheckpoint={predictionModelCheckpoint}
+            setPredictionModelCheckpoint={setPredictionModelCheckpoint}
+            customPredictionModelCheckpointPath={
+              customPredictionModelCheckpointPath
+            }
+            setCustomPredictionModelCheckpointPath={
+              setCustomPredictionModelCheckpointPath
+            }
           />
         </div>
         <div className="col-span-12 h-[70vh] md:h-full md:border-8 md:border-off-white flex-grow relative map-elements-z-index">

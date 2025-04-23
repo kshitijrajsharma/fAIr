@@ -6,7 +6,6 @@ import {
   MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION,
 } from "@/config";
 import { MobileDrawer } from "@/components/ui/drawer";
-import { ModelDetailsTriggerButton } from "@/features/start-mapping/components/model-details-button";
 import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
@@ -17,6 +16,8 @@ import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { ImagerySourceSelectorTriggerButton } from "@/features/start-mapping/components/replicable-models/imagery-source-selector-trigger-button";
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { useMapStore } from "@/store/map-store";
+import { ModelSelectorTriggerButton } from "./replicable-models/model-selector-trigger-button";
+import { ModelDetailsInfoButton } from "./model-details-info-button";
 
 export const StartMappingMobileDrawer = ({
   isOpen,
@@ -35,6 +36,13 @@ export const StartMappingMobileDrawer = ({
   customTileServerURL,
   setCustomTileServerURL,
   openMobileDialog,
+  predictionModel,
+  setPredictionModel,
+  predictionModelCheckpoint,
+  setPredictionModelCheckpoint,
+  customPredictionModelCheckpointPath,
+  setCustomPredictionModelCheckpointPath,
+  openModelSelectionDialog,
 }: {
   isOpen: boolean;
 
@@ -58,6 +66,17 @@ export const StartMappingMobileDrawer = ({
   customTileServerURL: string;
   setCustomTileServerURL: React.Dispatch<React.SetStateAction<string>>;
   openMobileDialog: () => void;
+  predictionModel: string;
+  setPredictionModel: React.Dispatch<React.SetStateAction<string>>;
+  predictionModelCheckpoint: string;
+  setPredictionModelCheckpoint: React.Dispatch<
+    React.SetStateAction<string>
+  >;
+  customPredictionModelCheckpointPath: string;
+  setCustomPredictionModelCheckpointPath: React.Dispatch<
+    React.SetStateAction<string>
+  >;
+  openModelSelectionDialog: () => void;
 }) => {
   const [showDownloadOptions, setShowDownloadOptions] =
     useState<boolean>(false);
@@ -79,28 +98,46 @@ export const StartMappingMobileDrawer = ({
           </p>
         )}
         <div className="flex flex-col gap-y-6">
-          <div className="flex items-center justify-between my-4 gap-x-2">
-            <div className="w-full basis-5/6">
+          <div className="flex items-center gap-x-2 w-full">
+            <div className="flex-1">
               <ModelAction
                 query={query}
                 map={map}
                 modelInfo={modelInfo}
                 predictionImageryURL={predictionImageryURL}
+                predictionModelCheckpoint={predictionModelCheckpoint}
               />
             </div>
-            <div
-              className="p-1 flex items-center justify-center icon-interaction rounded-xl"
-              id="anchor1"
-            >
-              <ModelDetailsTriggerButton
+            <div className="bg-off-white rounded-md p-1">
+              <ModelDetailsInfoButton
                 modelInfo={modelInfo}
                 modelInfoRequestIsPending={modelInfoRequestIsPending}
                 modelInfoRequestIsError={modelInfoRequestIsError}
+                predictionModel={predictionModel}
               />
             </div>
+          </div >
+          <div className="flex items-center gap-x-2 w-full justify-between">
+            <p className="text-body-3 text-nowrap">Model:</p>
+            <ModelSelectorTriggerButton
+              modelInfo={modelInfo}
+              modelInfoRequestIsPending={modelInfoRequestIsPending}
+              modelInfoRequestIsError={modelInfoRequestIsError}
+              setPredictionModel={setPredictionModel}
+              setPredictionModelCheckpoint={setPredictionModelCheckpoint}
+              predictionModel={predictionModel}
+              predictionModelCheckpoint={predictionModelCheckpoint}
+              customPredictionModelCheckpointPath={
+                customPredictionModelCheckpointPath
+              }
+              setCustomPredictionModelCheckpointPath={
+                setCustomPredictionModelCheckpointPath
+              }
+              openMobileDialog={openModelSelectionDialog}
+            />
           </div>
           <div className="flex items-center gap-x-2 w-full justify-between">
-            <p className="text-body-3 text-nowrap">Prediction imagery</p>
+            <p className="text-body-3 text-nowrap">Prediction imagery:</p>
             <ImagerySourceSelectorTriggerButton
               setPredictionImageryURL={setPredictionImageryURL}
               predictionImagerySource={predictionImagerySource}
@@ -109,7 +146,6 @@ export const StartMappingMobileDrawer = ({
               customTileServerURL={customTileServerURL}
               setCustomTileServerURL={setCustomTileServerURL}
               openMobileDialog={openMobileDialog}
-              isMobile
             />
           </div>
           <div className="text-body-3 font-normal flex items-center gap-x-2">
@@ -132,8 +168,8 @@ export const StartMappingMobileDrawer = ({
                 content={
                   disablePrediction
                     ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                        "see download options",
-                      )
+                      "see download options",
+                    )
                     : null
                 }
               >

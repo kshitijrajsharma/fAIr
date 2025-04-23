@@ -11,11 +11,7 @@ import { ToolTip } from "@/components/ui/tooltip";
 import { useCallback, useState } from "react";
 import { useGetModelPredictions } from "@/features/start-mapping/hooks/use-model-predictions";
 import { SEARCH_PARAMS } from "@/app/routes/start-mapping";
-import {
-  MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
-  PREDICTION_API_FILE_EXTENSIONS,
-} from "@/config";
-import { BASE_MODELS } from "@/enums";
+import { MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION } from "@/config";
 import { useParams } from "react-router-dom";
 import { useMapStore } from "@/store/map-store";
 import { useModelPredictionStore } from "@/store/model-prediction-store";
@@ -25,11 +21,13 @@ const ModelAction = ({
   query,
   modelInfo,
   predictionImageryURL,
+  predictionModelCheckpoint,
 }: {
   map: Map | null;
   query: TQueryParams;
   modelInfo: TModelDetails;
   predictionImageryURL: string | undefined;
+  predictionModelCheckpoint: string;
 }) => {
   const { modelId } = useParams();
   const { modelPredictions, setModelPredictions } = useModelPredictionStore();
@@ -48,7 +46,7 @@ const ModelAction = ({
       area_threshold: query[SEARCH_PARAMS.area] as number,
       use_josm_q: query[SEARCH_PARAMS.useJOSMQ] as boolean,
       confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
-      checkpoint: `/mnt/efsmount/data/trainings/dataset_${modelInfo?.dataset?.id}/output/training_${modelInfo?.published_training}/checkpoint${PREDICTION_API_FILE_EXTENSIONS[modelInfo?.base_model as BASE_MODELS]}`,
+      checkpoint: predictionModelCheckpoint,
       max_angle_change: 15,
       model_id: modelId as string,
       skew_tolerance: 15,

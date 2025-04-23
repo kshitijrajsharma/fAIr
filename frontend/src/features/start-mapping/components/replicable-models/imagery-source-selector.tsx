@@ -60,8 +60,6 @@ export const ImagerySourceSelector = ({
       [PredictionImagerySource.ModelDefault]: modelDefaultImageryURL,
       [PredictionImagerySource.Kontour]:
         "https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}.png",
-      [PredictionImagerySource.EsriWorldImagery]:
-        "https://wayback.maptiles.arcgis.com/arcgis/rest/services/world_imagery/mapserver/tile/{z}/{y}/{x}",
     }),
     [customTileServerURL, modelDefaultImageryURL],
   );

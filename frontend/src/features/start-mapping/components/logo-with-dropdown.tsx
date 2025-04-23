@@ -25,7 +25,7 @@ export const BrandLogoWithDropDown = ({
         disableLinkStyle
         title={link.title}
         href={link.href}
-        className={`text-dark text-nowrap text-body-3 block hover:bg-off-white py-2 px-4  ${id === 0 ? "hover:rounded-t-xl" : ""}`}
+        className={`text-dark text-nowrap md:text-wrap lg:text-nowrap text-body-3 block hover:bg-off-white py-2 px-4  ${id === 0 ? "hover:rounded-t-xl" : ""}`}
         nativeAnchor={false}
       >
         {link.title}
@@ -40,7 +40,7 @@ export const BrandLogoWithDropDown = ({
       onDropdownShow={onShow}
       triggerComponent={<NavLogo onClick={() => null} smallerSize />}
       distance={ELEMENT_DISTANCE_FROM_NAVBAR}
-      className="rounded-xl"
+      className="rounded-xl md:w-24 lg:w-fit max-w-fit"
     >
       <div className="bg-white flex flex-col rounded-xl w-full">
         <ul className="flex flex-col">{navItems}</ul>
