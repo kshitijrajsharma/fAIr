@@ -119,8 +119,6 @@ export const StartMappingMobileDrawer = ({
             <p className="text-body-3 text-nowrap">Model:</p>
             <ModelSelectorTriggerButton
               modelInfo={modelInfo}
-              modelInfoRequestIsPending={modelInfoRequestIsPending}
-              modelInfoRequestIsError={modelInfoRequestIsError}
               setPredictionModel={setPredictionModel}
               setPredictionModelCheckpoint={setPredictionModelCheckpoint}
               predictionModel={predictionModel}
@@ -166,8 +164,8 @@ export const StartMappingMobileDrawer = ({
                 content={
                   disablePrediction
                     ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                        "see download options",
-                      )
+                      "see download options",
+                    )
                     : null
                 }
               >
