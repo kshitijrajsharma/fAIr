@@ -101,5 +101,5 @@ export const constructModelCheckpointPath = (
     );
   }
   // move to environment variable - /mnt/efsmount/data/trainings
-  return `${FAIR_MODELS_BASE_PATH}dataset_${datasetId}/output/training_${trainingId}/checkpoint${fileExtension}`;
+  return `${FAIR_MODELS_BASE_PATH}/trainings/dataset_${datasetId}/output/training_${trainingId}/checkpoint${fileExtension}`;
 };
