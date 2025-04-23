@@ -49,7 +49,7 @@ export const XYZTileServerInput = ({
           <span className="text-wrap text-xs">
             The XYZ/TMS imagery link should follow the TMS/XYZ standard format:{" "}
             {`https://tiles.example.com/{z}/{x/y}/{y/x}`} Ensure your imagery
-            URL adheres to the{" "}
+            URL has CORS enabled and adheres to the{" "}
             <a
               href="https://github.com/hotosm/fair?tab=readme-ov-file#imagery-license"
               target="_blank"
