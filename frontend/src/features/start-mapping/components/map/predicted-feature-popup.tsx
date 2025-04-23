@@ -1,4 +1,4 @@
-import maplibregl, { Map } from "maplibre-gl";
+import { Map, Popup } from "maplibre-gl";
 import { CheckIcon } from "@/components/ui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { geojsonToWKT } from "@terraformer/wkt";
@@ -39,7 +39,7 @@ const PredictedFeatureActionPopup = ({
     useModelPredictionStore();
 
   const popupContainerRef = useRef<HTMLDivElement>(null);
-  const popupInstanceRef = useRef<maplibregl.Popup | null>(null);
+  const popupInstanceRef = useRef<Popup | null>(null);
 
   const { accepted, rejected, all } = modelPredictions;
   const [featureId, setFeatureId] = useState<number | null>(null);
@@ -81,7 +81,7 @@ const PredictedFeatureActionPopup = ({
 
       if (popupContainerRef.current) {
         popupInstanceRef.current?.remove(); // remove old one if any
-        const newPopup = new maplibregl.Popup({ closeButton: false })
+        const newPopup = new Popup({ closeButton: false })
           .setLngLat(e.lngLat)
           .setDOMContent(popupContainerRef.current)
           .addTo(map);

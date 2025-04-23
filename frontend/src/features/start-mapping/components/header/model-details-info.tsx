@@ -102,7 +102,9 @@ export const ModelDetailsInfo = ({
           </p>
         </div>
       ) : predictionModel === PredictionModel.CUSTOM ? (
-        <p>Custom model for generating predictions.</p>
+        <p className="text-dark font-normal text-body-3">
+          Custom model for generating predictions.
+        </p>
       ) : (
         <p className="text-dark font-normal text-body-3">
           {

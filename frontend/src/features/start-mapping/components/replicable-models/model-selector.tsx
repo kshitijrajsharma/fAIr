@@ -49,7 +49,7 @@ export const ModelSelector = ({
         label: "RAMP",
         tooltip:
           MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-          PredictionModel.RAMP
+            PredictionModel.RAMP
           ],
       },
       {
@@ -57,7 +57,7 @@ export const ModelSelector = ({
         label: "YOLO v8 v1",
         tooltip:
           MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-          PredictionModel.YOLOV8_V1
+            PredictionModel.YOLOV8_V1
           ],
       },
       {
@@ -65,7 +65,7 @@ export const ModelSelector = ({
         label: "YOLO v8 v2",
         tooltip:
           MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-          PredictionModel.YOLOV8_V2
+            PredictionModel.YOLOV8_V2
           ],
       },
       {
@@ -87,8 +87,10 @@ export const ModelSelector = ({
         },
       ),
       [PredictionModel.RAMP]: FAIR_BASE_MODELS_PATH[PredictionModel.RAMP],
-      [PredictionModel.YOLOV8_V1]: FAIR_BASE_MODELS_PATH[PredictionModel.YOLOV8_V1],
-      [PredictionModel.YOLOV8_V2]: FAIR_BASE_MODELS_PATH[PredictionModel.YOLOV8_V2],
+      [PredictionModel.YOLOV8_V1]:
+        FAIR_BASE_MODELS_PATH[PredictionModel.YOLOV8_V1],
+      [PredictionModel.YOLOV8_V2]:
+        FAIR_BASE_MODELS_PATH[PredictionModel.YOLOV8_V2],
       [PredictionModel.CUSTOM]: predictionModelCheckpoint,
     }),
     [predictionModelCheckpoint, modelInfo],

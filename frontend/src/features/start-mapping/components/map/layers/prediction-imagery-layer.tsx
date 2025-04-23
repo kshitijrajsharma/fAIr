@@ -7,6 +7,7 @@ import {
   PREDICTION_IMAGERY_SOURCE,
   REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
   REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+  TILE_BOUNDARY_LAYER_ID,
 } from "@/config";
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { useDynamicMapLayer } from "@/hooks/use-map-layer";
@@ -43,7 +44,7 @@ export const PredictionImageryLayer = ({
       predictionImageryURL?.length > 0 &&
       predictionImagerySource !== PredictionImagerySource.ModelDefault,
     /**
-     * Place the prediction imagery layer below the prediction layers.
+     * Place the prediction imagery layer below the prediction layers and also tile boundary layer.
      */
     [
       ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
@@ -52,6 +53,7 @@ export const PredictionImageryLayer = ({
       REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
       ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
       ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
+      TILE_BOUNDARY_LAYER_ID,
     ],
   );
   return null;
