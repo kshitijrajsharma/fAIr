@@ -24,6 +24,7 @@ const predictionConfig: TModelPredictionsConfig = {
   zoom_level: 21,
   source: "",
   tolerance: 0,
+  source_imagery: ''
 };
 
 describe("geometry-utils", () => {

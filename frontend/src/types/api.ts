@@ -198,10 +198,10 @@ export type Feature = {
   type: "Feature";
   geometry: Geometry;
   properties:
-    | {
-        mid: string;
-      }
-    | GeoJsonProperties;
+  | {
+    mid: string;
+  }
+  | GeoJsonProperties;
 };
 
 export type FeatureCollection = {
@@ -221,6 +221,7 @@ export type TModelPredictionsConfig = {
   tolerance: number;
   use_josm_q: boolean;
   zoom_level: number;
+  source_imagery?: string;
 };
 
 export type TModelPredictionFeature = {
@@ -229,7 +230,7 @@ export type TModelPredictionFeature = {
   properties: {
     id?: number | string;
     _id?: number | string;
-    config: TModelPredictionsConfig & { source_imagery: string };
+    config: TModelPredictionsConfig;
   };
   id?: string | number;
 };
