@@ -1,12 +1,12 @@
-import ModelAction from "@/features/start-mapping/components/model-action";
-import { BrandLogoWithDropDown } from "@/features/start-mapping/components/logo-with-dropdown";
+import ModelAction from "@/features/start-mapping/components/header/model-action";
+import { BrandLogoWithDropDown } from "@/features/start-mapping/components/header/logo-with-dropdown";
 import { ButtonWithIcon } from "@/components/ui/button";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { DropDown } from "@/components/ui/dropdown";
 import { ButtonVariant, DropdownPlacement, SHOELACE_SIZES } from "@/enums";
 import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { Map } from "maplibre-gl";
-import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
+import { ModelPredictionsTracker } from "@/features/start-mapping/components/header/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
 import { TModelDetails } from "@/types";

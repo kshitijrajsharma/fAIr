@@ -2,7 +2,7 @@ import { DropDown } from "@/components/ui/dropdown";
 import { TagsInfoIcon } from "@/components/ui/icons";
 import { DropdownPlacement } from "@/enums";
 import useScreenSize from "@/hooks/use-screen-size";
-import { ModelDetailsInfo } from "./model-details-info";
+import { ModelDetailsInfo } from "@/features/start-mapping/components/header/model-details-info";
 import { ELEMENT_DISTANCE_FROM_NAVBAR } from "@/config";
 import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";

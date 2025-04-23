@@ -341,29 +341,29 @@ export const StartMappingPage = () => {
 
   const handlePredictionImageryDialogOpen = useCallback(() => {
     /**
-     * Close the mobile drawer when the prediction imagery dialog is opened to prevent focus trapping issues.
+     * Close the mobile drawer when the prediction imagery dialog is opened to prevent focus trapping issues with vaul.
      */
     setOpenMobileDrawer(false);
     openDialog();
-  }, [openDialog, onDropdownShow]);
+  }, [openDialog, setOpenMobileDrawer]);
 
   const handlePredictionImageryDialogClose = useCallback(() => {
     setOpenMobileDrawer(true);
     closeDialog();
-  }, [closeDialog, onDropdownShow]);
+  }, [closeDialog, setOpenMobileDrawer]);
 
   const handlePredictionModelDialogOpen = useCallback(() => {
     /**
-     * Close the mobile drawer when the prediction imagery dialog is opened to prevent focus trapping issues.
+     * Close the mobile drawer when the model selection dialog is opened to prevent focus trapping issues with vaul.
      */
     setOpenMobileDrawer(false);
     openModelSelectionDialog();
-  }, [openModelSelectionDialog, onDropdownShow]);
+  }, [openModelSelectionDialog, setOpenMobileDrawer]);
 
   const handlePredictionModelDialogClose = useCallback(() => {
     setOpenMobileDrawer(true);
     closeModelSelectionDialog();
-  }, [closeModelSelectionDialog, onDropdownShow]);
+  }, [closeModelSelectionDialog, setOpenMobileDrawer]);
 
   return (
     <>
@@ -409,7 +409,7 @@ export const StartMappingPage = () => {
             isMobile
           />
         </Dialog>
-        {/* Mobile drawer */}
+        {/* Mobile bottom sheet */}
         <StartMappingMobileDrawer
           isOpen={openMobileDrawer}
           map={map}

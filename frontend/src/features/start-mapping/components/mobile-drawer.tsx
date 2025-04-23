@@ -1,4 +1,4 @@
-import ModelAction from "@/features/start-mapping/components/model-action";
+import ModelAction from "@/features/start-mapping/components/header/model-action";
 import { ChevronDownIcon, CloudDownloadIcon } from "@/components/ui/icons";
 import { Map } from "maplibre-gl";
 import {
@@ -6,7 +6,7 @@ import {
   MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION,
 } from "@/config";
 import { MobileDrawer } from "@/components/ui/drawer";
-import { ModelPredictionsTracker } from "@/features/start-mapping/components/model-predictions-tracker";
+import { ModelPredictionsTracker } from "@/features/start-mapping/components/header/model-predictions-tracker";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
 import { TDownloadOptions, TQueryParams } from "@/app/routes/start-mapping";
 import { TModelDetails } from "@/types";
@@ -16,8 +16,8 @@ import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { ImagerySourceSelectorTriggerButton } from "@/features/start-mapping/components/replicable-models/imagery-source-selector-trigger-button";
 import { PredictionImagerySource } from "@/enums/start-mapping";
 import { useMapStore } from "@/store/map-store";
-import { ModelSelectorTriggerButton } from "./replicable-models/model-selector-trigger-button";
-import { ModelDetailsInfoButton } from "./model-details-info-button";
+import { ModelSelectorTriggerButton } from "@/features/start-mapping/components/replicable-models/model-selector-trigger-button";
+import { ModelDetailsInfoButton } from "@/features/start-mapping/components/header/model-details-info-button";
 
 export const StartMappingMobileDrawer = ({
   isOpen,
