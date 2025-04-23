@@ -438,7 +438,7 @@ const REFRESH_BUFFER_MS: number = 1000;
  */
 export const KPI_STATS_CACHE_TIME_MS: number =
   parseIntEnv(ENVS.KPI_STATS_CACHE_TIME, DEFAULT_KPI_STATS_CACHE_TIME_SECONDS) *
-    1000 +
+  1000 +
   REFRESH_BUFFER_MS;
 
 /**
@@ -462,8 +462,14 @@ export const MAXIMUM_PREDICTION_AREA: number = parseIntEnv(
  */
 export const FAIR_MODELS_BASE_PATH: string = parseStringEnv(
   ENVS.FAIR_MODELS_BASE_PATH,
-  "/mnt/efsmount/data/trainings/",
+  "/mnt/efsmount/data",
 );
+
+export const FAIR_BASE_MODELS_PATH: Record<BASE_MODELS, string> = {
+  [BASE_MODELS.RAMP]: `${FAIR_MODELS_BASE_PATH}/basemodels/ramp/baseline.tflite`,
+  [BASE_MODELS.YOLOV8_V1]: `${FAIR_MODELS_BASE_PATH}/basemodels/yolo/yolov8s_v1-seg.onnx`,
+  [BASE_MODELS.YOLOV8_V2]: `${FAIR_MODELS_BASE_PATH}/basemodels/yolo/yolov8s_v2-seg.onnx`,
+};
 // ==============================================================================================================================
 // UI Settings
 // ==============================================================================================================================

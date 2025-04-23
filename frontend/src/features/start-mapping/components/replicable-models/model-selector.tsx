@@ -11,6 +11,7 @@ import {
   VALID_MODEL_CHECKPOINT_PATH,
 } from "@/utils";
 import { TModelDetails } from "@/types";
+import { FAIR_BASE_MODELS_PATH } from "@/config";
 
 export const ModelSelector = ({
   predictionModel,
@@ -48,7 +49,7 @@ export const ModelSelector = ({
         label: "RAMP",
         tooltip:
           MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-            PredictionModel.RAMP
+          PredictionModel.RAMP
           ],
       },
       {
@@ -56,7 +57,7 @@ export const ModelSelector = ({
         label: "YOLO v8 v1",
         tooltip:
           MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-            PredictionModel.YOLOV8_V1
+          PredictionModel.YOLOV8_V1
           ],
       },
       {
@@ -64,7 +65,7 @@ export const ModelSelector = ({
         label: "YOLO v8 v2",
         tooltip:
           MODELS_CONTENT.modelCreation.modelDetails.form.baseModel.suffixes[
-            PredictionModel.YOLOV8_V2
+          PredictionModel.YOLOV8_V2
           ],
       },
       {
@@ -85,9 +86,9 @@ export const ModelSelector = ({
           base_model: "",
         },
       ),
-      [PredictionModel.RAMP]: "https:ranmchecpoint.com",
-      [PredictionModel.YOLOV8_V1]: "https:ranmchecpoint.comyolo",
-      [PredictionModel.YOLOV8_V2]: "https:ranmchecpoint.comyolov2",
+      [PredictionModel.RAMP]: FAIR_BASE_MODELS_PATH[PredictionModel.RAMP],
+      [PredictionModel.YOLOV8_V1]: FAIR_BASE_MODELS_PATH[PredictionModel.YOLOV8_V1],
+      [PredictionModel.YOLOV8_V2]: FAIR_BASE_MODELS_PATH[PredictionModel.YOLOV8_V2],
       [PredictionModel.CUSTOM]: predictionModelCheckpoint,
     }),
     [predictionModelCheckpoint, modelInfo],
