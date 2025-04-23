@@ -164,8 +164,8 @@ export const StartMappingMobileDrawer = ({
                 content={
                   disablePrediction
                     ? START_MAPPING_PAGE_CONTENT.actions.disabledModeTooltip(
-                      "see download options",
-                    )
+                        "see download options",
+                      )
                     : null
                 }
               >

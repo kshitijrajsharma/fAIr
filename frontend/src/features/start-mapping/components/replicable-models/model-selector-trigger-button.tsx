@@ -9,7 +9,6 @@ import { TModelDetails } from "@/types";
 import { PredictionModel } from "@/enums/start-mapping";
 import { ModelSelector } from "@/features/start-mapping/components/replicable-models/model-selector";
 
-
 export const ModelSelectorTriggerButton = ({
   modelInfo,
   openMobileDialog,
@@ -20,7 +19,7 @@ export const ModelSelectorTriggerButton = ({
   customPredictionModelCheckpointPath,
   setCustomPredictionModelCheckpointPath,
 }: {
-  modelInfo?: TModelDetails;
+  modelInfo: TModelDetails;
   openMobileDialog?: () => void;
   predictionModel: string;
   setPredictionModel: React.Dispatch<React.SetStateAction<string>>;
@@ -37,7 +36,7 @@ export const ModelSelectorTriggerButton = ({
 
   return (
     <div className="flex items-center gap-x-1 mr-1 lg:mr-0">
-      <p className="hidden md:inline-block text-body-4 text-left">Model:</p>
+      <p className="hidden lg:inline-block text-body-4 text-left">Model:</p>
       <DropDown
         placement={DropdownPlacement.BOTTOM_START}
         disableCheveronIcon
@@ -85,6 +84,7 @@ export const ModelSelectorTriggerButton = ({
           setCustomPredictionModelCheckpointPath={
             setCustomPredictionModelCheckpointPath
           }
+          modelInfo={modelInfo}
         />
       </DropDown>
     </div>

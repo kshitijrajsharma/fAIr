@@ -458,6 +458,13 @@ export const MAXIMUM_PREDICTION_AREA: number = parseIntEnv(
   20,
 );
 
+/**
+ * The base path to the model checkpoint files.
+ */
+export const FAIR_MODELS_BASE_PATH: string = parseStringEnv(
+  ENVS.FAIR_MODELS_BASE_PATH,
+  "/mnt/efsmount/data/trainings/",
+);
 // ==============================================================================================================================
 // UI Settings
 // ==============================================================================================================================
