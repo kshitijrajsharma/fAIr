@@ -14,24 +14,24 @@ const PredictionImagerySources: Array<{
   url?: string;
   tooltip: string;
 }> = [
-    {
-      value: PredictionImagerySource.ModelDefault,
-      label: "Model Default",
-      url: "",
-      tooltip: "Default imagery for the model.",
-    },
-    {
-      value: PredictionImagerySource.CustomImagery,
-      label: "Custom Imagery",
-      tooltip: "Use a custom XYZ/TMS tile server URL.",
-    },
-    {
-      value: PredictionImagerySource.Kontour,
-      label: "OpenAerialMap Mosaic",
-      url: "https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}",
-      tooltip: "All OpenAerialMap images in one mosaic layer, by Kontur.io.",
-    },
-  ];
+  {
+    value: PredictionImagerySource.ModelDefault,
+    label: "Model Default",
+    url: "",
+    tooltip: "Default imagery for the model.",
+  },
+  {
+    value: PredictionImagerySource.CustomImagery,
+    label: "Custom Imagery",
+    tooltip: "Use a custom XYZ/TMS tile server URL.",
+  },
+  {
+    value: PredictionImagerySource.Kontour,
+    label: "OpenAerialMap Mosaic",
+    url: "https://apps.kontur.io/raster-tiler/oam/mosaic/{z}/{x}/{y}",
+    tooltip: "All OpenAerialMap images in one mosaic layer, by Kontur.io.",
+  },
+];
 
 export const ImagerySourceSelector = ({
   setPredictionImageryURL,
