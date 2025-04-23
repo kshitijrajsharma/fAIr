@@ -310,14 +310,8 @@ export const StartMappingPage = () => {
   const { openDialog, isOpened, closeDialog } = useDialog();
 
   const handlePredictionImageryDialogOpen = useCallback(() => {
-    setOpenMobileDrawer(false);
     openDialog();
   }, [openDialog, onDropdownShow]);
-
-  const handlePredictionImageryDialogClose = useCallback(() => {
-    closeDialog();
-    setOpenMobileDrawer(true);
-  }, [closeDialog]);
 
   return (
     <>
@@ -327,7 +321,7 @@ export const StartMappingPage = () => {
         <Dialog
           label="Prediction imagery"
           isOpened={isOpened}
-          closeDialog={handlePredictionImageryDialogClose}
+          closeDialog={closeDialog}
         >
           <ImagerySourceSelector
             setPredictionImageryURL={setPredictionImageryURL}

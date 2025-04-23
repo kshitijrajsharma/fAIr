@@ -299,57 +299,57 @@ const PredictedFeatureActionPopup = ({
 
   const primaryButton = alreadyAccepted
     ? {
-      label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
-      action: handleRejection,
-      className: "bg-primary",
-      icon: RejectIcon,
-      disabled: false,
-    }
-    : alreadyRejected
-      ? {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
-        action: handleResolve,
-        className: "bg-black",
-        icon: ResolveIcon,
-        disabled: deleteModelFeedbackMutation.isPending,
-      }
-      : {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
-        action: handleAcceptance,
-        className: "bg-green-primary",
-        icon: AcceptIcon,
-        disabled: createApprovedModelPredictionMutation.isPending,
-      };
-
-  const secondaryButton = alreadyAccepted
-    ? {
-      label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
-      action: handleResolve,
-      className: "bg-black",
-      icon: ResolveIcon,
-      disabled: deleteApprovedModelPrediction.isPending,
-    }
-    : alreadyRejected
-      ? {
-        label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
-        action: handleAcceptance,
-        className: "bg-green-primary",
-        icon: AcceptIcon,
-        disabled: deleteModelFeedbackMutation.isPending,
-      }
-      : {
         label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
         action: handleRejection,
         className: "bg-primary",
         icon: RejectIcon,
         disabled: false,
-      };
+      }
+    : alreadyRejected
+      ? {
+          label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
+          action: handleResolve,
+          className: "bg-black",
+          icon: ResolveIcon,
+          disabled: deleteModelFeedbackMutation.isPending,
+        }
+      : {
+          label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
+          action: handleAcceptance,
+          className: "bg-green-primary",
+          icon: AcceptIcon,
+          disabled: createApprovedModelPredictionMutation.isPending,
+        };
+
+  const secondaryButton = alreadyAccepted
+    ? {
+        label: START_MAPPING_PAGE_CONTENT.map.popup.resolve,
+        action: handleResolve,
+        className: "bg-black",
+        icon: ResolveIcon,
+        disabled: deleteApprovedModelPrediction.isPending,
+      }
+    : alreadyRejected
+      ? {
+          label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
+          action: handleAcceptance,
+          className: "bg-green-primary",
+          icon: AcceptIcon,
+          disabled: deleteModelFeedbackMutation.isPending,
+        }
+      : {
+          label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
+          action: handleRejection,
+          className: "bg-primary",
+          icon: RejectIcon,
+          disabled: false,
+        };
 
   /**
    * Early return if no feature is selected.
    * This is to prevent the popup from showing when there is no feature selected.
    */
-  if (!feature) return null;
+  if (!feature) return <div className="hidden" ref={popupContainerRef} />;
 
   return (
     <div

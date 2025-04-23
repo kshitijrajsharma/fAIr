@@ -38,6 +38,7 @@ export const ImagerySourceSelectorTriggerButton = ({
       <DropDown
         placement={DropdownPlacement.TOP_END}
         disableCheveronIcon
+        disabled={isMobile}
         dropdownIsOpened={dropdownIsOpened}
         onDropdownHide={onDropdownHide}
         onDropdownShow={onDropdownShow}
