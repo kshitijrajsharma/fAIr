@@ -4,7 +4,6 @@ import { START_MAPPING_PAGE_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import {
   BBOX,
   TModelDetails,
-  TModelPredictions,
   TModelPredictionsConfig,
   TQueryParams,
 } from "@/types";
@@ -12,31 +11,34 @@ import { ToolTip } from "@/components/ui/tooltip";
 import { useCallback, useState } from "react";
 import { useGetModelPredictions } from "@/features/start-mapping/hooks/use-model-predictions";
 import { SEARCH_PARAMS } from "@/app/routes/start-mapping";
-import { PREDICTION_API_FILE_EXTENSIONS } from "@/config";
-import { BASE_MODELS } from "@/enums";
+import { MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION } from "@/config";
 import { useParams } from "react-router-dom";
+import { useMapStore } from "@/store/map-store";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
 
 const ModelAction = ({
-  setModelPredictions,
-  modelPredictions,
   map,
-  disablePrediction,
   query,
-  currentZoom,
   modelInfo,
+  predictionImageryURL,
+  predictionModelCheckpoint,
 }: {
-  modelPredictions: TModelPredictions;
-  setModelPredictions: React.Dispatch<React.SetStateAction<TModelPredictions>>;
   map: Map | null;
-  disablePrediction: boolean;
   query: TQueryParams;
-  currentZoom: number;
   modelInfo: TModelDetails;
+  predictionImageryURL: string | undefined;
+  predictionModelCheckpoint: string;
 }) => {
   const { modelId } = useParams();
+  const { modelPredictions, setModelPredictions } = useModelPredictionStore();
+
   const [predictionZoomLevel, setPredictionZoomLevel] = useState<number | null>(
     null,
   );
+  const currentZoom = useMapStore((state) => state.zoom);
+
+  const disablePrediction =
+    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
 
   const getTrainingConfig = useCallback((): TModelPredictionsConfig => {
     return {
@@ -44,11 +46,12 @@ const ModelAction = ({
       area_threshold: query[SEARCH_PARAMS.area] as number,
       use_josm_q: query[SEARCH_PARAMS.useJOSMQ] as boolean,
       confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
-      checkpoint: `/mnt/efsmount/data/trainings/dataset_${modelInfo?.dataset?.id}/output/training_${modelInfo?.published_training}/checkpoint${PREDICTION_API_FILE_EXTENSIONS[modelInfo?.base_model as BASE_MODELS]}`,
+      checkpoint: predictionModelCheckpoint,
       max_angle_change: 15,
       model_id: modelId as string,
       skew_tolerance: 15,
-      source: modelInfo?.dataset?.source_imagery as string,
+      source:
+        predictionImageryURL ?? (modelInfo?.dataset?.source_imagery as string),
       zoom_level: predictionZoomLevel ?? currentZoom,
       bbox: [
         map?.getBounds().getWest(),
@@ -57,7 +60,14 @@ const ModelAction = ({
         map?.getBounds().getNorth(),
       ] as BBOX,
     };
-  }, [map, query, currentZoom, modelInfo, predictionZoomLevel]);
+  }, [
+    map,
+    query,
+    currentZoom,
+    modelInfo,
+    predictionZoomLevel,
+    predictionModelCheckpoint,
+  ]);
 
   const modelPredictionMutation = useGetModelPredictions({
     mutationConfig: {
@@ -97,7 +107,7 @@ const ModelAction = ({
           onClick={handlePrediction}
           className={`w-full text-nowrap bg-primary px-3 py-3 md:py-1.5 rounded-md text-white ${disablePrediction || modelPredictionMutation.isPending ? "opacity-50" : ""}`}
         >
-          <span className="capitalize text-sm">
+          <span className="capitalize text-body-4">
             {" "}
             {modelPredictionMutation.isPending
               ? START_MAPPING_PAGE_CONTENT.buttons.predictionInProgress

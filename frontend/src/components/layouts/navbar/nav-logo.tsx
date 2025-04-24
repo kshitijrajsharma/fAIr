@@ -15,8 +15,8 @@ export const NavLogo = ({
     onClick ? onClick() : navigate(APPLICATION_ROUTES.HOMEPAGE);
   };
 
-  const width = smallerSize ? "50px" : "60px";
-  const height = smallerSize ? "50px" : "22px";
+  const width = smallerSize ? "40px" : "60px";
+  const height = smallerSize ? "40px" : "22px";
 
   return (
     <button

@@ -1,0 +1,15 @@
+sl-radio::part(control--checked) {
+  background-color: var(--hot-fair-color-white);
+}
+
+sl-radio::part(control) {
+  color: var(--hot-fair-color-dark);
+  border-color: var(--hot-fair-color-dark);
+}
+
+sl-radio::part(checked-icon) {
+  background-color: var(--hot-fair-color-dark);
+  border-radius: 100%;
+  width: 75%;
+  height: 75%;
+}

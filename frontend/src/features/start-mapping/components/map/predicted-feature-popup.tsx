@@ -1,17 +1,13 @@
-import maplibregl, { Map, Popup } from "maplibre-gl";
+import { Map, Popup } from "maplibre-gl";
 import { CheckIcon } from "@/components/ui/icons";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { geojsonToWKT } from "@terraformer/wkt";
 import { Input } from "@/components/ui/form";
 import { SHOELACE_SIZES } from "@/enums";
 import { showErrorToast } from "@/utils";
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { useAuth } from "@/app/providers/auth-provider";
-import {
-  GeoJSONType,
-  TModelPredictionFeature,
-  TModelPredictions,
-} from "@/types";
+import { GeoJSONType } from "@/types";
 
 import {
   useCreateApprovedModelPrediction,
@@ -19,93 +15,109 @@ import {
   useDeleteApprovedModelPrediction,
   useDeleteModelPredictionFeedback,
 } from "@/features/start-mapping/hooks/use-feedbacks";
+import {
+  ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+  ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+  REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+} from "@/config";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
+import { Spinner } from "@/components/ui/spinner";
 
 const PredictedFeatureActionPopup = ({
-  event,
-  selectedFeature,
-  setModelPredictions,
-  modelPredictions,
   trainingId,
-  source_imagery,
   map,
 }: {
-  event: any;
-  selectedFeature: any;
-  modelPredictions: TModelPredictions;
-  setModelPredictions: Dispatch<
-    SetStateAction<{
-      all: TModelPredictionFeature[];
-      accepted: TModelPredictionFeature[];
-      rejected: TModelPredictionFeature[];
-    }>
-  >;
-  source_imagery: string;
   trainingId: number;
   map: Map | null;
 }) => {
-  const featureId = selectedFeature.properties.id;
   const { user } = useAuth();
+  const selectedFeatureRef = useRef<any>(null);
+  const selectedEventRef = useRef<any>(null);
+  const [showComment, setShowComment] = useState<boolean>(false);
+  const [comment, setComment] = useState<string>("");
+  const { modelPredictions, moveFeatureBetweenBuckets } =
+    useModelPredictionStore();
 
-  const popupRef = useRef(null);
-  const [popup, setPopup] = useState<Popup | null>(null);
+  const popupContainerRef = useRef<HTMLDivElement>(null);
+  const popupInstanceRef = useRef<Popup | null>(null);
+
   const { accepted, rejected, all } = modelPredictions;
+  const [featureId, setFeatureId] = useState<number | null>(null);
 
-  const alreadyAccepted = accepted.some(
-    (feature) => feature.properties.id === featureId,
+  const alreadyAccepted = useMemo(
+    () => accepted.some((f) => f.properties.id === featureId),
+    [accepted, featureId],
   );
-  const alreadyRejected = rejected.some(
-    (feature) => feature.properties.id === featureId,
+  const alreadyRejected = useMemo(
+    () => rejected.some((f) => f.properties.id === featureId),
+    [rejected, featureId],
   );
+
+  useEffect(() => {
+    if (!map) return;
+
+    const layerIds = [
+      ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
+      ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+      REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
+    ];
+
+    const handleMouseEnter = () => {
+      map.getCanvas().style.cursor = "pointer";
+    };
+
+    const handleMouseLeave = () => {
+      map.getCanvas().style.cursor = "";
+    };
+
+    const handleClick = (e: any) => {
+      const clickedFeature = e.features?.[0];
+      if (!clickedFeature) return;
+      selectedEventRef.current = e;
+      selectedFeatureRef.current = e.features?.[0];
+      setFeatureId(clickedFeature.properties.id);
+      // Reset if in comment mode
+      setShowComment(false);
+
+      if (popupContainerRef.current) {
+        popupInstanceRef.current?.remove(); // remove old one if any
+        const newPopup = new Popup({ closeButton: false })
+          .setLngLat(e.lngLat)
+          .setDOMContent(popupContainerRef.current)
+          .addTo(map);
+        popupInstanceRef.current = newPopup;
+      }
+    };
+
+    layerIds.forEach((layerId) => {
+      map.on("mouseenter", layerId, handleMouseEnter);
+      map.on("mouseleave", layerId, handleMouseLeave);
+      map.on("click", layerId, handleClick);
+    });
+
+    return () => {
+      popupInstanceRef.current?.remove();
+      layerIds.forEach((layerId) => {
+        map.off("mouseenter", layerId, handleMouseEnter);
+        map.off("mouseleave", layerId, handleMouseLeave);
+        map.off("click", layerId, handleClick);
+      });
+    };
+  }, [map]);
 
   // if already accepted, it means it's in accepted array
   // if it's already rejected, it means it's in the rejected array
   // if it's not in accepted or rejected, then it's in the all array
-  const feature =
-    accepted.find((f) => f.properties.id === featureId) ||
-    rejected.find((f) => f.properties.id === featureId) ||
-    all.find((f) => f.properties.id === featureId);
-
-  const [showComment, setShowComment] = useState<boolean>(false);
-  const [comment, setComment] = useState<string>("");
-
-  const moveFeature = (
-    source: TModelPredictionFeature[],
-    target: TModelPredictionFeature[],
-    id: number,
-    additionalProperties: Partial<TModelPredictionFeature["properties"]> = {},
-  ) => {
-    const movedFeatures = source
-      .filter((feature) => feature.properties.id === id)
-      .map((feature) => ({
-        ...feature,
-        properties: {
-          ...feature.properties,
-          ...additionalProperties,
-        },
-      }));
-
-    return {
-      updatedSource: source.filter((feature) => feature.properties.id !== id),
-      updatedTarget: [...target, ...movedFeatures],
-    };
-  };
-
-  useEffect(() => {
-    if (!map || !popupRef.current) return;
-    // reset if in comment mode
-    setShowComment(false);
-    const _popup = new maplibregl.Popup({ closeButton: false })
-      .setLngLat(event.lngLat)
-      .setDOMContent(popupRef.current)
-      .addTo(map);
-    setPopup(_popup);
-    return () => {
-      _popup.remove();
-    };
-  }, [event, map, selectedFeature, setShowComment]);
+  const feature = useMemo(() => {
+    return (
+      accepted.find((f) => f.properties.id === featureId) ||
+      rejected.find((f) => f.properties.id === featureId) ||
+      all.find((f) => f.properties.id === featureId)
+    );
+  }, [featureId, accepted, rejected, all]);
 
   const closePopup = () => {
-    popup?.remove();
+    popupInstanceRef.current?.remove();
     setShowComment(false);
     setComment("");
   };
@@ -114,55 +126,42 @@ const PredictedFeatureActionPopup = ({
     setShowComment(true);
   };
 
-  // Approved prediction is accept
-
+  /**
+   * This mutation is used to create an approved model prediction.
+   */
   const createApprovedModelPredictionMutation =
     useCreateApprovedModelPrediction({
       mutationConfig: {
         onSuccess: (data) => {
-          const { updatedSource, updatedTarget } = alreadyRejected
-            ? moveFeature(rejected, accepted, featureId, {
-                _id: data.id,
-                ...data.properties,
-              })
-            : moveFeature(all, accepted, featureId, {
-                _id: data.id,
-                ...data.properties,
-              });
+          const from = alreadyRejected ? "rejected" : "all";
+          if (featureId !== null) {
+            moveFeatureBetweenBuckets(from, "accepted", featureId, {
+              _id: data.id,
+              ...data.properties,
+            });
+          }
 
-          setModelPredictions((prev) => ({
-            ...prev,
-            rejected: alreadyRejected ? updatedSource : prev.rejected,
-            all: alreadyRejected ? prev.all : updatedSource,
-            accepted: updatedTarget,
-          }));
           closePopup();
         },
+
         onError: (error) => {
           showErrorToast(error);
         },
       },
     });
 
+  /**
+   * This mutation is used to delete a model prediction feedback.
+   */
   const deleteModelFeedbackMutation = useDeleteModelPredictionFeedback({
     mutationConfig: {
       onSuccess: (_, variables) => {
         if (variables.approvePrediction) {
           submitApprovedPrediction();
         } else {
-          const { updatedSource: updatedRejected } = moveFeature(
-            rejected,
-            all,
-            featureId,
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            all: [
-              ...all,
-              ...rejected.filter((f) => f.properties.id === featureId),
-            ],
-            rejected: updatedRejected,
-          }));
+          if (featureId !== null) {
+            moveFeatureBetweenBuckets("rejected", "all", featureId);
+          }
         }
       },
       onError: (error) => {
@@ -171,6 +170,9 @@ const PredictedFeatureActionPopup = ({
     },
   });
 
+  /**
+   * This mutation is used to delete an approved model prediction.
+   */
   const deleteApprovedModelPrediction = useDeleteApprovedModelPrediction({
     mutationConfig: {
       onSuccess: async (_, variables) => {
@@ -180,23 +182,20 @@ const PredictedFeatureActionPopup = ({
             comments: comment,
             geom: geojsonToWKT(feature?.geometry as GeoJSONType),
             feedback_type: "TN",
-            source_imagery: source_imagery,
+            /**
+             * Use the configuration when the prediction was made.
+             * If it doesn't exist, it means the feature has been interacted with before.
+             * In that case, we can use the source_imagery from the properties.
+             */
+            source_imagery:
+              (feature?.properties.config.source as string) ??
+              (feature?.properties.config.source_imagery as string),
             training: trainingId,
           });
         } else {
-          const { updatedSource: updatedAccepted } = moveFeature(
-            accepted,
-            all,
-            featureId,
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            all: [
-              ...all,
-              ...accepted.filter((f) => f.properties.id === featureId),
-            ],
-            accepted: updatedAccepted,
-          }));
+          if (featureId !== null) {
+            moveFeatureBetweenBuckets("accepted", "all", featureId);
+          }
         }
       },
       onError: (error) => {
@@ -218,6 +217,14 @@ const PredictedFeatureActionPopup = ({
         skew_tolerance: feature?.properties.config.skew_tolerance as number,
         tolerance: feature?.properties.config.tolerance as number,
         zoom_level: feature?.properties.config.zoom_level as number,
+        /**
+         * Use the configuration when the prediction was made.
+         * If it doesn't exist, it means the feature has been interacted with before.
+         * In that case, we can use the source_imagery from the properties.
+         */
+        source_imagery:
+          (feature?.properties.config.source as string) ??
+          (feature?.properties.config.source_imagery as string),
       },
       user: user.osm_id,
     });
@@ -227,32 +234,11 @@ const PredictedFeatureActionPopup = ({
   const createModelFeedbackMutation = useCreateModelFeedback({
     mutationConfig: {
       onSuccess: (data) => {
-        if (alreadyAccepted) {
-          const { updatedSource, updatedTarget } = moveFeature(
-            accepted,
-            rejected,
-            featureId,
-            // update the feature with the returned id from the backend as `_id`.
-            { _id: data.id },
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            accepted: updatedSource,
-            rejected: updatedTarget,
-          }));
-        } else {
-          const { updatedSource, updatedTarget } = moveFeature(
-            all,
-            rejected,
-            featureId,
-            // update the feature with the returned id from the backend as `_id`.
-            { _id: data.id },
-          );
-          setModelPredictions((prev) => ({
-            ...prev,
-            all: updatedSource,
-            rejected: updatedTarget,
-          }));
+        const source = alreadyAccepted ? "accepted" : "all";
+        if (featureId !== null) {
+          moveFeatureBetweenBuckets(source, "rejected", featureId, {
+            _id: data.id,
+          });
         }
         closePopup();
       },
@@ -274,7 +260,14 @@ const PredictedFeatureActionPopup = ({
         comments: comment,
         geom: geojsonToWKT(feature?.geometry as GeoJSONType),
         feedback_type: "TN",
-        source_imagery: source_imagery,
+        /**
+         * Use the configuration when the prediction was made.
+         * If it doesn't exist, it means the feature has been interacted with before.
+         * In that case, we can use the source_imagery from the properties.
+         */
+        source_imagery:
+          (feature?.properties.config.source as string) ??
+          (feature?.properties.config.source_imagery as string),
         training: trainingId,
       });
     }
@@ -310,6 +303,7 @@ const PredictedFeatureActionPopup = ({
         action: handleRejection,
         className: "bg-primary",
         icon: RejectIcon,
+        disabled: false,
       }
     : alreadyRejected
       ? {
@@ -317,12 +311,14 @@ const PredictedFeatureActionPopup = ({
           action: handleResolve,
           className: "bg-black",
           icon: ResolveIcon,
+          disabled: deleteModelFeedbackMutation.isPending,
         }
       : {
           label: START_MAPPING_PAGE_CONTENT.map.popup.accept,
           action: handleAcceptance,
           className: "bg-green-primary",
           icon: AcceptIcon,
+          disabled: createApprovedModelPredictionMutation.isPending,
         };
 
   const secondaryButton = alreadyAccepted
@@ -331,6 +327,7 @@ const PredictedFeatureActionPopup = ({
         action: handleResolve,
         className: "bg-black",
         icon: ResolveIcon,
+        disabled: deleteApprovedModelPrediction.isPending,
       }
     : alreadyRejected
       ? {
@@ -338,18 +335,26 @@ const PredictedFeatureActionPopup = ({
           action: handleAcceptance,
           className: "bg-green-primary",
           icon: AcceptIcon,
+          disabled: deleteModelFeedbackMutation.isPending,
         }
       : {
           label: START_MAPPING_PAGE_CONTENT.map.popup.reject,
           action: handleRejection,
           className: "bg-primary",
           icon: RejectIcon,
+          disabled: false,
         };
+
+  /**
+   * Early return if no feature is selected.
+   * This is to prevent the popup from showing when there is no feature selected.
+   */
+  if (!feature) return <div className="hidden" ref={popupContainerRef} />;
 
   return (
     <div
       className="bg-white p-4 rounded-xl flex flex-col gap-y-4 w-fit md:w-[300px]"
-      ref={popupRef}
+      ref={popupContainerRef}
     >
       <div className="flex items-center justify-between">
         <p className="font-semibold text-body-3 md:text-body-2base">
@@ -396,16 +401,20 @@ const PredictedFeatureActionPopup = ({
           <button
             className={`w-full ${primaryButton.className} text-white rounded-lg p-2 text-body-4 md:text-body-3 text-nowrap flex gap-x-3 justify-between items-center`}
             onClick={primaryButton.action}
+            disabled={primaryButton.disabled}
           >
             {primaryButton.label}
             <primaryButton.icon />
+            {primaryButton.disabled && <Spinner />}
           </button>
           <button
             className={`w-full ${secondaryButton.className} text-white rounded-lg p-2 text-body-4 md:text-body-3 text-nowrap flex justify-between items-center gap-x-3`}
             onClick={secondaryButton.action}
+            disabled={secondaryButton.disabled}
           >
             {secondaryButton.label}
             <secondaryButton.icon />
+            {secondaryButton.disabled && <Spinner />}
           </button>
         </div>
       )}

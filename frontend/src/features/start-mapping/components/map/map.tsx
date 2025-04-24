@@ -1,72 +1,49 @@
-import PredictedFeatureActionPopup from "@/features/start-mapping/components/feature-popup";
 import useScreenSize from "@/hooks/use-screen-size";
 import { ControlsPosition } from "@/enums";
 import { extractTileJSONURL, showErrorToast } from "@/utils";
 import { LngLatBoundsLike, Map } from "maplibre-gl";
-import { Legend } from "@/features/start-mapping/components";
+import {
+  Legend,
+  PredictedFeatureActionPopup,
+} from "@/features/start-mapping/components";
 import { MapComponent, MapCursorToolTip } from "@/components/map";
 import { TOAST_NOTIFICATIONS } from "@/constants";
-import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
-import {
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { memo, RefObject, useEffect, useMemo } from "react";
 
+import { TileJSON, TTrainingDataset } from "@/types";
 import {
-  TileJSON,
-  TModelPredictionFeature,
-  TModelPredictions,
-  TTrainingDataset,
-} from "@/types";
-import {
-  ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-  ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
   MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION,
-  REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
 } from "@/config";
 import bbox from "@turf/bbox";
 import {
   AcceptedPredictionsLayer,
   RejectedPredictionsLayer,
   AllPredictionsLayer,
+  PredictionImageryLayer,
 } from "@/features/start-mapping/components/map/layers";
+import { PredictionImagerySource } from "@/enums/start-mapping";
+import { useMapStore } from "@/store/map-store";
+import { useModelPredictionStore } from "@/store/model-prediction-store";
 
 export const StartMappingMapComponent = ({
   trainingDataset,
-  modelPredictions,
-  setModelPredictions,
   oamTileJSONIsError,
   oamTileJSON,
-  modelPredictionsExist,
   map,
   mapContainerRef,
-  currentZoom,
   layers,
   tmsBounds,
   trainingId,
   modelInfoRequestIsPending,
+  predictionImagerySource,
+  predictionImageryURL,
 }: {
   trainingId: number;
   trainingDataset?: TTrainingDataset;
-  modelPredictions: TModelPredictions;
-
-  setModelPredictions: Dispatch<
-    SetStateAction<{
-      all: TModelPredictionFeature[];
-      accepted: TModelPredictionFeature[];
-      rejected: TModelPredictionFeature[];
-    }>
-  >;
-
   oamTileJSONIsError: boolean;
   oamTileJSON: TileJSON;
-  modelPredictionsExist: boolean;
   map: Map | null;
-  currentZoom: number;
   mapContainerRef: RefObject<HTMLDivElement>;
   layers: {
     value: string;
@@ -74,24 +51,38 @@ export const StartMappingMapComponent = ({
   }[];
   tmsBounds: LngLatBoundsLike;
   modelInfoRequestIsPending: boolean;
+  predictionImagerySource: PredictionImagerySource;
+  predictionImageryURL: string | undefined;
 }) => {
   const tileJSONURL = extractTileJSONURL(trainingDataset?.source_imagery ?? "");
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedFeature, setSelectedFeature] = useState(null);
   const { isSmallViewport } = useScreenSize();
-
-  const { tooltipPosition, tooltipVisible } = useToolTipVisibility(map, [
-    currentZoom,
-  ]);
-
+  const currentZoom = useMapStore.getState().zoom;
   useEffect(() => {
     if (!oamTileJSONIsError) return;
     showErrorToast(undefined, TOAST_NOTIFICATIONS.trainingDataset.error);
   }, [oamTileJSONIsError]);
 
+  const { modelPredictions } = useModelPredictionStore();
+
+  const modelPredictionsExist = useMemo(() => {
+    return (
+      modelPredictions.accepted.length > 0 ||
+      modelPredictions.rejected.length > 0 ||
+      modelPredictions.all.length > 0
+    );
+  }, [modelPredictions]);
+
   useEffect(() => {
-    if (!map || !tmsBounds || oamTileJSONIsError || modelInfoRequestIsPending)
+    if (
+      !map ||
+      !tmsBounds ||
+      oamTileJSONIsError ||
+      modelInfoRequestIsPending ||
+      /**
+       * Zoom to the bounds of the tileJSON if the user has not selected the default model imagery.
+       */
+      predictionImagerySource !== PredictionImagerySource.ModelDefault
+    )
       return;
 
     // if there are predictions that the user hasn't interacted with, zoom to them.
@@ -112,45 +103,26 @@ export const StartMappingMapComponent = ({
     oamTileJSONIsError,
     oamTileJSON,
     modelInfoRequestIsPending,
+    predictionImagerySource,
   ]);
 
-  useEffect(() => {
-    if (!map) return;
-    const layerIds = [
-      ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
-      ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-      REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID,
-    ];
-    const handleMouseEnter = () => {
-      map.getCanvas().style.cursor = "pointer";
-    };
+  const shouldShowTooltip =
+    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
 
-    const handleMouseLeave = () => {
-      map.getCanvas().style.cursor = "";
-    };
+  const memoizedToolTip = useMemo(() => {
+    if (!map) return null;
 
-    const handleClick = (e: any) => {
-      setShowPopup(true);
-      setSelectedEvent(e);
-      setSelectedFeature(e.features && e.features[0]);
-    };
-
-    layerIds.forEach((layerId) => {
-      map.on("mouseenter", layerId, handleMouseEnter);
-      map.on("mouseleave", layerId, handleMouseLeave);
-      map.on("click", layerId, handleClick);
-    });
-    return () => {
-      layerIds.forEach((layerId) => {
-        map.off("mouseenter", layerId, handleMouseEnter);
-        map.off("mouseleave", layerId, handleMouseLeave);
-        map.off("click", layerId, handleClick);
-      });
-    };
-  }, [map]);
-
-  const showTooltip =
-    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION && tooltipVisible;
+    return (
+      <MapCursorToolTip
+        color="bg-primary"
+        map={map}
+        showTooltip={shouldShowTooltip}
+        minZoom={MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION}
+      >
+        {MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION}
+      </MapCursorToolTip>
+    );
+  }, [map, currentZoom]);
 
   return (
     <MapComponent
@@ -159,7 +131,6 @@ export const StartMappingMapComponent = ({
       fitToBounds={!isSmallViewport}
       bounds={tmsBounds}
       mapContainerRef={mapContainerRef}
-      currentZoom={currentZoom}
       map={map}
       zoomControls={!isSmallViewport}
       layerControl={!isSmallViewport}
@@ -169,39 +140,36 @@ export const StartMappingMapComponent = ({
       openAerialMap={!modelInfoRequestIsPending}
       oamTileJSONURL={tileJSONURL}
     >
-      {!modelInfoRequestIsPending && (
-        <>
-          <AcceptedPredictionsLayer
-            map={map}
-            features={modelPredictions.accepted}
-          />
-          <RejectedPredictionsLayer
-            map={map}
-            features={modelPredictions.rejected}
-          />
-          <AllPredictionsLayer map={map} features={modelPredictions.all} />
-        </>
-      )}
-
-      {showPopup && (
-        <PredictedFeatureActionPopup
-          event={selectedEvent}
-          selectedFeature={selectedFeature}
-          setModelPredictions={setModelPredictions}
-          modelPredictions={modelPredictions}
-          source_imagery={trainingDataset?.source_imagery as string}
-          trainingId={trainingId}
+      {map && predictionImageryURL && (
+        <PredictionImageryLayer
           map={map}
+          predictionImagerySource={predictionImagerySource}
+          predictionImageryURL={predictionImageryURL}
         />
       )}
-      <MapCursorToolTip
-        tooltipVisible={showTooltip && !isSmallViewport}
-        color={"bg-primary"}
-        tooltipPosition={tooltipPosition}
-      >
-        {MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION}
-      </MapCursorToolTip>
+      {map && <PredictedFeatureActionPopup trainingId={trainingId} map={map} />}
+
+      {!modelInfoRequestIsPending && map && <PredictionLayers map={map} />}
+      {memoizedToolTip}
       {map && modelPredictionsExist && !isSmallViewport && <Legend map={map} />}
     </MapComponent>
   );
 };
+
+const PredictionLayers = memo(({ map }: { map: Map | null }) => {
+  const { modelPredictions } = useModelPredictionStore();
+
+  return (
+    <>
+      <AcceptedPredictionsLayer
+        map={map}
+        features={modelPredictions.accepted}
+      />
+      <RejectedPredictionsLayer
+        map={map}
+        features={modelPredictions.rejected}
+      />
+      <AllPredictionsLayer map={map} features={modelPredictions.all} />
+    </>
+  );
+});

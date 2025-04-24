@@ -52,12 +52,6 @@ export type TModelsContent = {
           placeholder: string;
           toolTip: string;
         };
-        tmsURL: {
-          label: string;
-          toolTip: string;
-          helpText: string;
-          placeholder: string;
-        };
         existingTrainingDatasetSectionDescription: string;
 
         searchBar: {
@@ -565,6 +559,10 @@ export type TStartMappingPageContent = {
       accuracy: string;
       baseModel: string;
     };
+  };
+  replicableModel: {
+    apply: string;
+    info: string;
   };
 };
 

@@ -286,7 +286,8 @@ export const REJECTED_MODEL_PREDICTIONS_SOURCE_ID: string =
 export const REJECTED_MODEL_PREDICTIONS_FILL_LAYER_ID: string = `${MAP_STYLES_PREFIX}-rejected-predictions-fill-layer`;
 export const REJECTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID: string =
   "rejected-predictions-outline-layer";
-
+export const PREDICTION_IMAGERY_SOURCE: string = `${MAP_STYLES_PREFIX}-prediction-imagery-source`;
+export const PREDICTION_IMAGERY_LAYER_ID: string = `${MAP_STYLES_PREFIX}-prediction-imagery-layer`;
 // Training Areas
 export const TRAINING_AREAS_AOI_FILL_COLOR: string = parseStringEnv(
   ENVS.TRAINING_AREAS_AOI_FILL_COLOR,
@@ -457,6 +458,19 @@ export const MAXIMUM_PREDICTION_AREA: number = parseIntEnv(
   20,
 );
 
+/**
+ * The base path to the model checkpoint files.
+ */
+export const FAIR_MODELS_BASE_PATH: string = parseStringEnv(
+  ENVS.FAIR_MODELS_BASE_PATH,
+  "/mnt/efsmount/data",
+);
+
+export const FAIR_BASE_MODELS_PATH: Record<BASE_MODELS, string> = {
+  [BASE_MODELS.RAMP]: `${FAIR_MODELS_BASE_PATH}/basemodels/ramp/baseline.tflite`,
+  [BASE_MODELS.YOLOV8_V1]: `${FAIR_MODELS_BASE_PATH}/basemodels/yolo/yolov8s_v1-seg.onnx`,
+  [BASE_MODELS.YOLOV8_V2]: `${FAIR_MODELS_BASE_PATH}/basemodels/yolo/yolov8s_v2-seg.onnx`,
+};
 // ==============================================================================================================================
 // UI Settings
 // ==============================================================================================================================

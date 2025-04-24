@@ -221,6 +221,7 @@ export type TModelPredictionsConfig = {
   tolerance: number;
   use_josm_q: boolean;
   zoom_level: number;
+  source_imagery?: string;
 };
 
 export type TModelPredictionFeature = {

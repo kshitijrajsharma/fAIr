@@ -6,7 +6,7 @@ import { useCallback, useEffect } from "react";
 
 export const TileBoundaries = ({ map }: { map: Map | null }) => {
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.getStyle()) return;
     if (!map.getSource(TILE_BOUNDARY_SOURCE_ID)) {
       map.addSource(TILE_BOUNDARY_SOURCE_ID, {
         type: "geojson",
@@ -29,7 +29,7 @@ export const TileBoundaries = ({ map }: { map: Map | null }) => {
   }, [map]);
 
   const updateTileBoundary = useCallback(() => {
-    if (map) {
+    if (map && map.getStyle()) {
       if (map.getSource(TILE_BOUNDARY_SOURCE_ID)) {
         const tileBoundaries = getTileBoundariesGeoJSON(
           map,
@@ -44,10 +44,14 @@ export const TileBoundaries = ({ map }: { map: Map | null }) => {
   }, [map]);
 
   useEffect(() => {
-    if (!map) return;
-    map.on("moveend", updateTileBoundary);
+    if (map && map.getStyle()) {
+      map.on("moveend", updateTileBoundary);
+    }
+
     return () => {
-      map.off("moveend", updateTileBoundary);
+      if (map && map.getStyle()) {
+        map.off("moveend", updateTileBoundary);
+      }
     };
   }, [map, updateTileBoundary]);
 

@@ -1,4 +1,5 @@
 import { showErrorToast } from "@/utils";
+import { getLocalStorageValue, setLocalStorageValue } from "@/utils/storage";
 
 /**
  * Custom hook to interact with the browser's localStorage.
@@ -14,7 +15,7 @@ import { showErrorToast } from "@/utils";
 export const useLocalStorage = () => {
   const getValue = (key: string): string | undefined => {
     try {
-      const item = localStorage.getItem(key);
+      const item = getLocalStorageValue(key);
       return item ? item : undefined;
     } catch (error) {
       showErrorToast(error);
@@ -23,7 +24,7 @@ export const useLocalStorage = () => {
 
   const setValue = (key: string, value: string): void => {
     try {
-      localStorage.setItem(key, value);
+      setLocalStorageValue(key, value);
     } catch (error) {
       showErrorToast(
         "Storage limit exceeded. Please clear the predictions or hard refresh the application.",

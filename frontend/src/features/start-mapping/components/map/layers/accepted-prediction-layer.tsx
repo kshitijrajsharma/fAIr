@@ -23,7 +23,8 @@ export const AcceptedPredictionsLayer = ({
   );
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !map.getStyle()) return;
+
     if (!map.getSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID)) {
       map.addSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID, {
         type: "geojson",
@@ -54,10 +55,23 @@ export const AcceptedPredictionsLayer = ({
         layout: { visibility: "visible" },
       });
     }
+
+    return () => {
+      if (!map || !map.getStyle()) return;
+      if (map.getLayer(ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID)) {
+        map.removeLayer(ACCEPTED_MODEL_PREDICTIONS_FILL_LAYER_ID);
+      }
+      if (map.getLayer(ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID)) {
+        map.removeLayer(ACCEPTED_MODEL_PREDICTIONS_OUTLINE_LAYER_ID);
+      }
+      if (map.getSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID)) {
+        map.removeSource(ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID);
+      }
+    };
   }, [map]);
 
   useEffect(() => {
-    if (!map || !features) return;
+    if (!map || !features || !map.getStyle()) return;
     const source = map.getSource(
       ACCEPTED_MODEL_PREDICTIONS_SOURCE_ID,
     ) as GeoJSONSource;

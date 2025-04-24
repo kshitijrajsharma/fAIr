@@ -7,7 +7,6 @@ import { MapComponent, MapCursorToolTip } from "@/components/map";
 import { Polygon } from "geojson";
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { TerraDraw } from "terra-draw";
-import { useToolTipVisibility } from "@/hooks/use-tooltip-visibility";
 import {
   useCreateTrainingArea,
   useGetTrainingDatasetLabels,
@@ -32,6 +31,7 @@ import {
   TrainingAreasLabelsLayers,
   MaskBoundsLayers,
 } from "@/features/model-creation/components/map-layers";
+import { useMapStore } from "@/store/map-store";
 
 // Debounce delay in milliseconds.
 const DEBOUNCE_DELAY: number = 300;
@@ -44,7 +44,6 @@ const TrainingAreaMap = ({
   map,
   drawingMode,
   setDrawingMode,
-  currentZoom,
   terraDraw,
   mapContainerRef,
   trainingAreaIsPending,
@@ -57,7 +56,6 @@ const TrainingAreaMap = ({
   map: Map | null;
   drawingMode: DrawingModes;
   setDrawingMode: (newMode: DrawingModes) => void;
-  currentZoom: number;
   terraDraw?: TerraDraw;
   mapContainerRef: RefObject<HTMLDivElement> | null;
   trainingAreaIsPending: boolean;
@@ -73,13 +71,11 @@ const TrainingAreaMap = ({
   const trainingAreasLabelsOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-labels-outline-layer`;
 
   const [mapBounds, setMapBounds] = useState<LngLatBounds | null>(null);
-
+  const [tooltipIsVisible, setTooltipVisible] = useState<boolean>(false);
   const [bbox, setBbox] = useState<string>("");
+  const currentZoom = useMapStore((state) => state.zoom);
 
   const [featureArea, setFeatureArea] = useState<number>(0);
-
-  const { setTooltipVisible, tooltipPosition, tooltipVisible } =
-    useToolTipVisibility(map, [drawingMode, currentZoom]);
 
   const debouncedBbox = useDebounce(bbox, DEBOUNCE_DELAY);
 
@@ -176,10 +172,6 @@ const TrainingAreaMap = ({
 
   const showLabelsToolTip = currentZoom >= 14 && currentZoom < 18;
 
-  const showTooltip =
-    Boolean(drawingMode === DrawingModes.RECTANGLE || showLabelsToolTip) &&
-    tooltipVisible;
-
   const getTooltipColor = () => {
     if (featureArea !== 0) {
       if (
@@ -225,7 +217,6 @@ const TrainingAreaMap = ({
       drawingMode={drawingMode}
       setDrawingMode={setDrawingMode}
       mapContainerRef={mapContainerRef}
-      currentZoom={currentZoom}
       layerControlLayers={[
         ...(labels && labels?.features.length > 0
           ? [
@@ -279,20 +270,26 @@ const TrainingAreaMap = ({
         />
       )}
 
-      <MapCursorToolTip
-        tooltipVisible={showTooltip}
-        color={getTooltipColor()}
-        tooltipPosition={tooltipPosition}
-      >
-        {drawingMode === DrawingModes.RECTANGLE && (
-          <p>
-            {drawingMode === DrawingModes.RECTANGLE && featureArea === 0
-              ? "Click and drag to draw a rectangle."
-              : `Current area: ${formatAreaInAppropriateUnit(featureArea)}`}
-          </p>
-        )}
-        <p>{getFeedbackMessage()}</p>
-      </MapCursorToolTip>
+      {map && (
+        <MapCursorToolTip
+          color={getTooltipColor()}
+          map={map}
+          showTooltip={
+            tooltipIsVisible ||
+            Boolean(drawingMode === DrawingModes.RECTANGLE || showLabelsToolTip)
+          }
+          dependencies={[drawingMode]}
+        >
+          {drawingMode === DrawingModes.RECTANGLE && (
+            <p>
+              {drawingMode === DrawingModes.RECTANGLE && featureArea === 0
+                ? "Click and drag to draw a rectangle."
+                : `Current area: ${formatAreaInAppropriateUnit(featureArea)}`}
+            </p>
+          )}
+          <p>{getFeedbackMessage()}</p>
+        </MapCursorToolTip>
+      )}
     </MapComponent>
   );
 };

@@ -109,7 +109,7 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
             ) {
               showErrorToast(
                 undefined,
-                `File area for ${file.name} exceeds area limit.`,
+                `The area of ${file.name} does not satisfy the required size constraints.`,
               );
             } else {
               validFiles.push({ file, id: generateUniqueId() });

@@ -3,6 +3,7 @@ import { Map } from "maplibre-gl";
 import { ToolTip } from "../../ui/tooltip";
 import { ToolTipPlacement } from "@/enums";
 import { useCallback } from "react";
+import { useMapStore } from "@/store/map-store";
 
 const ZoomButton = ({
   onClick,
@@ -22,13 +23,9 @@ const ZoomButton = ({
   </button>
 );
 
-export const ZoomControls = ({
-  map,
-  currentZoom,
-}: {
-  map: Map | null;
-  currentZoom: number;
-}) => {
+export const ZoomControls = ({ map }: { map: Map | null }) => {
+  const currentZoom = useMapStore((state) => state.zoom);
+
   const handleZoomIn = useCallback(() => {
     if (map && currentZoom < map.getMaxZoom()) {
       map.zoomIn();

@@ -75,6 +75,7 @@ export const RootLayout = () => {
   return (
     <>
       <HotTracking showTracking={showTracking} />
+
       {/* Show the auth modal when a `backgroundLocation` is set and when the user is not authenticated. */}
       <AuthenticationModal
         isOpen={state?.backgroundLocation && !isAuthenticated}
