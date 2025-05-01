@@ -75,15 +75,14 @@ const FileItem = ({
                 </span>
               </button>
             </ToolTip>
-            <ToolTip content="Click to copy file download link. You can open this link in a new tab to download the file.">
-              <CopyButton
-                text={
-                  BASE_API_URL +
-                  API_ENDPOINTS.DOWNLOAD_TRAINING_FILE(trainingId, validPath)
-                }
-                size="small"
-              />
-            </ToolTip>
+            <CopyButton
+              text={
+                BASE_API_URL +
+                API_ENDPOINTS.DOWNLOAD_TRAINING_FILE(trainingId, validPath)
+              }
+              size="small"
+              tooltipContent="Click to copy file download link. You can open this link in a new tab to download the file."
+            />
           </div>
         )}
       </div>
