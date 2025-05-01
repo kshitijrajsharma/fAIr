@@ -21,7 +21,6 @@ const ModelNameFormInput = ({
         FORM_VALIDATION_CONFIG[MODEL_CREATION_FORM_NAME.MODEL_NAME].maxLength,
     message: "",
   });
-
   return (
     <Input
       handleInput={(e) => handleChange(e.target.value)}
@@ -35,7 +34,7 @@ const ModelNameFormInput = ({
         MODELS_CONTENT.modelCreation.modelDetails.form.modelName.placeholder
       }
       validationStateUpdateCallback={setModelNameIsValid}
-      isValid={modelNameIsValid.valid}
+      isValid={value.length > 0 && modelNameIsValid.valid}
       showBorder
       helpText={modelNameIsValid.message}
       maxLength={

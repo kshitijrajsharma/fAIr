@@ -32,7 +32,7 @@ const ModelDescriptionFormInput = ({
       }
       helpText={modelDescriptionIsValid.message}
       validationStateUpdateCallback={setmodelDescriptionIsValid}
-      isValid={modelDescriptionIsValid.valid}
+      isValid={value.length > 0 && modelDescriptionIsValid.valid}
       labelWithTooltip
       toolTipContent={
         MODELS_CONTENT.modelCreation.modelDetails.form.modelDescription.toolTip
