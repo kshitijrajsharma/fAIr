@@ -117,10 +117,10 @@ export const TrainingLabelsOffset = ({
         ]);
         showSuccessToast("Offset saved successfully.");
       },
-      onError: () => {
+      onError: (error) => {
         // Reset the local input to the previous offset values.
         handleOffsetReset();
-        showErrorToast("Failed to save offset. Please try again.");
+        showErrorToast(error);
       },
     },
   });
@@ -143,7 +143,7 @@ export const TrainingLabelsOffset = ({
       (trainingDatasetOffset.x === initialOffset.x &&
         trainingDatasetOffset.y === initialOffset.y &&
         localInput ===
-          `${initialOffset.x.toFixed(2)}, ${initialOffset.y.toFixed(2)}`) ||
+        `${initialOffset.x.toFixed(2)}, ${initialOffset.y.toFixed(2)}`) ||
       isPending,
     [trainingDatasetOffset, initialOffset, localInput, isPending],
   );
