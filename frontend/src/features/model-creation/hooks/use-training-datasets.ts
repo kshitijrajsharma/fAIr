@@ -26,7 +26,6 @@ export const useCreateTrainingDataset = ({
   });
 };
 
-
 type useUpdateTrainingDatasetOptions = {
   mutationConfig?: MutationConfig<typeof updateTrainingDataset>;
 };

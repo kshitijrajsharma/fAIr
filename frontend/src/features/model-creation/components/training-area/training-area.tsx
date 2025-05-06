@@ -39,8 +39,8 @@ const TrainingAreaForm = () => {
 
   const tileJSONURL = extractTileJSONURL(formData.tmsURL);
   const initialOffset = {
-    x: formData.datasetOffset[0] || 0,
-    y: formData.datasetOffset[1] || 0,
+    x: formData.datasetOffset?.[0] || 0,
+    y: formData.datasetOffset?.[1] || 0,
   };
   const [trainingDatasetOffset, setTrainingDatasetOffset] =
     useState(initialOffset);
@@ -95,7 +95,6 @@ const TrainingAreaForm = () => {
     setTrainingDatasetOffset(initialOffset);
   };
 
-
   return (
     <>
       <FileUploadDialog
@@ -142,7 +141,8 @@ const TrainingAreaForm = () => {
               OAMIsPending={isPending}
               OAMIsError={isError}
               OAMData={data as TileJSON}
-            /></div>
+            />
+          </div>
 
           <div className="border-t border-gray-border min-h-24">
             <TrainingLabelsOffset
@@ -150,8 +150,9 @@ const TrainingAreaForm = () => {
               setTrainingDatasetOffset={setTrainingDatasetOffset}
               handleOffsetReset={handleOffsetReset}
               initialOffset={initialOffset}
-            /></div>
-        </div >
+            />
+          </div>
+        </div>
 
         <div
           ref={mapElementRef}
@@ -187,9 +188,6 @@ const TrainingAreaForm = () => {
               setTrainingDatasetOffset={setTrainingDatasetOffset}
               handleOffsetReset={handleOffsetReset}
               initialOffset={initialOffset}
-
-
-
             />
             <div className="bg-white flex-1 flex flex-col p-2 rounded-lg min-h-0">
               <TrainingAreaList
@@ -227,7 +225,7 @@ const TrainingAreaForm = () => {
             setDrawingMode={setDrawingMode}
           />
         </div>
-      </div >
+      </div>
     </>
   );
 };

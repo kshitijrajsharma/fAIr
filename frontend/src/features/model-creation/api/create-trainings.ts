@@ -120,7 +120,6 @@ export const createTrainingLabelsForAOI = async ({
   ).data.status;
 };
 
-
 export type TUpdateTrainingDatasetArgs = {
   id: number;
   offset: [number, number];

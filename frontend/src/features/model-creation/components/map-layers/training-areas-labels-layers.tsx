@@ -10,26 +10,22 @@ import { metersToLngLat } from "@/utils";
 import { GeoJSONSource, Map } from "maplibre-gl";
 import { useEffect, useMemo } from "react";
 
-
-
-
 /**
  *  Offsets the coordinates of a GeoJSON feature collection by a given distance in meters.
  * The trick is to offset the feature and then save the offset value in the backend. So the background imagery doesn't change.
  * @param features The GeoJSON feature collection to be modified.
  * @param offset The offset in meters to apply to the coordinates.
  * @param lat  The latitude at which the offset is applied.
- * @returns The modified GeoJSON feature collection with coordinates adjusted by the offset. 
+ * @returns The modified GeoJSON feature collection with coordinates adjusted by the offset.
  */
 const offsetGeoJSON = (
   features: Feature[],
   offset: { x: number; y: number },
-  lat: number
+  lat: number,
 ): Feature[] => {
   if (!offset.x && !offset.y) return features;
 
   const [deltaLng, deltaLat] = metersToLngLat(offset.x, offset.y, lat);
-
 
   const cloned = JSON.parse(JSON.stringify(features));
 
@@ -40,7 +36,7 @@ const offsetGeoJSON = (
     return coords.map(applyOffset);
   };
 
-  return cloned.map((feature: { geometry: { coordinates: any; }; }) => {
+  return cloned.map((feature: { geometry: { coordinates: any } }) => {
     if (feature.geometry?.coordinates) {
       feature.geometry.coordinates = applyOffset(feature.geometry.coordinates);
     }

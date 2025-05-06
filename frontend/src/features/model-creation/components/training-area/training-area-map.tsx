@@ -33,7 +33,6 @@ import {
 } from "@/features/model-creation/components/map-layers";
 import { useMapStore } from "@/store/map-store";
 
-
 // Debounce delay in milliseconds.
 const DEBOUNCE_DELAY: number = 300;
 
@@ -205,7 +204,6 @@ const TrainingAreaMap = ({
     return;
   };
 
-
   return (
     <MapComponent
       openAerialMap={!trainingAreaIsPending}
@@ -224,25 +222,25 @@ const TrainingAreaMap = ({
       layerControlLayers={[
         ...(labels && labels?.features.length > 0
           ? [
-            {
-              value: "Training Labels",
-              subLayers: [
-                trainingAreasLabelsFillLayerId,
-                trainingAreasLabelsOutlineLayerId,
-              ],
-            },
-          ]
+              {
+                value: "Training Labels",
+                subLayers: [
+                  trainingAreasLabelsFillLayerId,
+                  trainingAreasLabelsOutlineLayerId,
+                ],
+              },
+            ]
           : []),
         ...(data?.results?.features?.length
           ? [
-            {
-              value: "Training Areas",
-              subLayers: [
-                trainingAreasOutlineLayerId,
-                trainingAreasFillLayerId,
-              ],
-            },
-          ]
+              {
+                value: "Training Areas",
+                subLayers: [
+                  trainingAreasOutlineLayerId,
+                  trainingAreasFillLayerId,
+                ],
+              },
+            ]
           : []),
       ]}
     >
@@ -257,7 +255,7 @@ const TrainingAreaMap = ({
       )}
 
       {!trainingAreasLabelsIsPending &&
-        currentZoom >= MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS ? (
+      currentZoom >= MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS ? (
         <TrainingAreasLabelsLayers
           map={map}
           features={labels?.features}
