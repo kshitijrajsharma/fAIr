@@ -438,3 +438,16 @@ export const featureIsWithinBounds = (
   };
   return booleanWithin(feature, OAMFeature as Feature);
 };
+
+/**
+ * Convert x/y meter to approximate longitude/latitude offsets based on the map center latitude.
+ */
+export const metersToLngLat = (
+  xMeters: number,
+  yMeters: number,
+  latitude: number,
+): [number, number] => {
+  const deltaLng = xMeters / (111320 * Math.cos((latitude * Math.PI) / 180));
+  const deltaLat = yMeters / 110540;
+  return [deltaLng, deltaLat];
+};

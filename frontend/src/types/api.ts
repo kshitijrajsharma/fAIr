@@ -141,6 +141,7 @@ export type TTrainingDataset = {
   };
   source_imagery: string;
   models_count: number;
+  offset: number[];
 };
 
 // Training API response types

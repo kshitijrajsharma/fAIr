@@ -33,6 +33,7 @@ import {
 } from "@/features/model-creation/components/map-layers";
 import { useMapStore } from "@/store/map-store";
 
+
 // Debounce delay in milliseconds.
 const DEBOUNCE_DELAY: number = 300;
 
@@ -48,6 +49,7 @@ const TrainingAreaMap = ({
   mapContainerRef,
   trainingAreaIsPending,
   OAMData,
+  trainingDatasetOffset,
 }: {
   tileJSONURL: string;
   data?: PaginatedTrainingArea;
@@ -60,6 +62,7 @@ const TrainingAreaMap = ({
   mapContainerRef: RefObject<HTMLDivElement> | null;
   trainingAreaIsPending: boolean;
   OAMData: TileJSON;
+  trainingDatasetOffset: { x: number; y: number };
 }) => {
   // Training Areas
   const trainingAreasOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-area-layer`;
@@ -202,6 +205,7 @@ const TrainingAreaMap = ({
     return;
   };
 
+
   return (
     <MapComponent
       openAerialMap={!trainingAreaIsPending}
@@ -220,25 +224,25 @@ const TrainingAreaMap = ({
       layerControlLayers={[
         ...(labels && labels?.features.length > 0
           ? [
-              {
-                value: "Training Labels",
-                subLayers: [
-                  trainingAreasLabelsFillLayerId,
-                  trainingAreasLabelsOutlineLayerId,
-                ],
-              },
-            ]
+            {
+              value: "Training Labels",
+              subLayers: [
+                trainingAreasLabelsFillLayerId,
+                trainingAreasLabelsOutlineLayerId,
+              ],
+            },
+          ]
           : []),
         ...(data?.results?.features?.length
           ? [
-              {
-                value: "Training Areas",
-                subLayers: [
-                  trainingAreasOutlineLayerId,
-                  trainingAreasFillLayerId,
-                ],
-              },
-            ]
+            {
+              value: "Training Areas",
+              subLayers: [
+                trainingAreasOutlineLayerId,
+                trainingAreasFillLayerId,
+              ],
+            },
+          ]
           : []),
       ]}
     >
@@ -253,13 +257,14 @@ const TrainingAreaMap = ({
       )}
 
       {!trainingAreasLabelsIsPending &&
-      currentZoom >= MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS ? (
+        currentZoom >= MIN_ZOOM_LEVEL_FOR_TRAINING_AREA_LABELS ? (
         <TrainingAreasLabelsLayers
           map={map}
           features={labels?.features}
           trainingAreasLabelsFillLayerId={trainingAreasLabelsFillLayerId}
           trainingAreasLabelsOutlineLayerId={trainingAreasLabelsOutlineLayerId}
           trainingAreasLabelsSourceId={trainingAreasLabelsSourceId}
+          trainingDatasetOffset={trainingDatasetOffset}
         />
       ) : null}
       {OAMData?.bounds && mapBounds && (

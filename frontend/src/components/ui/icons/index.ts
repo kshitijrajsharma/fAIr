@@ -59,3 +59,5 @@ export { ArrowMoveIcon } from "./arrow-move-icon";
 export { ProductionCheckmarkIcon } from "./production-checkmark";
 export { NotificationBellIcon } from "./notification-bell-icon";
 export { PeopleIcon } from "./people-icon";
+export { ResetIcon } from "./reset-icon";
+export { DirectionIcon } from "./direction-icon";

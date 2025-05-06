@@ -57,6 +57,7 @@ import { useAuth } from "./auth-provider";
 export enum MODEL_CREATION_FORM_NAME {
   MODEL_NAME = "modelName",
   DATASET_NAME = "datasetName",
+  DATASET_OFFSET = "datasetOffset",
   MODEL_DESCRIPTION = "modelDescription",
   BASE_MODELS = "baseModel",
   TRAINING_DATASET_OPTION = "trainingDatasetOption",
@@ -170,6 +171,7 @@ type FormData = {
   zoomLevels: number[];
   trainingSettingsIsValid: boolean;
   tileserviceType: TileServiceType;
+  datasetOffset: number[];
 };
 
 const initialFormState: FormData = {
@@ -195,6 +197,7 @@ const initialFormState: FormData = {
   [MODEL_CREATION_FORM_NAME.ZOOM_LEVELS]: [19, 20, 21],
   [MODEL_CREATION_FORM_NAME.TRAINING_SETTINGS_IS_VALID]: true,
   [MODEL_CREATION_FORM_NAME.TILESERVICE_TYPE]: TileServiceType.XYZ,
+  [MODEL_CREATION_FORM_NAME.DATASET_OFFSET]: [0, 0],
 };
 
 const ModelsContext = createContext<{
@@ -363,6 +366,7 @@ export const ModelsProvider: React.FC<{
       MODEL_CREATION_FORM_NAME.TMS_URL,
       data.dataset.source_imagery ?? "",
     );
+    handleChange(MODEL_CREATION_FORM_NAME.DATASET_OFFSET, data.dataset.offset);
   }, [isEditMode, isError, isPending, data]);
 
   const resetState = () => {
@@ -414,6 +418,7 @@ export const ModelsProvider: React.FC<{
           MODEL_CREATION_FORM_NAME.SELECTED_TRAINING_DATASET_ID,
           data.id,
         );
+        handleChange(MODEL_CREATION_FORM_NAME.DATASET_OFFSET, data.offset);
       },
       onError: (error) => {
         showErrorToast(error);
