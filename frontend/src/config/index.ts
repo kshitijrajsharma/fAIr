@@ -366,14 +366,6 @@ export const MATOMO_TRACKING_URL: string = parseStringEnv(
  */
 export const HOT_TRACKING_HTML_TAG_NAME: string = "hot-tracking";
 
-/**
- * The timeout duration in milliseconds to show the tracking component.
- * Default value: 1000 ms (1 seconds).
- */
-export const MATOMO_TRACKING_TIMEOUT_DURATION: number = parseIntEnv(
-  ENVS.MATOMO_TRACKING_TIMEOUT_DURATION,
-  1000,
-);
 
 export const BANNER_TIMEOUT_DURATION: number = parseIntEnv(
   ENVS.BANNER_TIMEOUT_DURATION,
