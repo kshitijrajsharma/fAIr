@@ -20,6 +20,7 @@ export const HotTracking = ({ homepagePath = APPLICATION_ROUTES.HOMEPAGE }) => {
       hotTracking.classList.add("hot-matomo");
       hotTracking.setAttribute("site-id", MATOMO_ID);
       hotTracking.setAttribute("domain", MATOMO_APP_DOMAIN);
+      hotTracking.setAttribute("force", "true");
 
       // Append element to body
       document.body.appendChild(hotTracking);
