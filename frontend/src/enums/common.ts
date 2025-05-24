@@ -35,6 +35,7 @@ export enum ToolTipPlacement {
   RIGHT = "right",
   BOTTOM = "bottom",
   TOP = "top",
+  LEFT = "left",
 }
 
 export enum BASEMAPS {
